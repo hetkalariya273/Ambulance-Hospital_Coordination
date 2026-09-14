@@ -2,6 +2,21 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+namespace AMS.Data
+{
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    {
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Driver> Drivers { get; set; }
+        public DbSet<Ambulance> Ambulances { get; set; }
+        public DbSet<Hospital> Hospitals { get; set; }
+    }
+}
 /* 
   IdentityDbContext already knows how to create/manage Identity tables
 
@@ -14,14 +29,3 @@ using Microsoft.EntityFrameworkCore;
     AspNetRoleClaims
 
  */
-namespace AMS.Data
-{
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
-    {
-        public ApplicationDbContext(
-            DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
-    }
-}

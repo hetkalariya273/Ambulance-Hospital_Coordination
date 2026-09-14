@@ -1,0 +1,23 @@
+﻿namespace AMS.Models
+{
+    public class Hospital
+    {
+        public int HospitalId { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public string Address { get; set; } = string.Empty;
+
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        public double? Latitude { get; set; }
+
+        public double? Longitude { get; set; }
+
+        public bool EmergencyAvailable { get; set; }
+
+        public int AvailableBeds { get; set; }
+
+        public int AvailableICUBeds { get; set; }
+    }
+}

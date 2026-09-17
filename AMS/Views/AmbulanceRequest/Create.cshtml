@@ -1,0 +1,109 @@
+﻿@model AmbulanceRequestViewModel
+
+@{
+    ViewData["Title"] = "Request Ambulance";
+}
+
+<h2>Request Ambulance</h2>
+
+<form asp-action="Create" method="post">
+
+    @Html.AntiForgeryToken() @* Generates the token which will be checked by the controller's post method *@
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div> @* To show Model Level errors *@
+
+    <div class="mb-3">
+        <label asp-for="EmergencyType" class="form-label"></label>
+        <select asp-for="EmergencyType"
+                asp-items="Html.GetEnumSelectList<EmergencyType>()"
+                class="form-select">
+            <option value="">-- Select Emergency Type --</option>
+        </select>
+        <span asp-validation-for="EmergencyType" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PatientCondition" class="form-label"></label>
+        <select asp-for="PatientCondition"
+                asp-items="Html.GetEnumSelectList<PatientCondition>()"
+                class="form-select">
+            <option value="">-- Select Patient Condition --</option>
+        </select>
+        <span asp-validation-for="PatientCondition" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NumberOfPatients" class="form-label"></label>
+        <input asp-for="NumberOfPatients"
+               type="number"
+               min="1"
+               max="20"
+               class="form-control" />
+        <span asp-validation-for="NumberOfPatients" class="text-danger"></span>
+    </div>
+
+    <!-- Location will be filled automatically using browser GPS -->
+    <input asp-for="PickupLatitude" type="hidden" id="pickupLatitude" />
+    <input asp-for="PickupLongitude" type="hidden" id="pickupLongitude" />
+
+    <div class="mb-3">
+        <button type="button"
+                class="btn btn-secondary"
+                id="getLocationBtn">
+            Get Current Location
+        </button>
+
+        <span id="locationStatus" class="ms-2"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
+        Request Ambulance
+    </button>
+
+</form>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const getLocationBtn = document.getElementById("getLocationBtn");
+        const locationStatus = document.getElementById("locationStatus");
+        const submitBtn = document.getElementById("submitBtn");
+
+        getLocationBtn.addEventListener("click", function () {
+
+            if (!navigator.geolocation) {
+                locationStatus.textContent =
+                    "Geolocation is not supported by this browser.";
+                return;
+            }
+
+            locationStatus.textContent = "Getting your current location...";
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+
+                    document.getElementById("pickupLatitude").value =
+                        position.coords.latitude;
+
+                    document.getElementById("pickupLongitude").value =
+                        position.coords.longitude;
+
+                    locationStatus.textContent =
+                        "Location captured successfully.";
+
+                    submitBtn.disabled = false;
+                },
+                function (error) {
+
+                    locationStatus.textContent =
+                        "Unable to get your location. Please allow location access.";
+
+                    submitBtn.disabled = true;
+                }
+            );
+        });
+    </script>
+}

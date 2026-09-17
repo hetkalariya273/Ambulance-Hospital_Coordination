@@ -4,6 +4,7 @@ using AMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260915190654_UpdateAmbulanceRequest")]
+    partial class UpdateAmbulanceRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,9 +68,6 @@ namespace AMS.Migrations
                     b.Property<int?>("AmbulanceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DriverId")
-                        .HasColumnType("int");
-
                     b.Property<int>("EmergencyType")
                         .HasColumnType("int");
 
@@ -98,8 +98,6 @@ namespace AMS.Migrations
                     b.HasKey("RequestId");
 
                     b.HasIndex("AmbulanceId");
-
-                    b.HasIndex("DriverId");
 
                     b.HasIndex("HospitalId");
 
@@ -393,10 +391,6 @@ namespace AMS.Migrations
                         .WithMany()
                         .HasForeignKey("AmbulanceId");
 
-                    b.HasOne("AMS.Models.Driver", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId");
-
                     b.HasOne("AMS.Models.Hospital", "Hospital")
                         .WithMany()
                         .HasForeignKey("HospitalId");
@@ -406,8 +400,6 @@ namespace AMS.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Ambulance");
-
-                    b.Navigation("Driver");
 
                     b.Navigation("Hospital");
 

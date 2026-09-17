@@ -4,6 +4,7 @@ using AMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260915184643_AddAmbulanceRequest")]
+    partial class AddAmbulanceRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,11 +68,9 @@ namespace AMS.Migrations
                     b.Property<int?>("AmbulanceId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmergencyType")
-                        .HasColumnType("int");
+                    b.Property<string>("EmergencyType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("HospitalId")
                         .HasColumnType("int");
@@ -77,8 +78,9 @@ namespace AMS.Migrations
                     b.Property<int>("NumberOfPatients")
                         .HasColumnType("int");
 
-                    b.Property<int>("PatientCondition")
-                        .HasColumnType("int");
+                    b.Property<string>("PatientCondition")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("PickupLatitude")
                         .HasColumnType("float");
@@ -89,8 +91,9 @@ namespace AMS.Migrations
                     b.Property<DateTime>("RequestTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -98,8 +101,6 @@ namespace AMS.Migrations
                     b.HasKey("RequestId");
 
                     b.HasIndex("AmbulanceId");
-
-                    b.HasIndex("DriverId");
 
                     b.HasIndex("HospitalId");
 
@@ -393,10 +394,6 @@ namespace AMS.Migrations
                         .WithMany()
                         .HasForeignKey("AmbulanceId");
 
-                    b.HasOne("AMS.Models.Driver", "Driver")
-                        .WithMany()
-                        .HasForeignKey("DriverId");
-
                     b.HasOne("AMS.Models.Hospital", "Hospital")
                         .WithMany()
                         .HasForeignKey("HospitalId");
@@ -406,8 +403,6 @@ namespace AMS.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Ambulance");
-
-                    b.Navigation("Driver");
 
                     b.Navigation("Hospital");
 

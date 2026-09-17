@@ -1,0 +1,217 @@
+﻿@model AMS.Models.AmbulanceRequest
+
+@{
+    ViewData["Title"] = "Ambulance Request Details";
+}
+
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2>Ambulance Request Details</h2>
+    </div>
+
+    <!-- Request Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Request Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Request ID:</strong>
+                #@Model.RequestId
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                @Model.Status
+            </p>
+
+        </div>
+    </div>
+
+
+    <!-- Emergency Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Emergency Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            <p>
+                <strong>Emergency Type:</strong>
+                @Model.EmergencyType
+            </p>
+
+            <p>
+                <strong>Patient Condition:</strong>
+                @Model.PatientCondition
+            </p>
+
+            <p>
+                <strong>Number of Patients:</strong>
+                @Model.NumberOfPatients
+            </p>
+
+            <p class="mb-0">
+                <strong>Request Time:</strong>
+                @Model.RequestTime.ToString("dd-MM-yyyy HH:mm")
+            </p>
+
+        </div>
+    </div>
+
+
+    <!-- Driver Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Driver Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Driver != null)
+            {
+                <p>
+                    <strong>Driver Name:</strong>
+                    @Model.Driver.FullName
+                </p>
+
+                <p class="mb-0">
+                    <strong>Phone Number:</strong>
+                    @Model.Driver.PhoneNumber
+                </p>
+            }
+            else
+            {
+                <p class="mb-0">
+                    <strong>Driver Name:</strong> Not Assigned
+                </p>
+
+                <p class="mb-0">
+                    <strong>Phone Number:</strong> Not Available
+                </p>
+            }
+
+        </div>
+    </div>
+
+
+    <!-- Ambulance Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Ambulance Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Ambulance != null)
+            {
+                <p>
+                    <strong>Vehicle Number:</strong>
+                    @Model.Ambulance.VehicleNumber
+                </p>
+
+                <p class="mb-0">
+                    <strong>Ambulance Status:</strong>
+                    @Model.Ambulance.Status
+                </p>
+            }
+            else
+            {
+                <p>
+                    <strong>Vehicle Number:</strong> Not Assigned
+                </p>
+
+                <p class="mb-0">
+                    <strong>Ambulance Status:</strong> Not Assigned
+                </p>
+            }
+
+        </div>
+    </div>
+
+
+    <!-- Hospital Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Hospital Information</h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.Hospital != null)
+            {
+                <p>
+                    <strong>Hospital:</strong>
+                    @Model.Hospital.Name
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    @Model.Hospital.Address
+                </p>
+
+                <p class="mb-0">
+                    <strong>Phone Number:</strong>
+                    @Model.Hospital.PhoneNumber
+                </p>
+            }
+            else
+            {
+                <p class="mb-0">
+                    <strong>Hospital:</strong> Not Selected
+                </p>
+            }
+
+        </div>
+    </div>
+
+
+    <!-- Map Button -->
+    <div class="text-center mb-4">
+
+        <button type="button"
+                class="btn btn-outline-primary"
+                disabled>
+            Track on Map
+        </button>
+
+    </div>
+
+
+    <!-- Action Buttons -->
+    <div class="d-flex justify-content-between mb-4">
+
+        <a asp-controller="AmbulanceRequest"
+           asp-action="MyRequests"
+           class="btn btn-secondary">
+            ← Back
+        </a>
+
+        @if (Model.Status == AMS.Enums.RequestStatus.Requested ||
+             Model.Status == AMS.Enums.RequestStatus.Searching ||
+             Model.Status == AMS.Enums.RequestStatus.Assigned ||
+             Model.Status == AMS.Enums.RequestStatus.Accepted ||
+             Model.Status == AMS.Enums.RequestStatus.OnTheWay)
+        {
+            <form asp-action="Cancel"
+                  asp-route-id="@Model.RequestId"
+                  method="post"
+                  onsubmit="return confirm('Are you sure you want to cancel this request?');">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    Cancel Request
+                </button>
+
+            </form>
+        }
+
+    </div>
+
+</div>

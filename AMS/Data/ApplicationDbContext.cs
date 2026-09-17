@@ -15,6 +15,7 @@ namespace AMS.Data
         public DbSet<Driver> Drivers { get; set; }
         public DbSet<Ambulance> Ambulances { get; set; }
         public DbSet<Hospital> Hospitals { get; set; }
+        public DbSet<AmbulanceRequest> AmbulanceRequests { get; set; }
     }
 }
 /* 

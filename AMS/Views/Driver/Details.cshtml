@@ -1,0 +1,123 @@
+﻿@model AMS.Models.Driver
+
+@{
+    ViewData["Title"] = "Driver Details";
+}
+
+<div class="driver-details-page">
+
+    <div class="driver-details-card">
+
+        <div class="driver-details-top">
+
+            <h1>@Model.FullName</h1>
+
+            <p class="form-subtitle">
+                Driver information
+            </p>
+
+        </div>
+
+
+        <div class="driver-details-body">
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Driver ID
+                </span>
+
+                <span class="detail-value">
+                    #@Model.DriverId
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Full Name
+                </span>
+
+                <span class="detail-value">
+                    @Model.FullName
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Phone Number
+                </span>
+
+                <span class="detail-value">
+                    @Model.PhoneNumber
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    License Number
+                </span>
+
+                <span class="detail-value">
+                    @Model.LicenseNumber
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Availability
+                </span>
+
+                <span class="detail-value">
+
+                    @if (Model.IsAvailable)
+                    {
+                        <span class="status status-available">
+                            <span class="status-dot"></span>
+                            Available
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="status status-unavailable">
+                            <span class="status-dot"></span>
+                            Unavailable
+                        </span>
+                    }
+
+                </span>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.DriverId"
+                   class="btn-primary-custom">
+                    Edit Driver
+                </a>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Back to Drivers
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

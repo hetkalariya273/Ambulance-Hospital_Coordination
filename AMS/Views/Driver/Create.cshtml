@@ -1,0 +1,86 @@
+﻿@model AMS.Models.Driver
+
+@{
+    ViewData["Title"] = "Add Driver";
+}
+
+<div class="driver-form-page">
+
+    <div class="driver-form-card">
+
+        <h1>Add Driver</h1>
+
+        <p class="form-subtitle">
+            Register a new ambulance driver.
+        </p>
+
+        <form asp-action="Create" method="post">
+
+            <div class="driver-form-group">
+
+                <label asp-for="FullName">
+                    Full Name
+                </label>
+
+                <input asp-for="FullName"
+                       placeholder="Enter driver's full name" />
+
+            </div>
+
+
+            <div class="driver-form-group">
+
+                <label asp-for="PhoneNumber">
+                    Phone Number
+                </label>
+
+                <input asp-for="PhoneNumber"
+                       placeholder="Enter phone number" />
+
+            </div>
+
+
+            <div class="driver-form-group">
+
+                <label asp-for="LicenseNumber">
+                    License Number
+                </label>
+
+                <input asp-for="LicenseNumber"
+                       placeholder="Enter driving license number" />
+
+            </div>
+
+
+            <div class="driver-form-group">
+
+                <label class="driver-checkbox">
+
+                    <input asp-for="IsAvailable" />
+
+                    Driver is currently available
+
+                </label>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-primary-custom">
+                    Save Driver
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

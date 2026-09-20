@@ -1,0 +1,85 @@
+﻿@model AMS.Models.Driver
+
+@{
+    ViewData["Title"] = "Edit Driver";
+}
+
+<div class="driver-form-page">
+
+    <div class="driver-form-card">
+
+        <h1>Edit Driver</h1>
+
+        <p class="form-subtitle">
+            Update driver information.
+        </p>
+
+        <form asp-action="Edit" method="post">
+
+            <input type="hidden" asp-for="DriverId" />
+
+            <div class="driver-form-group">
+
+                <label asp-for="FullName">
+                    Full Name
+                </label>
+
+                <input asp-for="FullName" />
+
+            </div>
+
+
+            <div class="driver-form-group">
+
+                <label asp-for="PhoneNumber">
+                    Phone Number
+                </label>
+
+                <input asp-for="PhoneNumber" />
+
+            </div>
+
+
+            <div class="driver-form-group">
+
+                <label asp-for="LicenseNumber">
+                    License Number
+                </label>
+
+                <input asp-for="LicenseNumber" />
+
+            </div>
+
+
+            <div class="driver-form-group">
+
+                <label class="driver-checkbox">
+
+                    <input asp-for="IsAvailable" />
+
+                    Driver is currently available
+
+                </label>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-primary-custom">
+                    Save Changes
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>

@@ -1,0 +1,86 @@
+﻿@model AMS.Models.Driver
+
+@{
+    ViewData["Title"] = "Delete Driver";
+}
+
+<div class="driver-details-page">
+
+    <div class="driver-details-card">
+
+        <div class="driver-details-top">
+
+            <h1>Delete Driver</h1>
+
+            <p class="form-subtitle">
+                This action will permanently remove this driver.
+            </p>
+
+        </div>
+
+
+        <div class="driver-details-body">
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Full Name
+                </span>
+
+                <span class="detail-value">
+                    @Model.FullName
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    Phone Number
+                </span>
+
+                <span class="detail-value">
+                    @Model.PhoneNumber
+                </span>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span class="detail-label">
+                    License Number
+                </span>
+
+                <span class="detail-value">
+                    @Model.LicenseNumber
+                </span>
+
+            </div>
+
+
+            <form asp-action="Delete"
+                  method="post"
+                  class="form-actions">
+
+                <input type="hidden"
+                       asp-for="DriverId" />
+
+                <button type="submit"
+                        class="btn-danger-custom">
+                    Delete Driver
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

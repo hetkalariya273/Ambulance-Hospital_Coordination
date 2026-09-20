@@ -1,0 +1,162 @@
+﻿@model IEnumerable<AMS.Models.Driver>
+
+@{
+    ViewData["Title"] = "Driver Management";
+
+    var totalDrivers = Model.Count();
+    var availableDrivers = Model.Count(d => d.IsAvailable);
+    var unavailableDrivers = totalDrivers - availableDrivers;
+}
+
+<div class="driver-page">
+
+    <div class="driver-header">
+
+        <div>
+            <h1>Driver Management</h1>
+            <p>Manage ambulance drivers and their availability.</p>
+        </div>
+
+        <a asp-action="Create" class="btn-add-driver">
+            + Add Driver
+        </a>
+
+    </div>
+
+
+    <!-- Statistics -->
+
+    <div class="driver-stats">
+
+        <div class="stat-card">
+            <div class="stat-title">Total Drivers</div>
+            <div class="stat-number">@totalDrivers</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Available Drivers</div>
+            <div class="stat-number">@availableDrivers</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-title">Unavailable Drivers</div>
+            <div class="stat-number">@unavailableDrivers</div>
+        </div>
+
+    </div>
+
+
+    <!-- Driver Table -->
+
+    <div class="driver-table-card">
+
+        <div class="driver-table-header">
+            <h2>All Drivers</h2>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="empty-drivers">
+
+                <h3>No Drivers Found</h3>
+
+                <p>
+                    Add your first ambulance driver to the system.
+                </p>
+
+                <a asp-action="Create" class="btn-add-driver">
+                    + Add First Driver
+                </a>
+
+            </div>
+        }
+        else
+        {
+            <table class="driver-table">
+
+                <thead>
+                    <tr>
+                        <th>Driver</th>
+                        <th>Phone</th>
+                        <th>License</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var driver in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                <span class="driver-name">
+                                    @driver.FullName
+                                </span>
+                            </td>
+
+                            <td>
+                                @driver.PhoneNumber
+                            </td>
+
+                            <td>
+                                @driver.LicenseNumber
+                            </td>
+
+                            <td>
+
+                                @if (driver.IsAvailable)
+                                {
+                                    <span class="status status-available">
+                                        <span class="status-dot"></span>
+                                        Available
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status status-unavailable">
+                                        <span class="status-dot"></span>
+                                        Unavailable
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td>
+
+                                <div class="action-buttons">
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@driver.DriverId"
+                                       class="action-btn action-view">
+                                        View
+                                    </a>
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@driver.DriverId"
+                                       class="action-btn action-edit">
+                                        Edit
+                                    </a>
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@driver.DriverId"
+                                       class="action-btn action-delete">
+                                        Delete
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        }
+
+    </div>
+
+</div>

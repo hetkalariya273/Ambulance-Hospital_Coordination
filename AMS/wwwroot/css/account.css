@@ -1,0 +1,51 @@
+﻿/* Main container for Login and Register pages */
+.auth-container {
+    max-width: 450px;
+    margin: 50px auto;
+    padding: 30px;
+}
+
+    /* Login and Register page heading */
+    .auth-container h2 {
+        margin-bottom: 25px;
+        text-align: center;
+    }
+
+/* Spacing between form fields */
+.form-group {
+    margin-bottom: 18px;
+}
+
+/* Input fields */
+.auth-container .form-control {
+    width: 100%;
+    padding: 10px;
+}
+
+/* Login and Register submit button */
+.auth-container button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Validation error messages */
+.auth-container .text-danger {
+    display: block;
+    margin-top: 5px;
+}
+
+/* Register/Login link below the form */
+.auth-container p {
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* Remember Me checkbox */
+.auth-container input[type="checkbox"] {
+    margin-right: 6px;
+}
+
+/* Form labels */
+.auth-container label {
+    font-weight: 500;
+}

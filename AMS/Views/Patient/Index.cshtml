@@ -1,0 +1,119 @@
+﻿@model AMS.ViewModels.PatientDashboardViewModel
+
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<div class="patient-dashboard">
+
+    <div class="dashboard-header">
+        <div>
+            <h2>Welcome, @Model.FullName</h2>
+            <p>Manage your ambulance requests from here.</p>
+        </div>
+
+        <form asp-controller="Account"
+              asp-action="Logout"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <button type="submit" class="btn btn-outline-danger">
+                Logout
+            </button>
+
+        </form>
+    </div>
+
+    <div class="emergency-action">
+        <h3>Need an Ambulance?</h3>
+
+        <p>
+            Request an ambulance immediately by providing
+            the emergency details and your current location.
+        </p>
+
+        <a asp-controller="AmbulanceRequest"
+           asp-action="Create"
+           class="btn btn-primary">
+            Request Ambulance
+        </a>
+    </div>
+
+    <div class="recent-requests">
+
+        <div class="section-header">
+            <h3>Recent Requests</h3>
+
+            <a asp-controller="AmbulanceRequest"
+               asp-action="MyRequests"
+               class="btn btn-outline-primary">
+                View Request History
+            </a>
+        </div>
+
+        @if (!Model.RecentRequests.Any())
+        {
+            <div class="alert alert-info">
+                You have not created any ambulance requests yet.
+            </div>
+        }
+        else
+        {
+            <div class="request-list">
+
+                @foreach (var request in Model.RecentRequests)
+                {
+                    <div class="request-card">
+
+                        <div class="request-info">
+                            <h5>
+                                Request #@request.RequestId
+                            </h5>
+
+                            <p>
+                                <strong>Emergency:</strong>
+                                @request.EmergencyType
+                            </p>
+
+                            <p>
+                                <strong>Condition:</strong>
+                                @request.PatientCondition
+                            </p>
+
+                            <p>
+                                <strong>Requested:</strong>
+                                @request.RequestTime.ToString("dd-MM-yyyy HH:mm")
+                            </p>
+                        </div>
+
+                        <div class="request-card-right">
+
+                            <span class="request-status">
+                                @request.Status
+                            </span>
+
+                            <a asp-controller="AmbulanceRequest"
+                               asp-action="Details"
+                               asp-route-id="@request.RequestId"
+                               class="btn btn-outline-primary">
+                                Details
+                            </a>
+
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/patient.css"
+          asp-append-version="true" />
+}

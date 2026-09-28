@@ -1,0 +1,75 @@
+﻿@model AMS.Models.Hospital
+
+@{
+    ViewData["Title"] = "Delete Hospital";
+}
+
+<div class="hospital-form-page">
+
+    <div class="hospital-form-header">
+        <h2>Delete Hospital</h2>
+        <p>Confirm that you want to delete this hospital.</p>
+    </div>
+
+    <div class="hospital-form-group">
+
+        <label>Hospital Name</label>
+
+        <input value="@Model.Name"
+               class="hospital-input"
+               readonly />
+
+    </div>
+
+    <div class="hospital-form-group">
+
+        <label>Address</label>
+
+        <input value="@Model.Address"
+               class="hospital-input"
+               readonly />
+
+    </div>
+
+    <div class="hospital-form-group">
+
+        <label>Phone Number</label>
+
+        <input value="@Model.PhoneNumber"
+               class="hospital-input"
+               readonly />
+
+    </div>
+
+    <div class="hospital-form-actions">
+
+        <a asp-action="Index"
+           class="hospital-back-button">
+            ← Back to Hospitals
+        </a>
+
+        <form asp-action="Delete"
+              method="post"
+              onsubmit="return confirm('Are you sure you want to delete this hospital?');">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden"
+                   asp-for="HospitalId" />
+
+            <button type="submit"
+                    class="hospital-delete-button">
+                Delete Hospital
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/hospital.css"
+          asp-append-version="true" />
+}

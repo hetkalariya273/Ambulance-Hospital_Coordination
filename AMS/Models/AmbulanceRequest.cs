@@ -40,7 +40,7 @@ namespace AMS.Models
         [Required]
         public PatientCondition PatientCondition { get; set; }
 
-        [Range(1, 20)]
+        [Range(1, 5)]
         public int NumberOfPatients { get; set; } = 1;
 
         // Request status

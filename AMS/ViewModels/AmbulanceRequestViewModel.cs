@@ -13,7 +13,7 @@ namespace AMS.ViewModels
         [Display(Name = "Patient Condition")]
         public PatientCondition PatientCondition { get; set; }
 
-        [Range(1, 20)]
+        [Range(1, 5)]
         [Display(Name = "Number of Patients")]
         public int NumberOfPatients { get; set; } = 1;
 

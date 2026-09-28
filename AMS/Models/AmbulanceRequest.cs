@@ -10,8 +10,8 @@ namespace AMS.Models
 
         // Patient who created the request
         // Identity by default uses string For ID
-        public string? UserId { get; set; }
-        public ApplicationUser? User { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
 
 
         public int? DriverId { get; set; }

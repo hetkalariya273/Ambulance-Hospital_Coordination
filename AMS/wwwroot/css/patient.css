@@ -1,0 +1,127 @@
+﻿/* Main patient dashboard container */
+.patient-dashboard {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Dashboard welcome section */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+    /* Dashboard welcome heading */
+    .dashboard-header h2 {
+        margin-bottom: 5px;
+    }
+
+    /* Dashboard welcome text */
+    .dashboard-header p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+/* Emergency request section */
+.emergency-action {
+    padding: 30px;
+    margin-bottom: 35px;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+    /* Emergency section heading */
+    .emergency-action h3 {
+        margin-bottom: 10px;
+    }
+
+    /* Emergency section description */
+    .emergency-action p {
+        color: #6c757d;
+    }
+
+/* Recent requests section */
+.recent-requests {
+    margin-bottom: 30px;
+}
+
+/* Recent requests header */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Request list */
+.request-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Individual request card */
+.request-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+/* Request information */
+.request-info h5 {
+    margin-bottom: 12px;
+}
+
+/* Request information text */
+.request-info p {
+    margin-bottom: 6px;
+}
+
+/* Right side of request card */
+.request-card-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+/* Request status badge */
+.request-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background-color: #0d6efd;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+/* Responsive dashboard header */
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .request-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .request-card-right {
+        align-items: flex-start;
+    }
+}

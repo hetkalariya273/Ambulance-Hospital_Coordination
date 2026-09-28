@@ -1,0 +1,71 @@
+﻿@model AMS.Models.Hospital
+
+<div class="hospital-card">
+
+    <div class="hospital-card-header">
+
+        <div>
+            <h4>@Model.Name</h4>
+            <p>@Model.Address</p>
+        </div>
+
+        @if (Model.EmergencyAvailable)
+        {
+            <span class="availability available">
+                Emergency Available
+            </span>
+        }
+        else
+        {
+            <span class="availability unavailable">
+                Emergency Unavailable
+            </span>
+        }
+
+    </div>
+
+    <div class="hospital-information">
+
+        <div class="hospital-info-item">
+            <span class="info-label">Phone</span>
+            <span>@Model.PhoneNumber</span>
+        </div>
+
+        <div class="hospital-info-item">
+            <span class="info-label">Available Beds</span>
+            <span>@Model.AvailableBeds</span>
+        </div>
+
+        <div class="hospital-info-item">
+            <span class="info-label">ICU Beds</span>
+            <span>@Model.AvailableICUBeds</span>
+        </div>
+
+    </div>
+
+    <div class="hospital-actions">
+
+        <a asp-controller="Hospital"
+           asp-action="Details"
+           asp-route-id="@Model.HospitalId"
+           class="btn btn-outline-primary">
+            Details
+        </a>
+
+        <a asp-controller="Hospital"
+           asp-action="Edit"
+           asp-route-id="@Model.HospitalId"
+           class="btn btn-outline-secondary">
+            Edit
+        </a>
+
+        <a asp-controller="Hospital"
+           asp-action="Delete"
+           asp-route-id="@Model.HospitalId"
+           class="btn btn-outline-danger">
+            Delete
+        </a>
+
+    </div>
+
+</div>

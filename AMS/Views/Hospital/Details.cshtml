@@ -1,0 +1,101 @@
+﻿@model AMS.Models.Hospital
+
+@{
+    ViewData["Title"] = "Hospital Details";
+}
+
+<div class="hospital-form-page">
+
+    <div class="hospital-form-header">
+        <h2>Hospital Details</h2>
+        <p>View hospital information and current availability.</p>
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="Name"></label>
+
+        <input asp-for="Name"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="Address"></label>
+
+        <input asp-for="Address"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="PhoneNumber"></label>
+
+        <input asp-for="PhoneNumber"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="Latitude"></label>
+
+        <input asp-for="Latitude"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="Longitude"></label>
+
+        <input asp-for="Longitude"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-checkbox-group">
+
+        <input asp-for="EmergencyAvailable"
+               class="hospital-checkbox"
+               disabled />
+
+        <label asp-for="EmergencyAvailable"></label>
+
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="AvailableBeds"></label>
+
+        <input asp-for="AvailableBeds"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-form-group">
+        <label asp-for="AvailableICUBeds"></label>
+
+        <input asp-for="AvailableICUBeds"
+               class="hospital-input"
+               readonly />
+    </div>
+
+    <div class="hospital-form-actions">
+
+        <a asp-action="Index"
+           class="hospital-back-button">
+            ← Back to Hospitals
+        </a>
+
+        <a asp-action="Edit"
+           asp-route-id="@Model.HospitalId"
+           class="hospital-submit-button">
+            Edit Hospital
+        </a>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/hospital.css"
+          asp-append-version="true" />
+}

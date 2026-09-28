@@ -1,0 +1,48 @@
+﻿@model IEnumerable<AMS.Models.Hospital>
+
+@{
+    ViewData["Title"] = "Hospitals";
+}
+
+<div class="hospital-page">
+
+    <div class="hospital-header">
+
+        <div>
+            <h2>Hospitals</h2>
+            <p>Manage registered hospitals and their current availability.</p>
+        </div>
+
+        <a asp-action="Create"
+           class="btn btn-primary">
+            Add Hospital
+        </a>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            No hospitals have been added yet.
+        </div>
+    }
+    else
+    {
+        <div class="hospital-list">
+
+            @foreach (var hospital in Model)
+            {
+                <partial name="_HospitalCard"
+                         model="hospital" />
+            }
+
+        </div>
+    }
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/hospital.css"
+          asp-append-version="true" />
+}

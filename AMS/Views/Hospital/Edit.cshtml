@@ -1,0 +1,141 @@
+﻿@model AMS.Models.Hospital
+
+@{
+    ViewData["Title"] = "Edit Hospital";
+}
+
+<div class="hospital-form-page">
+
+    <div class="hospital-form-header">
+        <h2>Edit Hospital</h2>
+        <p>Update hospital information and current availability.</p>
+    </div>
+
+    <form asp-action="Edit" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input asp-for="HospitalId" type="hidden" />
+
+        <div asp-validation-summary="ModelOnly"
+             class="validation-summary">
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="Name"></label>
+
+            <input asp-for="Name"
+                   class="hospital-input" />
+
+            <span asp-validation-for="Name"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="Address"></label>
+
+            <input asp-for="Address"
+                   class="hospital-input" />
+
+            <span asp-validation-for="Address"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="PhoneNumber"></label>
+
+            <input asp-for="PhoneNumber"
+                   class="hospital-input" />
+
+            <span asp-validation-for="PhoneNumber"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="Latitude"></label>
+
+            <input asp-for="Latitude"
+                   class="hospital-input" />
+
+            <span asp-validation-for="Latitude"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="Longitude"></label>
+
+            <input asp-for="Longitude"
+                   class="hospital-input" />
+
+            <span asp-validation-for="Longitude"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-checkbox-group">
+
+            <input asp-for="EmergencyAvailable"
+                   class="hospital-checkbox" />
+
+            <label asp-for="EmergencyAvailable"></label>
+
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="AvailableBeds"></label>
+
+            <input asp-for="AvailableBeds"
+                   type="number"
+                   min="0"
+                   class="hospital-input" />
+
+            <span asp-validation-for="AvailableBeds"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-form-group">
+            <label asp-for="AvailableICUBeds"></label>
+
+            <input asp-for="AvailableICUBeds"
+                   type="number"
+                   min="0"
+                   class="hospital-input" />
+
+            <span asp-validation-for="AvailableICUBeds"
+                  class="validation-message">
+            </span>
+        </div>
+
+        <div class="hospital-form-actions">
+
+            <a asp-action="Details"
+               asp-route-id="@Model.HospitalId"
+               class="hospital-back-button">
+                ← Back to Details
+            </a>
+
+            <button type="submit"
+                    class="hospital-submit-button">
+                Save Changes
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/hospital.css"
+          asp-append-version="true" />
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

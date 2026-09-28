@@ -1,0 +1,281 @@
+﻿/* =========================================================
+   HOSPITAL INDEX PAGE
+   ========================================================= */
+
+/* Main hospital page container */
+.hospital-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Hospital page header */
+.hospital-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+    /* Hospital page heading */
+    .hospital-header h2 {
+        margin-bottom: 5px;
+    }
+
+    /* Hospital page description */
+    .hospital-header p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+/* Hospital card list */
+.hospital-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Individual hospital card */
+.hospital-card {
+    padding: 14px 18px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Hospital card header */
+.hospital-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+    /* Hospital name */
+    .hospital-card-header h4 {
+        margin: 0 0 2px 0;
+        font-size: 19px;
+    }
+
+    /* Hospital address */
+    .hospital-card-header p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+/* Emergency availability badge */
+.availability {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+    /* Available emergency service */
+    .availability.available {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    /* Unavailable emergency service */
+    .availability.unavailable {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+/* Hospital information section */
+.hospital-information {
+    display: flex;
+    align-items: center;
+    gap: 45px;
+    padding: 8px 0;
+    border-top: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+}
+
+/* Hospital information item */
+.hospital-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+/* Hospital information label */
+.info-label {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Hospital action buttons */
+.hospital-actions {
+    display: flex;
+    gap: 7px;
+    margin-top: 10px;
+}
+
+    /* Compact action button */
+    .hospital-actions .btn {
+        padding: 5px 12px;
+        font-size: 14px;
+    }
+
+/* Responsive hospital page */
+@media (max-width: 600px) {
+
+    .hospital-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .hospital-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .hospital-information {
+        gap: 20px;
+    }
+
+    .hospital-actions {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* =========================================================
+   HOSPITAL FORM PAGES
+   ========================================================= */
+
+/* Hospital form page */
+.hospital-form-page {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Hospital form header */
+.hospital-form-header {
+    margin-bottom: 30px;
+}
+
+    /* Hospital form heading */
+    .hospital-form-header h2 {
+        margin-bottom: 5px;
+    }
+
+    /* Hospital form description */
+    .hospital-form-header p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+/* Hospital form group */
+.hospital-form-group {
+    margin-bottom: 20px;
+}
+
+    /* Hospital form label */
+    .hospital-form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+
+/* Hospital form input */
+.hospital-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+    /* Hospital form input focus */
+    .hospital-input:focus {
+        outline: none;
+        border-color: #86b7fe;
+    }
+
+/* Hospital validation message */
+.validation-message {
+    display: block;
+    margin-top: 5px;
+    color: #dc3545;
+}
+
+/* Hospital validation summary */
+.validation-summary {
+    margin-bottom: 20px;
+    color: #dc3545;
+}
+
+/* Hospital checkbox group */
+.hospital-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+/* Hospital checkbox */
+.hospital-checkbox {
+    width: 18px;
+    height: 18px;
+}
+
+/* Hospital form actions */
+.hospital-form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+}
+
+/* Hospital back button */
+.hospital-back-button {
+    padding: 10px 16px;
+    border: 1px solid #6c757d;
+    border-radius: 6px;
+    color: #495057;
+    text-decoration: none;
+}
+
+/* Hospital submit button */
+.hospital-submit-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background-color: #0d6efd;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+/* Hospital form responsive layout */
+@media (max-width: 768px) {
+
+    .hospital-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .hospital-back-button,
+    .hospital-submit-button {
+        text-align: center;
+    }
+}
+
+/* Hospital delete button */
+.hospital-delete-button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background-color: #dc3545;
+    color: #ffffff;
+    cursor: pointer;
+}

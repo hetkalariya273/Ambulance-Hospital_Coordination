@@ -1,0 +1,122 @@
+﻿/* Main admin dashboard container */
+.admin-dashboard {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Admin dashboard header */
+.admin-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+    /* Admin dashboard heading */
+    .admin-dashboard-header h2 {
+        margin-bottom: 5px;
+    }
+
+    /* Admin dashboard description */
+    .admin-dashboard-header p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+/* Admin statistics grid */
+.admin-statistics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+/* Admin statistic card */
+.admin-stat-card {
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Statistic label */
+.stat-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Statistic value */
+.stat-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+/* Management section */
+.admin-management {
+    margin-bottom: 30px;
+}
+
+    /* Management heading */
+    .admin-management h3 {
+        margin-bottom: 20px;
+    }
+
+/* Management card grid */
+.admin-management-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+/* Management card */
+.admin-management-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #212529;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+    /* Management card hover */
+    .admin-management-card:hover {
+        border-color: #0d6efd;
+        color: #0d6efd;
+    }
+
+/* Responsive admin dashboard */
+@media (max-width: 768px) {
+
+    .admin-dashboard-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .admin-statistics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-management-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Small screen statistics */
+@media (max-width: 500px) {
+
+    .admin-statistics {
+        grid-template-columns: 1fr;
+    }
+}

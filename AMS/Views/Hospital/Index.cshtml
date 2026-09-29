@@ -13,10 +13,18 @@
             <p>Manage registered hospitals and their current availability.</p>
         </div>
 
-        <a asp-action="Create"
-           class="btn btn-primary">
-            Add Hospital
-        </a>
+        <div>
+            <a asp-controller="Admin"
+               asp-action="Index"
+               class="btn btn-secondary">
+                ← Dashboard
+            </a>
+
+            <a asp-action="Create"
+               class="btn btn-primary">
+                Add Hospital
+            </a>
+        </div>
 
     </div>
 

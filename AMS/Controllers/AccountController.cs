@@ -132,7 +132,7 @@ namespace AMS.Controllers
             {
                 return RedirectToAction(
                     "Index",
-                    "AdminDashboard");
+                    "Admin");
             }
 
             await _signInManager.SignOutAsync();

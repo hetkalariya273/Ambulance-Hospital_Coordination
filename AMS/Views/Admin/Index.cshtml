@@ -1,0 +1,102 @@
+﻿@model AMS.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="admin-dashboard">
+
+    <div class="admin-dashboard-header">
+        <div>
+            <h2>Admin Dashboard</h2>
+            <p>Monitor and manage the ambulance coordination system.</p>
+        </div>
+
+        <form asp-controller="Account"
+              asp-action="Logout"
+              method="post">
+
+            @Html.AntiForgeryToken()
+
+            <button type="submit"
+                    class="btn btn-outline-danger">
+                Logout
+            </button>
+
+        </form>
+    </div>
+
+    <div class="admin-statistics">
+
+        <div class="admin-stat-card">
+            <span class="stat-label">Total Users</span>
+            <span class="stat-value">@Model.TotalUsers</span>
+        </div>
+
+        <div class="admin-stat-card">
+            <span class="stat-label">Total Drivers</span>
+            <span class="stat-value">@Model.TotalDrivers</span>
+        </div>
+
+        <div class="admin-stat-card">
+            <span class="stat-label">Total Ambulances</span>
+            <span class="stat-value">@Model.TotalAmbulances</span>
+        </div>
+
+        <div class="admin-stat-card">
+            <span class="stat-label">Total Hospitals</span>
+            <span class="stat-value">@Model.TotalHospitals</span>
+        </div>
+
+        <div class="admin-stat-card">
+            <span class="stat-label">Active Requests</span>
+            <span class="stat-value">@Model.ActiveRequests</span>
+        </div>
+
+    </div>
+
+    <div class="admin-management">
+
+        <h3>Management</h3>
+
+        <div class="admin-management-grid">
+
+            <a href="#"
+               class="admin-management-card">
+                Manage Users
+            </a>
+
+            <a asp-controller="Driver"
+               asp-action="Index"
+               class="admin-management-card">
+                Manage Drivers
+            </a>
+
+            <a asp-controller="Ambulance"
+               asp-action="Index"
+               class="admin-management-card">
+                Manage Ambulances
+            </a>
+
+            <a asp-controller="Hospital"
+               asp-action="Index"
+               class="admin-management-card">
+                Manage Hospitals
+            </a>
+
+            <a href="#"
+               class="admin-management-card">
+                View All Requests
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/admin.css"
+          asp-append-version="true" />
+}

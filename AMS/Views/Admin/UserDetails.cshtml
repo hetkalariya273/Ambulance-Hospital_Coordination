@@ -1,0 +1,122 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+a@model AMS.ViewModels.AdminUserDetailsViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="admin-page">
+
+    <div class="admin-page-header">
+
+        <div>
+            <h2>User Details</h2>
+            <p>View registered user information and request summary.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Users"
+           class="btn btn-secondary">
+            ← Back to Users
+        </a>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Account Information</h3>
+        </div>
+
+        <div class="admin-details-grid">
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">User ID</span>
+                <span class="admin-detail-value admin-user-id">
+                    @Model.UserId
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Full Name</span>
+                <span class="admin-detail-value">
+                    @Model.FullName
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Email</span>
+                <span class="admin-detail-value">
+                    @Model.Email
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Phone Number</span>
+                <span class="admin-detail-value">
+                    @Model.PhoneNumber
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Role</span>
+                <span class="admin-status role">
+                    Patient
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Ambulance Request Summary</h3>
+        </div>
+
+        <div class="admin-request-statistics">
+
+            <div class="admin-request-stat">
+                <span class="admin-detail-label">Total Requests</span>
+                <span class="admin-request-value">
+                    @Model.TotalRequests
+                </span>
+            </div>
+
+            <div class="admin-request-stat">
+                <span class="admin-detail-label">Active Requests</span>
+                <span class="admin-request-value">
+                    @Model.ActiveRequests
+                </span>
+            </div>
+
+            <div class="admin-request-stat">
+                <span class="admin-detail-label">Completed</span>
+                <span class="admin-request-value">
+                    @Model.CompletedRequests
+                </span>
+            </div>
+
+            <div class="admin-request-stat">
+                <span class="admin-detail-label">Cancelled</span>
+                <span class="admin-request-value">
+                    @Model.CancelledRequests
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/admin.css"
+          asp-append-version="true" />
+}

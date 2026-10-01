@@ -120,3 +120,247 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+
+/* Admin management page */
+.admin-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Management page header */
+.admin-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+    /* Management page heading */
+    .admin-page-header h2 {
+        margin-bottom: 5px;
+    }
+
+    /* Management page description */
+    .admin-page-header p {
+        margin: 0;
+        color: #6c757d;
+    }
+
+/* User table container */
+.admin-table-container {
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Admin management table */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+    /* Admin table heading */
+    .admin-table thead {
+        background-color: #f8f9fa;
+    }
+
+    /* Admin table cells */
+    .admin-table th,
+    .admin-table td {
+        padding: 12px 14px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+        white-space: nowrap;
+    }
+
+    /* Admin table heading text */
+    .admin-table th {
+        font-weight: 600;
+    }
+
+    /* Last table row */
+    .admin-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Admin table row hover */
+    .admin-table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+/* User ID column */
+.user-id {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Admin view button */
+.admin-view-button {
+    display: inline-block;
+    padding: 5px 12px;
+    border: 1px solid #0d6efd;
+    border-radius: 5px;
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+    /* Admin view button hover */
+    .admin-view-button:hover {
+        background-color: #0d6efd;
+        color: #ffffff;
+    }
+
+/* Empty management message */
+.admin-empty-message {
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+/* Responsive management page */
+@media (max-width: 768px) {
+
+    .admin-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 10px;
+    }
+}
+
+/* Admin details card */
+.admin-details-card {
+    margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Admin details heading */
+.admin-details-header {
+    margin-bottom: 20px;
+}
+
+    /* Admin details heading text */
+    .admin-details-header h3 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+/* Admin details grid */
+.admin-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+/* Admin detail item */
+.admin-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+/* Admin detail label */
+.admin-detail-label {
+    color: #6c757d;
+    font-size: 13px;
+}
+
+/* Admin detail value */
+.admin-detail-value {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+/* Admin user ID */
+.admin-user-id {
+    font-size: 12px;
+    word-break: break-all;
+    color: #6c757d;
+}
+
+/* Admin user status */
+.admin-status {
+    display: inline-block;
+    width: fit-content;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 13px;
+}
+
+    /* Confirmed user status */
+    .admin-status.confirmed {
+        background-color: #d1e7dd;
+        color: #0f5132;
+    }
+
+    /* Unconfirmed user status */
+    .admin-status.not-confirmed {
+        background-color: #f8d7da;
+        color: #842029;
+    }
+
+    /* User role status */
+    .admin-status.role {
+        background-color: #cfe2ff;
+        color: #084298;
+    }
+
+/* Request statistics */
+.admin-request-statistics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+/* Request statistic item */
+.admin-request-stat {
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+}
+
+/* Request statistic value */
+.admin-request-value {
+    display: block;
+    margin-top: 5px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Responsive user details */
+@media (max-width: 768px) {
+
+    .admin-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-request-statistics {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Small screen request statistics */
+@media (max-width: 500px) {
+
+    .admin-request-statistics {
+        grid-template-columns: 1fr;
+    }
+}

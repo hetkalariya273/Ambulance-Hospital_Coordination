@@ -1,0 +1,91 @@
+﻿@model AMS.Models.Ambulance
+
+@{
+    ViewData["Title"] = "Edit Ambulance";
+}
+
+<div class="ambulance-form-page">
+
+    <div class="ambulance-form-card">
+
+        <h1>Edit Ambulance</h1>
+
+        <p class="form-subtitle">
+            Update ambulance information.
+        </p>
+
+        <form asp-action="Edit" method="post">
+
+            <input type="hidden"
+                   asp-for="AmbulanceId" />
+
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div class="ambulance-form-group">
+                <label asp-for="VehicleNumber">
+                    Vehicle Number
+                </label>
+
+                <input asp-for="VehicleNumber"
+                       placeholder="Enter vehicle number" />
+
+                <span asp-validation-for="VehicleNumber"></span>
+            </div>
+
+            <div class="ambulance-form-group">
+                <label asp-for="Latitude">
+                    Latitude
+                </label>
+
+                <input asp-for="Latitude"
+                       type="number"
+                       step="any"
+                       placeholder="Enter latitude" />
+
+                <span asp-validation-for="Latitude"></span>
+            </div>
+
+            <div class="ambulance-form-group">
+                <label asp-for="Longitude">
+                    Longitude
+                </label>
+
+                <input asp-for="Longitude"
+                       type="number"
+                       step="any"
+                       placeholder="Enter longitude" />
+
+                <span asp-validation-for="Longitude"></span>
+            </div>
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-primary-custom">
+                    Update Ambulance
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/ambulance.css"
+          asp-append-version="true" />
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,61 @@
+﻿@model AMS.Models.Ambulance
+
+@{
+    ViewData["Title"] = "Delete Ambulance";
+}
+
+<div class="ambulance-form-page">
+
+    <div class="ambulance-form-card">
+
+        <h1>Delete Ambulance</h1>
+
+        <p>
+            Are you sure you want to delete this ambulance?
+        </p>
+
+        <dl>
+            <dt>Vehicle Number</dt>
+            <dd>@Model.VehicleNumber</dd>
+
+            <dt>Status</dt>
+            <dd>@Model.Status</dd>
+
+            <dt>Driver</dt>
+            <dd>
+                @(Model.Driver?.FullName ?? "Not Assigned")
+            </dd>
+        </dl>
+
+        <form asp-action="Delete"
+              method="post">
+
+            <input type="hidden"
+                   asp-for="AmbulanceId" />
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-primary-custom"
+                        onclick="return confirm('Are you sure you want to delete this ambulance?');">
+                    Delete
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/ambulance.css"
+          asp-append-version="true" />
+}

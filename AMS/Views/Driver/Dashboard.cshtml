@@ -6,432 +6,245 @@
 
 <div class="driver-dashboard">
 
-    <!-- HEADER -->
+    <!-- Dashboard header -->
     <div class="dashboard-header">
 
-        <div>
-            <h1>Driver Dashboard</h1>
+        <div class="dashboard-header-content">
 
-            <p>
-                Welcome back,
-                <strong>@Model.Driver.FullName</strong>
-            </p>
-        </div>
+            <div>
+                <h1>Driver Dashboard</h1>
 
-        <div class="driver-status">
+                <p>
+                    Welcome,
+                    <strong>@Model.Driver.FullName</strong>
+                </p>
+            </div>
 
-            @if (Model.ActiveRequest != null)
-            {
-                <span class="status-badge busy">
-                    <span class="status-dot"></span>
-                    Busy
+            <div class="driver-status">
+
+                <span class="status-label">
+                    Status:
                 </span>
-            }
-            else if (Model.Driver.IsAvailable)
-            {
-                <span class="status-badge available">
-                    <span class="status-dot"></span>
-                    Available
-                </span>
-            }
-            else
-            {
-                <span class="status-badge unavailable">
-                    <span class="status-dot"></span>
-                    Unavailable
-                </span>
-            }
+
+                @if (Model.Driver.IsAvailable)
+                {
+                    <span class="status-available">
+                        Available
+                    </span>
+                }
+                else
+                {
+                    <span class="status-busy">
+                        Busy
+                    </span>
+                }
+
+            </div>
 
         </div>
 
     </div>
 
-
-    <!-- ALERTS -->
     @if (TempData["SuccessMessage"] != null)
     {
-        <div class="dashboard-alert success">
+        <div class="dashboard-alert success-alert">
             @TempData["SuccessMessage"]
         </div>
     }
 
     @if (TempData["ErrorMessage"] != null)
     {
-        <div class="dashboard-alert error">
+        <div class="dashboard-alert error-alert">
             @TempData["ErrorMessage"]
         </div>
     }
 
+    <!-- Current request section -->
+    @if (Model.CurrentRequest != null)
+    {
+        <div class="dashboard-section">
 
-    <!-- DRIVER INFORMATION -->
+            <div class="section-header">
 
-    <div class="dashboard-grid">
+                <div>
+                    <h2>Current Request</h2>
 
-        <div class="dashboard-card">
+                    <p>
+                        You are currently working on this ambulance request.
+                    </p>
+                </div>
 
-            <div class="card-title">
-                <span>👤</span>
-                Driver Information
             </div>
 
-            <div class="info-list">
+            <div class="current-request-card">
 
-                <div class="info-row">
-                    <span>Full Name</span>
-                    <strong>@Model.Driver.FullName</strong>
+                <div class="current-request-header">
+
+                    <div>
+                        <span>Request</span>
+
+                        <strong>
+                            #@Model.CurrentRequest.RequestId
+                        </strong>
+                    </div>
+
+                    <div class="current-request-status">
+                        @Model.CurrentRequest.Status
+                    </div>
+
                 </div>
 
-                <div class="info-row">
-                    <span>Phone</span>
-                    <strong>@Model.Driver.PhoneNumber</strong>
+                <div class="current-request-details">
+
+                    <div class="current-request-detail">
+                        <span>Patient</span>
+
+                        <strong>
+                            @Model.CurrentRequest.User.FullName
+                        </strong>
+                    </div>
+
+                    <div class="current-request-detail">
+                        <span>Emergency Type</span>
+
+                        <strong>
+                            @Model.CurrentRequest.EmergencyType
+                        </strong>
+                    </div>
+
+                    <div class="current-request-detail">
+                        <span>Patient Condition</span>
+
+                        <strong>
+                            @Model.CurrentRequest.PatientCondition
+                        </strong>
+                    </div>
+
+                    <div class="current-request-detail">
+                        <span>Number of Patients</span>
+
+                        <strong>
+                            @Model.CurrentRequest.NumberOfPatients
+                        </strong>
+                    </div>
+
+                    <div class="current-request-detail">
+                        <span>Ambulance</span>
+
+                        <strong>
+                            @(Model.CurrentRequest.Ambulance?.VehicleNumber
+                                ?? "Not assigned")
+                        </strong>
+                    </div>
+
+                    <div class="current-request-detail">
+                        <span>Request Time</span>
+
+                        <strong>
+                            @Model.CurrentRequest.RequestTime
+                        </strong>
+                    </div>
+
                 </div>
 
-                <div class="info-row">
-                    <span>License</span>
-                    <strong>@Model.Driver.LicenseNumber</strong>
+                <div class="current-request-actions">
+
+                    <a asp-controller="Driver"
+                       asp-action="CurrentRequestDetails"
+                       asp-route-id="@Model.CurrentRequest.RequestId"
+                       class="view-current-request-btn">
+                        View Current Request
+                    </a>
+
                 </div>
 
             </div>
 
         </div>
+    }
 
-
-        <!-- AMBULANCE -->
-
-        <div class="dashboard-card">
-
-            <div class="card-title">
-                <span>🚑</span>
-                Assigned Ambulance
-            </div>
-
-            @if (Model.Ambulance != null)
-            {
-                <div class="ambulance-number">
-                    @Model.Ambulance.VehicleNumber
-                </div>
-
-                <div class="ambulance-status">
-                    Status:
-                    <strong>@Model.Ambulance.Status</strong>
-                </div>
-
-                @if (Model.Ambulance.Latitude.HasValue &&
-                     Model.Ambulance.Longitude.HasValue)
-                {
-                    <div class="location-text">
-                        📍 Location available
-                    </div>
-                }
-                else
-                {
-                    <div class="location-text">
-                        📍 Location not available
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="empty-card">
-                    No ambulance has been assigned to you.
-                </div>
-            }
-
-        </div>
-
-    </div>
-
-
-    <!-- ACTIVE REQUEST -->
-
-    <div class="request-section">
+    <!-- My Ambulances section -->
+    <div class="dashboard-section">
 
         <div class="section-header">
 
             <div>
-                <h2>Current Emergency Request</h2>
-                <p>Your active ambulance request</p>
+                <h2>My Ambulances</h2>
+
+                <p>
+                    Ambulances currently assigned to you.
+                </p>
             </div>
 
         </div>
 
-
-        @if (Model.ActiveRequest == null)
+        @if (Model.Ambulances != null &&
+             Model.Ambulances.Any())
         {
-            <div class="no-request">
+            <div class="ambulance-list">
 
-                <div class="no-request-icon">
-                    ✓
-                </div>
-
-                <h3>No Active Request</h3>
-
-                <p>
-                    You are currently available for a new emergency request.
-                </p>
+                @foreach (var ambulance in Model.Ambulances)
+                {
+                    <partial name="_AmbulanceCard"
+                             model="ambulance" />
+                }
 
             </div>
         }
         else
         {
-            <div class="request-card">
+            <p class="empty-message">
+                No ambulance is assigned to you.
+            </p>
+        }
 
-                <div class="request-card-header">
+    </div>
 
-                    <div>
-                        <span class="request-label">
-                            Request
-                        </span>
+    <!-- Requests section -->
+    <div class="dashboard-section">
 
-                        <h3>
-                            #@Model.ActiveRequest.RequestId
-                        </h3>
-                    </div>
+        <div class="section-header">
 
-                    <span class="request-status">
-                        @Model.ActiveRequest.Status
-                    </span>
+            <div>
+                <h2>Requests</h2>
 
-                </div>
+                <p>
+                    New ambulance requests available for acceptance.
+                </p>
+            </div>
 
+            <div class="request-count">
+                @Model.RequestCount
+            </div>
 
-                <div class="request-information">
+        </div>
 
-                    <div class="request-info">
-                        <span>Emergency</span>
-                        <strong>
-                            @Model.ActiveRequest.EmergencyType
-                        </strong>
-                    </div>
+        @if (Model.Requests != null &&
+             Model.Requests.Any())
+        {
+            <div class="request-list">
 
-                    <div class="request-info">
-                        <span>Patient Condition</span>
-                        <strong>
-                            @Model.ActiveRequest.PatientCondition
-                        </strong>
-                    </div>
-
-                    <div class="request-info">
-                        <span>Patients</span>
-                        <strong>
-                            @Model.ActiveRequest.NumberOfPatients
-                        </strong>
-                    </div>
-
-                    <div class="request-info">
-                        <span>Request Time</span>
-                        <strong>
-                            @Model.ActiveRequest.RequestTime.ToString("dd MMM yyyy, hh:mm tt")
-                        </strong>
-                    </div>
-
-                </div>
-
-
-                <!-- LOCATION -->
-
-                <div class="pickup-location">
-
-                    <div class="location-title">
-                        📍 Patient Pickup Location
-                    </div>
-
-                    <div class="coordinates">
-
-                        <span>
-                            Latitude:
-                            <strong>
-                                @Model.ActiveRequest.PickupLatitude
-                            </strong>
-                        </span>
-
-                        <span>
-                            Longitude:
-                            <strong>
-                                @Model.ActiveRequest.PickupLongitude
-                            </strong>
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-                <!-- STATUS ACTIONS -->
-
-                <div class="request-actions">
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.Assigned)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="Accepted" />
-
-                            <button type="submit"
-                                    class="btn-action accept">
-                                Accept Request
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.Accepted)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="OnTheWay" />
-
-                            <button type="submit"
-                                    class="btn-action primary">
-                                Start Journey
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.OnTheWay)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="ReachedPatient" />
-
-                            <button type="submit"
-                                    class="btn-action primary">
-                                Reached Patient
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.ReachedPatient)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="PatientPickedUp" />
-
-                            <button type="submit"
-                                    class="btn-action primary">
-                                Patient Picked Up
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.PatientPickedUp)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="GoingToHospital" />
-
-                            <button type="submit"
-                                    class="btn-action primary">
-                                Start Hospital Journey
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.GoingToHospital)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="ReachedHospital" />
-
-                            <button type="submit"
-                                    class="btn-action primary">
-                                Reached Hospital
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                    @if (Model.ActiveRequest.Status == AMS.Enums.RequestStatus.ReachedHospital)
-                    {
-                        <form asp-action="UpdateRequestStatus"
-                              method="post">
-
-                            <input type="hidden"
-                                   name="requestId"
-                                   value="@Model.ActiveRequest.RequestId" />
-
-                            <input type="hidden"
-                                   name="newStatus"
-                                   value="Completed" />
-
-                            <button type="submit"
-                                    class="btn-action complete">
-                                Complete Request
-                            </button>
-
-                            @Html.AntiForgeryToken()
-
-                        </form>
-                    }
-
-                </div>
+                @foreach (var request in Model.Requests)
+                {
+                    <partial name="_RequestCard"
+                             model="request" />
+                }
 
             </div>
+        }
+        else
+        {
+            <p class="empty-message">
+                No new requests available.
+            </p>
         }
 
     </div>
 
 </div>
+
 @section Styles {
     <link rel="stylesheet"
-          href="~/css/driver-dashboard.css"
+          href="~/css/driver.css"
           asp-append-version="true" />
 }

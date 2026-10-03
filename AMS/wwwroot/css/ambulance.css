@@ -1,0 +1,392 @@
+﻿/* Ambulance page */
+.ambulance-page {
+    padding: 35px;
+}
+
+/* Ambulance header */
+.ambulance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+    /* Header title */
+    .ambulance-header h1 {
+        margin: 0 0 6px;
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    /* Header subtitle */
+    .ambulance-header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 15px;
+    }
+
+    /* Add ambulance button */
+    .ambulance-header .btn-primary-custom {
+        display: inline-block;
+        padding: 11px 18px;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+        /* Add button hover */
+        .ambulance-header .btn-primary-custom:hover {
+            background: #1d4ed8;
+            color: #ffffff;
+        }
+
+/* Ambulance table container */
+.ambulance-table-container {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow-x: auto;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* Ambulance table */
+.ambulance-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    /* Table cells */
+    .ambulance-table th,
+    .ambulance-table td {
+        padding: 16px 18px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Table heading */
+    .ambulance-table th {
+        background: #f8fafc;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    /* Table data */
+    .ambulance-table td {
+        color: #374151;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    /* Table row */
+    .ambulance-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+        /* Table row hover */
+        .ambulance-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        /* Last table row */
+        .ambulance-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    /* Status text */
+    .ambulance-table td:nth-child(2) {
+        font-weight: 600;
+    }
+
+    /* Action column */
+    .ambulance-table .ambulance-actions {
+        white-space: nowrap;
+    }
+
+        /* Edit button */
+        .ambulance-table .ambulance-actions .edit-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 55px;
+            padding: 7px 12px;
+            margin-right: 6px;
+            border: 1px solid #2563eb;
+            border-radius: 6px;
+            background: #2563eb;
+            color: #ffffff !important;
+            text-decoration: none !important;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.2;
+            box-sizing: border-box;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+            /* Edit button hover */
+            .ambulance-table .ambulance-actions .edit-btn:hover {
+                background: #1d4ed8;
+                border-color: #1d4ed8;
+                color: #ffffff !important;
+            }
+
+        /* Delete button */
+        .ambulance-table .ambulance-actions .delete-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 60px;
+            padding: 7px 12px;
+            border: 1px solid #dc2626;
+            border-radius: 6px;
+            background: #dc2626;
+            color: #ffffff !important;
+            text-decoration: none !important;
+            font-size: 13px;
+            font-weight: 600;
+            line-height: 1.2;
+            box-sizing: border-box;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+
+            /* Delete button hover */
+            .ambulance-table .ambulance-actions .delete-btn:hover {
+                background: #b91c1c;
+                border-color: #b91c1c;
+                color: #ffffff !important;
+            }
+
+/* Ambulance form page */
+.ambulance-form-page {
+    padding: 35px;
+}
+
+/* Ambulance form card */
+.ambulance-form-card {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+    /* Form title */
+    .ambulance-form-card h1 {
+        margin: 0 0 6px;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+/* Form subtitle */
+.form-subtitle {
+    margin: 0 0 28px;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+/* Ambulance form group */
+.ambulance-form-group {
+    margin-bottom: 20px;
+}
+
+    /* Form labels */
+    .ambulance-form-group label {
+        display: block;
+        margin-bottom: 7px;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    /* Form inputs */
+    .ambulance-form-group input {
+        width: 100%;
+        padding: 11px 12px;
+        box-sizing: border-box;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #111827;
+        font-size: 14px;
+        outline: none;
+        transition: 0.2s ease;
+    }
+
+        /* Input focus */
+        .ambulance-form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+    /* Form validation */
+    .ambulance-form-group span.field-validation-error {
+        display: block;
+        margin-top: 5px;
+        color: #dc2626;
+        font-size: 13px;
+    }
+
+/* Form actions */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 28px;
+}
+
+    /* Primary form button */
+    .form-actions .btn-primary-custom {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 7px;
+        background: #2563eb;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+        /* Primary button hover */
+        .form-actions .btn-primary-custom:hover {
+            background: #1d4ed8;
+        }
+
+    /* Secondary form button */
+    .form-actions .btn-secondary-custom {
+        padding: 10px 18px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #374151;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.2s ease;
+    }
+
+        /* Secondary button hover */
+        .form-actions .btn-secondary-custom:hover {
+            background: #f3f4f6;
+        }
+
+/* Responsive ambulance page */
+@media (max-width: 768px) {
+
+    .ambulance-page {
+        padding: 20px;
+    }
+
+    .ambulance-table .ambulance-actions .assign-btn {
+        display: flex;
+        width: 70px;
+        margin: 4px 0;
+    }
+
+    .ambulance-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .ambulance-table th,
+    .ambulance-table td {
+        padding: 12px;
+    }
+
+    .ambulance-form-page {
+        padding: 20px;
+    }
+
+    .ambulance-form-card {
+        padding: 22px;
+    }
+
+    .ambulance-table .ambulance-actions .edit-btn,
+    .ambulance-table .ambulance-actions .delete-btn {
+        display: flex;
+        width: 70px;
+        margin: 4px 0;
+    }
+}
+
+
+/* Back to admin dashboard */
+.ambulance-back {
+    margin-bottom: 20px;
+}
+
+    /* Back button */
+    .ambulance-back .back-btn {
+        display: inline-block;
+        padding: 8px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        background: #ffffff;
+        color: #374151;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+        /* Back button hover */
+        .ambulance-back .back-btn:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+
+/* Assign button */
+.ambulance-table .ambulance-actions .assign-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 65px;
+    padding: 7px 12px;
+    margin-right: 6px;
+    border: 1px solid #059669;
+    border-radius: 6px;
+    background: #059669;
+    color: #ffffff !important;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    box-sizing: border-box;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+    /* Assign button hover */
+    .ambulance-table .ambulance-actions .assign-btn:hover {
+        background: #047857;
+        border-color: #047857;
+        color: #ffffff !important;
+    }
+
+
+
+/* Unassign button */
+.unassign-btn {
+    display: inline-block;
+    padding: 7px 12px;
+    border: none;
+    border-radius: 6px;
+    background: #f59e0b;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+    /* Unassign button hover */
+    .unassign-btn:hover {
+        background: #d97706;
+    }

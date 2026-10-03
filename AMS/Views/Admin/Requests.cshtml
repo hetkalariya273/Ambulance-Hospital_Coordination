@@ -1,0 +1,131 @@
+﻿@model IEnumerable<AMS.Models.AmbulanceRequest>
+
+@{
+    ViewData["Title"] = "View All Requests";
+}
+
+<div class="admin-page">
+
+    <div class="admin-page-header">
+
+        <div>
+            <h2>View All Requests</h2>
+            <p>Monitor ambulance requests across the system.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="btn btn-secondary">
+            ← Dashboard
+        </a>
+
+    </div>
+
+    <div class="admin-request-filter">
+
+        <form asp-controller="Admin"
+              asp-action="Requests"
+              method="get">
+
+            <label for="filter">Filter:</label>
+
+            <select id="filter"
+                    name="filter"
+                    onchange="this.form.submit()">
+
+                <option value="Active"
+                        selected="@(ViewBag.Filter == "Active")">
+                    Active
+                </option>
+
+                <option value="Completed"
+                        selected="@(ViewBag.Filter == "Completed")">
+                    Completed
+                </option>
+
+                <option value="Cancelled"
+                        selected="@(ViewBag.Filter == "Cancelled")">
+                    Cancelled
+                </option>
+
+            </select>
+
+        </form>
+
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="admin-empty-message">
+            No @ViewBag.Filter.ToString().ToLower() requests found.
+        </div>
+    }
+    else
+    {
+        <div class="admin-table-container">
+
+            <table class="admin-table">
+
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Patient Name</th>
+                        <th>User ID</th>
+                        <th>Current Status</th>
+                        <th>Request Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @foreach (var request in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                #@request.RequestId
+                            </td>
+
+                            <td>
+                                @(request.User?.FullName ?? "Unknown")
+                            </td>
+
+                            <td class="user-id">
+                                @request.UserId
+                            </td>
+
+                            <td>
+                                @request.Status
+                            </td>
+
+                            <td>
+                                @request.RequestTime.ToString("dd-MM-yyyy HH:mm")
+                            </td>
+
+                            <td>
+                                <a asp-controller="Admin"
+                                   asp-action="RequestDetails"
+                                   asp-route-id="@request.RequestId"
+                                   class="admin-view-button">
+                                    View
+                                </a>
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/admin.css"
+          asp-append-version="true" />
+}

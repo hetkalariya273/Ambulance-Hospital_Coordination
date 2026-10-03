@@ -1,5 +1,6 @@
 ﻿using AMS.Models;
 using AMS.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,13 @@ namespace AMS.Controllers
         [HttpGet]
         public IActionResult Register()
         {
+            return View();
+        }
+
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string? returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
@@ -124,9 +132,10 @@ namespace AMS.Controllers
             if (await _userManager.IsInRoleAsync(user, "Driver"))
             {
                 return RedirectToAction(
-                    "Index",
-                    "DriverDashboard");
+                    "Dashboard",
+                    "Driver");
             }
+
 
             if (await _userManager.IsInRoleAsync(user, "Admin"))
             {

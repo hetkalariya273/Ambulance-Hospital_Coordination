@@ -6,10 +6,14 @@ namespace AMS.ViewModels
     {
         public Driver Driver { get; set; } = null!;
 
-        public Ambulance? Ambulance { get; set; }
+        public List<Ambulance> Ambulances { get; set; }
+            = new List<Ambulance>();
 
-        public AmbulanceRequest? ActiveRequest { get; set; }
+        public List<AmbulanceRequest> Requests { get; set; }
+            = new List<AmbulanceRequest>();
 
-        public int ActiveRequestCount { get; set; }
+        public AmbulanceRequest? CurrentRequest { get; set; }
+
+        public int RequestCount { get; set; }
     }
 }

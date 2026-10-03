@@ -1,0 +1,91 @@
+﻿@model AMS.ViewModels.AmbulanceAssignmentViewModel
+
+@{
+    ViewData["Title"] = "Assign Ambulance";
+}
+
+<div class="ambulance-form-page">
+
+    <div class="ambulance-form-card">
+
+        <h1>Assign Ambulance</h1>
+
+        <p class="form-subtitle">
+            Assign this ambulance to a driver.
+        </p>
+
+        <form asp-action="Assign" method="post">
+
+            <input type="hidden"
+                   asp-for="AmbulanceId" />
+
+            <div asp-validation-summary="ModelOnly"></div>
+
+            <div class="ambulance-form-group">
+
+                <label>
+                    Vehicle Number
+                </label>
+
+                <input type="text"
+                       value="@Model.VehicleNumber"
+                       readonly />
+
+            </div>
+
+            <div class="ambulance-form-group">
+
+                <label asp-for="DriverId">
+                    Driver
+                </label>
+
+                <select asp-for="DriverId">
+
+                    <option value="">
+                        -- Select Driver --
+                    </option>
+
+                    @foreach (var driver in ViewBag.Drivers)
+                    {
+                        <option value="@driver.DriverId">
+                            @driver.FullName
+                        </option>
+                    }
+
+                </select>
+
+                <span asp-validation-for="DriverId"></span>
+
+            </div>
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-primary-custom">
+                    Assign Ambulance
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-secondary-custom">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/ambulance.css"
+          asp-append-version="true" />
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

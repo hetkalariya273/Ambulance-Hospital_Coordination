@@ -381,3 +381,686 @@
         padding: 22px;
     }
 }
+
+
+/* =========================
+   DRIVER DASHBOARD PAGE
+   ========================= */
+
+/* Dashboard page */
+
+.driver-dashboard {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+}
+
+    /* Dashboard header */
+
+    .driver-dashboard .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 30px;
+        padding: 28px 30px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+        /* Dashboard title */
+
+        .driver-dashboard .dashboard-header h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+            font-weight: 700;
+            color: #172033;
+        }
+
+        /* Dashboard welcome */
+
+        .driver-dashboard .dashboard-header p {
+            margin: 0;
+            font-size: 16px;
+            color: #718096;
+        }
+
+    /* Driver status */
+
+    .driver-dashboard .driver-status {
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .driver-dashboard .status-available {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .driver-dashboard .status-busy {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    /* Dashboard section */
+
+    .driver-dashboard .dashboard-section {
+        margin-bottom: 28px;
+        padding: 26px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Section header */
+
+    .driver-dashboard .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        /* Section heading */
+
+        .driver-dashboard .section-header h2 {
+            margin: 0;
+            font-size: 23px;
+            font-weight: 700;
+            color: #172033;
+        }
+
+        /* Section description */
+
+        .driver-dashboard .section-header p {
+            margin: 5px 0 0;
+            font-size: 14px;
+            color: #718096;
+        }
+
+    /* Request count */
+
+    .driver-dashboard .request-count {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: 50%;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    /* Ambulance list */
+
+    .driver-dashboard .ambulance-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    /* Ambulance card */
+
+    .driver-dashboard .ambulance-card {
+        padding: 20px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        transition: 0.2s ease;
+    }
+
+        /* Ambulance card hover */
+
+        .driver-dashboard .ambulance-card:hover {
+            transform: translateY(-4px);
+            border-color: #93c5fd;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+    /* Ambulance number */
+
+    .driver-dashboard .ambulance-card-header {
+        margin-bottom: 14px;
+        font-size: 19px;
+        color: #172033;
+    }
+
+    /* Ambulance status */
+
+    .driver-dashboard .ambulance-card-status {
+        font-size: 14px;
+        color: #718096;
+    }
+
+        /* Ambulance status value */
+
+        .driver-dashboard .ambulance-card-status strong {
+            color: #15803d;
+        }
+
+    /* Request list */
+
+    .driver-dashboard .request-list {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    /* Request card */
+
+    .driver-dashboard .request-card {
+        padding: 22px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        transition: 0.2s ease;
+    }
+
+        /* Request card hover */
+
+        .driver-dashboard .request-card:hover {
+            border-color: #93c5fd;
+            background: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+    /* Request card header */
+
+    .driver-dashboard .request-card-header {
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #e5e7eb;
+        color: #172033;
+        font-size: 18px;
+    }
+
+    /* Request card details */
+
+    .driver-dashboard .request-card-details {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+        /* Request detail */
+
+        .driver-dashboard .request-card-details > div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding: 12px;
+            background: #ffffff;
+            border-radius: 8px;
+        }
+
+        /* Request detail label */
+
+        .driver-dashboard .request-card-details span {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        /* Request detail value */
+
+        .driver-dashboard .request-card-details strong {
+            font-size: 15px;
+            color: #172033;
+        }
+
+    /* Request action area */
+
+    .driver-dashboard .request-card-action {
+        margin-top: 18px;
+    }
+
+        /* View request button */
+
+        .driver-dashboard .request-card-action a {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 8px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+            /* View request hover */
+
+            .driver-dashboard .request-card-action a:hover {
+                background: #1d4ed8;
+                color: #ffffff;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+            }
+
+    /* Dashboard empty state */
+
+    .driver-dashboard .empty-message {
+        margin: 0;
+        padding: 18px;
+        text-align: center;
+        color: #718096;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+    }
+
+    /* Dashboard success message */
+
+    .driver-dashboard .dashboard-alert.success-alert {
+        margin-bottom: 20px;
+        padding: 13px 16px;
+        border: 1px solid #a7f3d0;
+        border-radius: 8px;
+        background: #ecfdf5;
+        color: #047857;
+        font-size: 14px;
+    }
+
+    /* Dashboard error message */
+
+    .driver-dashboard .dashboard-alert.error-alert {
+        margin-bottom: 20px;
+        padding: 13px 16px;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        background: #fef2f2;
+        color: #b91c1c;
+        font-size: 14px;
+    }
+
+/* Dashboard tablet */
+
+@media (max-width: 850px) {
+
+    .driver-dashboard .ambulance-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .driver-dashboard .request-card-details {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Dashboard mobile */
+
+@media (max-width: 600px) {
+
+    .driver-dashboard {
+        padding: 25px 15px 40px;
+    }
+
+        .driver-dashboard .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 22px;
+        }
+
+            .driver-dashboard .dashboard-header h1 {
+                font-size: 27px;
+            }
+
+        .driver-dashboard .dashboard-section {
+            padding: 20px;
+        }
+
+        .driver-dashboard .section-header {
+            align-items: flex-start;
+        }
+
+        .driver-dashboard .ambulance-list {
+            grid-template-columns: 1fr;
+        }
+
+        .driver-dashboard .request-card-details {
+            grid-template-columns: 1fr;
+        }
+
+        .driver-dashboard .request-card-action a {
+            width: 100%;
+            text-align: center;
+        }
+
+        .driver-dashboard .driver-status {
+            align-self: flex-start;
+        }
+}
+
+
+
+/* =========================
+   REQUEST DETAILS PAGE
+   ========================= */
+
+/* Request details grid */
+.driver-dashboard .request-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+/* Request detail item */
+.driver-dashboard .request-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+    /* Request detail label */
+    .driver-dashboard .request-detail-item span {
+        font-size: 13px;
+        color: #718096;
+    }
+
+    /* Request detail value */
+    .driver-dashboard .request-detail-item strong {
+        font-size: 15px;
+        color: #172033;
+    }
+
+/* Request form group */
+.driver-dashboard .request-form-group {
+    margin-bottom: 20px;
+}
+
+    /* Request form label */
+    .driver-dashboard .request-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    /* Ambulance dropdown */
+    .driver-dashboard .request-form-group select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #d9e0ea;
+        border-radius: 9px;
+        background: #ffffff;
+        color: #172033;
+        font-size: 14px;
+        outline: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+        /* Ambulance dropdown focus */
+        .driver-dashboard .request-form-group select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+/* Request details actions */
+.driver-dashboard .request-details-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+/* Accept request button */
+.driver-dashboard .accept-request-btn {
+    padding: 11px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    /* Accept request hover */
+    .driver-dashboard .accept-request-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+/* Back dashboard button */
+.driver-dashboard .back-dashboard-btn {
+    display: inline-block;
+    padding: 11px 20px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+    /* Back dashboard hover */
+    .driver-dashboard .back-dashboard-btn:hover {
+        background: #e2e8f0;
+        color: #172033;
+        transform: translateY(-1px);
+    }
+
+/* Request details mobile */
+@media (max-width: 600px) {
+
+    .driver-dashboard .request-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .driver-dashboard .request-details-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .driver-dashboard .accept-request-btn,
+    .driver-dashboard .back-dashboard-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+/* Current request card */
+.driver-dashboard .current-request-card {
+    padding: 20px;
+    border: 1px solid #d9e0ea;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+/* Current request header */
+.driver-dashboard .current-request-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+    /* Current request number */
+    .driver-dashboard .current-request-header > div:first-child {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    /* Current request label */
+    .driver-dashboard .current-request-header span {
+        font-size: 13px;
+        color: #718096;
+    }
+
+    /* Current request number value */
+    .driver-dashboard .current-request-header strong {
+        font-size: 18px;
+        color: #172033;
+    }
+
+/* Current request status */
+.driver-dashboard .current-request-status {
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #dbeafe;
+    color: #1d4ed8;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Current request details */
+.driver-dashboard .current-request-details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+}
+
+/* Current request detail */
+.driver-dashboard .current-request-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 13px;
+    background: #f8fafc;
+    border-radius: 9px;
+}
+
+    /* Current request detail label */
+    .driver-dashboard .current-request-detail span {
+        font-size: 13px;
+        color: #718096;
+    }
+
+    /* Current request detail value */
+    .driver-dashboard .current-request-detail strong {
+        font-size: 14px;
+        color: #172033;
+    }
+
+/* Current request actions */
+.driver-dashboard .current-request-actions {
+    margin-top: 18px;
+}
+
+/* View current request button */
+.driver-dashboard .view-current-request-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s ease;
+}
+
+    /* View current request hover */
+    .driver-dashboard .view-current-request-btn:hover {
+        background: #1d4ed8;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+/* Current request mobile */
+@media (max-width: 600px) {
+
+    .driver-dashboard .current-request-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .driver-dashboard .current-request-details {
+        grid-template-columns: 1fr;
+    }
+
+    .driver-dashboard .view-current-request-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+/* Current request status panel */
+.driver-dashboard .current-request-status-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1px solid #d9e0ea;
+    border-radius: 10px;
+    background: #f8fafc;
+}
+
+    /* Current status label */
+    .driver-dashboard .current-request-status-panel span {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    /* Current status value */
+    .driver-dashboard .current-request-status-panel strong {
+        padding: 8px 14px;
+        border-radius: 20px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+/* Status update button */
+.driver-dashboard .status-update-btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    /* Status update button hover */
+    .driver-dashboard .status-update-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Status update button focus */
+    .driver-dashboard .status-update-btn:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+/* Current request status mobile */
+@media (max-width: 600px) {
+
+    .driver-dashboard .current-request-status-panel {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .driver-dashboard .status-update-btn {
+        width: 100%;
+    }
+}

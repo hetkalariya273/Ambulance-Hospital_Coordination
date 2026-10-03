@@ -1,0 +1,376 @@
+﻿@model AMS.Models.AmbulanceRequest
+
+@{
+    ViewData["Title"] = "Current Request";
+}
+
+<div class="driver-dashboard">
+
+    <!-- Current request header -->
+    <div class="dashboard-header">
+
+        <div>
+            <h1>Current Request</h1>
+
+            <p>
+                You are currently working on Request
+                #@Model.RequestId.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Request information -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Request Information</h2>
+
+                <p>
+                    Details of the current ambulance request.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="request-details-grid">
+
+            <div class="request-detail-item">
+                <span>Request ID</span>
+
+                <strong>
+                    #@Model.RequestId
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Patient Name</span>
+
+                <strong>
+                    @Model.User.FullName
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Emergency Type</span>
+
+                <strong>
+                    @Model.EmergencyType
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Patient Condition</span>
+
+                <strong>
+                    @Model.PatientCondition
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Number of Patients</span>
+
+                <strong>
+                    @Model.NumberOfPatients
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Request Time</span>
+
+                <strong>
+                    @Model.RequestTime
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Current status -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Current Status</h2>
+
+                <p>
+                    Current progress of the ambulance request.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="current-request-status-panel">
+
+            <span>
+                Current Status
+            </span>
+
+            <strong>
+                @Model.Status
+            </strong>
+
+        </div>
+
+    </div>
+
+    <!-- Assigned ambulance -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Assigned Ambulance</h2>
+
+                <p>
+                    Ambulance currently being used for this request.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="request-details-grid">
+
+            <div class="request-detail-item">
+
+                <span>Vehicle Number</span>
+
+                <strong>
+                    @(Model.Ambulance?.VehicleNumber ?? "Not available")
+                </strong>
+
+            </div>
+
+            <div class="request-detail-item">
+
+                <span>Ambulance Status</span>
+
+                <strong>
+                    @(Model.Ambulance?.Status ?? "Not available")
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Pickup location -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Pickup Location</h2>
+
+                <p>
+                    Patient's current location.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="request-details-grid">
+
+            <div class="request-detail-item">
+
+                <span>Latitude</span>
+
+                <strong>
+                    @Model.PickupLatitude
+                </strong>
+
+            </div>
+
+            <div class="request-detail-item">
+
+                <span>Longitude</span>
+
+                <strong>
+                    @Model.PickupLongitude
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Status update -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Update Request Status</h2>
+
+                <p>
+                    Update the request as you proceed with the patient.
+                </p>
+            </div>
+
+        </div>
+
+        @if (Model.Status == AMS.Enums.RequestStatus.Accepted)
+        {
+            <form asp-controller="Driver"
+                  asp-action="UpdateRequestStatus"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.RequestId" />
+
+                <input type="hidden"
+                       name="newStatus"
+                       value="@AMS.Enums.RequestStatus.OnTheWay" />
+
+                <button type="submit"
+                        class="status-update-btn">
+                    Start Journey - On The Way
+                </button>
+
+            </form>
+        }
+        else if (Model.Status == AMS.Enums.RequestStatus.OnTheWay)
+        {
+            <form asp-controller="Driver"
+                  asp-action="UpdateRequestStatus"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.RequestId" />
+
+                <input type="hidden"
+                       name="newStatus"
+                       value="@AMS.Enums.RequestStatus.ReachedPatient" />
+
+                <button type="submit"
+                        class="status-update-btn">
+                    Reached Patient
+                </button>
+
+            </form>
+        }
+        else if (Model.Status == AMS.Enums.RequestStatus.ReachedPatient)
+        {
+            <form asp-controller="Driver"
+                  asp-action="UpdateRequestStatus"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.RequestId" />
+
+                <input type="hidden"
+                       name="newStatus"
+                       value="@AMS.Enums.RequestStatus.PatientPickedUp" />
+
+                <button type="submit"
+                        class="status-update-btn">
+                    Patient Picked Up
+                </button>
+
+            </form>
+        }
+        else if (Model.Status == AMS.Enums.RequestStatus.PatientPickedUp)
+        {
+            <form asp-controller="Driver"
+                  asp-action="UpdateRequestStatus"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.RequestId" />
+
+                <input type="hidden"
+                       name="newStatus"
+                       value="@AMS.Enums.RequestStatus.GoingToHospital" />
+
+                <button type="submit"
+                        class="status-update-btn">
+                    Going To Hospital
+                </button>
+
+            </form>
+        }
+        else if (Model.Status == AMS.Enums.RequestStatus.GoingToHospital)
+        {
+            <form asp-controller="Driver"
+                  asp-action="UpdateRequestStatus"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.RequestId" />
+
+                <input type="hidden"
+                       name="newStatus"
+                       value="@AMS.Enums.RequestStatus.ReachedHospital" />
+
+                <button type="submit"
+                        class="status-update-btn">
+                    Reached Hospital
+                </button>
+
+            </form>
+        }
+        else if (Model.Status == AMS.Enums.RequestStatus.ReachedHospital)
+        {
+            <form asp-controller="Driver"
+                  asp-action="UpdateRequestStatus"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.RequestId" />
+
+                <input type="hidden"
+                       name="newStatus"
+                       value="@AMS.Enums.RequestStatus.Completed" />
+
+                <button type="submit"
+                        class="status-update-btn">
+                    Complete Request
+                </button>
+
+            </form>
+        }
+
+    </div>
+
+    <!-- Dashboard action -->
+    <div class="request-details-actions">
+
+        <a asp-controller="Driver"
+           asp-action="Dashboard"
+           class="back-dashboard-btn">
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/driver.css"
+          asp-append-version="true" />
+}

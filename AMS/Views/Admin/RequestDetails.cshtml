@@ -1,0 +1,195 @@
+﻿@model AMS.Models.AmbulanceRequest
+
+@{
+    ViewData["Title"] = "Request Details";
+}
+
+<div class="admin-page">
+
+    <div class="admin-page-header">
+
+        <div>
+            <h2>Request Details</h2>
+            <p>View complete information about the ambulance request.</p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Requests"
+           class="btn btn-secondary">
+            ← Back to Requests
+        </a>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Request Information</h3>
+        </div>
+
+        <div class="admin-details-grid">
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Request ID</span>
+                <span class="admin-detail-value">
+                    #@Model.RequestId
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Request Time</span>
+                <span class="admin-detail-value">
+                    @Model.RequestTime.ToString("dd-MM-yyyy HH:mm")
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Current Status</span>
+                <span class="admin-status">
+                    @Model.Status
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Patient Information</h3>
+        </div>
+
+        <div class="admin-details-grid">
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">User ID</span>
+                <span class="admin-detail-value admin-user-id">
+                    @Model.UserId
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Full Name</span>
+                <span class="admin-detail-value">
+                    @(Model.User?.FullName ?? "Not available")
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Email</span>
+                <span class="admin-detail-value">
+                    @(Model.User?.Email ?? "Not available")
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Phone Number</span>
+                <span class="admin-detail-value">
+                    @(Model.User?.PhoneNumber ?? "Not available")
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Emergency Information</h3>
+        </div>
+
+        <div class="admin-details-grid">
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Emergency Type</span>
+                <span class="admin-detail-value">
+                    @Model.EmergencyType
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Patient Condition</span>
+                <span class="admin-detail-value">
+                    @Model.PatientCondition
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Number of Patients</span>
+                <span class="admin-detail-value">
+                    @Model.NumberOfPatients
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Pickup Location</h3>
+        </div>
+
+        <div class="admin-details-grid">
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Latitude</span>
+                <span class="admin-detail-value">
+                    @Model.PickupLatitude
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Longitude</span>
+                <span class="admin-detail-value">
+                    @Model.PickupLongitude
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="admin-details-card">
+
+        <div class="admin-details-header">
+            <h3>Assignment Information</h3>
+        </div>
+
+        <div class="admin-details-grid">
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Driver</span>
+                <span class="admin-detail-value">
+                    @(Model.Driver?.FullName ?? "Not assigned")
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Ambulance</span>
+                <span class="admin-detail-value">
+                    @(Model.Ambulance?.VehicleNumber ?? "Not assigned")
+                </span>
+            </div>
+
+            <div class="admin-detail-item">
+                <span class="admin-detail-label">Hospital</span>
+                <span class="admin-detail-value">
+                    @(Model.Hospital?.Name ?? "Not assigned")
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/admin.css"
+          asp-append-version="true" />
+}

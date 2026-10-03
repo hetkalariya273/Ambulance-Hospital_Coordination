@@ -1,0 +1,135 @@
+﻿@model IEnumerable<AMS.Models.Ambulance>
+
+@{
+    ViewData["Title"] = "Ambulances";
+}
+
+<div class="ambulance-page">
+
+    <div class="ambulance-header">
+
+        <div>
+            <h1>Ambulances</h1>
+
+            <p>
+                Manage ambulances in the system.
+            </p>
+        </div>
+
+        <a asp-action="Create"
+           class="btn-primary-custom">
+            Add Ambulance
+        </a>
+
+    </div>
+
+    <div class="ambulance-back">
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="back-btn">
+            ← To Dashboard
+        </a>
+    </div>
+
+    <div class="ambulance-table-container">
+
+        <table class="ambulance-table">
+
+            <thead>
+                <tr>
+                    <th>Vehicle Number</th>
+                    <th>Status</th>
+                    <th>Driver</th>
+                    <th>Location</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @foreach (var ambulance in Model)
+                {
+                    <tr>
+
+                        <td>
+                            @ambulance.VehicleNumber
+                        </td>
+
+                        <td>
+                            @ambulance.Status
+                        </td>
+
+                        <td>
+                            @(ambulance.Driver?.FullName ?? "Not Assigned")
+                        </td>
+
+                        <td>
+                            @if (ambulance.Latitude.HasValue &&
+                                 ambulance.Longitude.HasValue)
+                            {
+                                @($"{ambulance.Latitude:F6}, {ambulance.Longitude:F6}")
+                            }
+                            else
+                            {
+                                <span>Not Available</span>
+                            }
+                        </td>
+
+                        <td class="ambulance-actions">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@ambulance.AmbulanceId"
+                               class="edit-btn">
+                                Edit
+                            </a>
+
+                            @if (ambulance.DriverId == null)
+                            {
+                                <a asp-action="Assign"
+                                   asp-route-id="@ambulance.AmbulanceId"
+                                   class="assign-btn">
+                                    Assign
+                                </a>
+                            }
+                            else
+                            {
+                                <form asp-action="Unassign"
+                                      method="post"
+                                      class="inline-action-form">
+
+                                    <input type="hidden"
+                                           name="id"
+                                           value="@ambulance.AmbulanceId" />
+
+                                    <button type="submit"
+                                            class="unassign-btn">
+                                        Unassign
+                                    </button>
+
+                                </form>
+                            }
+
+                            <a asp-action="Delete"
+                               asp-route-id="@ambulance.AmbulanceId"
+                               class="delete-btn">
+                                Delete
+                            </a>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/ambulance.css"
+          asp-append-version="true" />
+}

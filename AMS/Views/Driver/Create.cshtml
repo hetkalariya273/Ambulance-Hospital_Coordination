@@ -1,4 +1,4 @@
-﻿@model AMS.Models.Driver
+﻿@model AMS.ViewModels.DriverCreateViewModel
 
 @{
     ViewData["Title"] = "Add Driver";
@@ -16,8 +16,9 @@
 
         <form asp-action="Create" method="post">
 
-            <div class="driver-form-group">
+            <div asp-validation-summary="ModelOnly"></div>
 
+            <div class="driver-form-group">
                 <label asp-for="FullName">
                     Full Name
                 </label>
@@ -25,11 +26,10 @@
                 <input asp-for="FullName"
                        placeholder="Enter driver's full name" />
 
+                <span asp-validation-for="FullName"></span>
             </div>
 
-
             <div class="driver-form-group">
-
                 <label asp-for="PhoneNumber">
                     Phone Number
                 </label>
@@ -37,11 +37,10 @@
                 <input asp-for="PhoneNumber"
                        placeholder="Enter phone number" />
 
+                <span asp-validation-for="PhoneNumber"></span>
             </div>
 
-
             <div class="driver-form-group">
-
                 <label asp-for="LicenseNumber">
                     License Number
                 </label>
@@ -49,8 +48,41 @@
                 <input asp-for="LicenseNumber"
                        placeholder="Enter driving license number" />
 
+                <span asp-validation-for="LicenseNumber"></span>
             </div>
 
+            <div class="driver-form-group">
+                <label asp-for="Email">
+                    Email
+                </label>
+
+                <input asp-for="Email"
+                       placeholder="Enter driver's email" />
+
+                <span asp-validation-for="Email"></span>
+            </div>
+
+            <div class="driver-form-group">
+                <label asp-for="Password">
+                    Password
+                </label>
+
+                <input asp-for="Password"
+                       placeholder="Enter driver's password" />
+
+                <span asp-validation-for="Password"></span>
+            </div>
+
+            <div class="driver-form-group">
+                <label asp-for="ConfirmPassword">
+                    Confirm Password
+                </label>
+
+                <input asp-for="ConfirmPassword"
+                       placeholder="Confirm driver's password" />
+
+                <span asp-validation-for="ConfirmPassword"></span>
+            </div>
 
             <div class="driver-form-group">
 
@@ -63,7 +95,6 @@
                 </label>
 
             </div>
-
 
             <div class="form-actions">
 
@@ -84,8 +115,15 @@
     </div>
 
 </div>
+
 @section Styles {
     <link rel="stylesheet"
           href="~/css/driver.css"
           asp-append-version="true" />
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

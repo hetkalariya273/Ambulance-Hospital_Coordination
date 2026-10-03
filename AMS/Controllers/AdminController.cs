@@ -123,5 +123,71 @@ namespace AMS.Controllers
 
             return View(model);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Requests(string filter = "Active")
+        {
+            var activeStatuses = new[]
+            {
+                RequestStatus.Requested,
+                RequestStatus.Searching,
+                RequestStatus.Assigned,
+                RequestStatus.Accepted,
+                RequestStatus.OnTheWay,
+                RequestStatus.ReachedPatient,
+                RequestStatus.PatientPickedUp,
+                RequestStatus.GoingToHospital,
+                RequestStatus.ReachedHospital
+            };
+
+            IQueryable<AmbulanceRequest> query = _context.AmbulanceRequests
+                .Include(r => r.User);
+
+            if (filter == "Completed")
+            {
+                query = query.Where(r =>
+                    r.Status == RequestStatus.Completed);
+            }
+            else if (filter == "Cancelled")
+            {
+                query = query.Where(r =>
+                    r.Status == RequestStatus.Cancelled);
+            }
+            else
+            {
+                filter = "Active";
+
+                query = query.Where(r =>
+                    activeStatuses.Contains(r.Status));
+            }
+
+            var requests = await query
+                .OrderByDescending(r => r.RequestTime)
+                .ToListAsync();
+
+            ViewBag.Filter = filter;
+
+            return View(requests);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> RequestDetails(int id)
+        {
+            var request = await _context.AmbulanceRequests
+                .Include(r => r.User)
+                .Include(r => r.Driver)
+                .Include(r => r.Ambulance)
+                .Include(r => r.Hospital)
+                .FirstOrDefaultAsync(r => r.RequestId == id);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            return View(request);
+        }
     }
 }

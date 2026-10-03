@@ -1,0 +1,225 @@
+﻿@model AMS.ViewModels.RequestDetailsViewModel
+
+@{
+    ViewData["Title"] = "Request Details";
+}
+
+<div class="driver-dashboard">
+
+    <!-- Request details header -->
+    <div class="dashboard-header">
+
+        <div>
+            <h1>Request Details</h1>
+
+            <p>
+                Review the patient request before accepting it.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Request information -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>
+                    Request #@Model.Request.RequestId
+                </h2>
+
+                <p>
+                    Request information provided by the patient.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="request-details-grid">
+
+            <div class="request-detail-item">
+                <span>Emergency Type</span>
+                <strong>
+                    @Model.Request.EmergencyType
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Patient Condition</span>
+                <strong>
+                    @Model.Request.PatientCondition
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Number of Patients</span>
+                <strong>
+                    @Model.Request.NumberOfPatients
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Status</span>
+                <strong>
+                    @Model.Request.Status
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Request Time</span>
+                <strong>
+                    @Model.Request.RequestTime
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Patient Name</span>
+                <strong>
+                    @Model.Request.User.FullName
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pickup location -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Pickup Location</h2>
+
+                <p>
+                    Current location provided by the patient.
+                </p>
+            </div>
+
+        </div>
+
+
+        <div class="request-details-grid">
+
+            <div class="request-detail-item">
+                <span>Latitude</span>
+                <strong>
+                    @Model.Request.PickupLatitude
+                </strong>
+            </div>
+
+            <div class="request-detail-item">
+                <span>Longitude</span>
+                <strong>
+                    @Model.Request.PickupLongitude
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Ambulance selection -->
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <div>
+                <h2>Select Ambulance</h2>
+
+                <p>
+                    Select one of your available ambulances
+                    for this request.
+                </p>
+            </div>
+
+        </div>
+
+
+        @if (Model.AvailableAmbulances != null &&
+             Model.AvailableAmbulances.Any())
+        {
+            <form asp-controller="Driver"
+                  asp-action="AcceptRequest"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.Request.RequestId" />
+
+                <div class="request-form-group">
+
+                    <label for="ambulanceId">
+                        Available Ambulance
+                    </label>
+
+                    <select id="ambulanceId"
+                            name="ambulanceId"
+                            required>
+
+                        <option value="">
+                            -- Select Ambulance --
+                        </option>
+
+                        @foreach (var ambulance in Model.AvailableAmbulances)
+                        {
+                            <option value="@ambulance.AmbulanceId">
+                                @ambulance.VehicleNumber
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <div class="request-details-actions">
+
+                    <button type="submit"
+                            class="accept-request-btn">
+                        Accept Request
+                    </button>
+
+                    <a asp-controller="Driver"
+                       asp-action="Dashboard"
+                       class="back-dashboard-btn">
+                        Back to Dashboard
+                    </a>
+
+                </div>
+
+            </form>
+        }
+        else
+        {
+            <p class="empty-message">
+                You currently have no available ambulances.
+            </p>
+
+            <div class="request-details-actions">
+
+                <a asp-controller="Driver"
+                   asp-action="Dashboard"
+                   class="back-dashboard-btn">
+                    Back to Dashboard
+                </a>
+
+            </div>
+        }
+
+    </div>
+
+</div>
+
+@section Styles {
+    <link rel="stylesheet"
+          href="~/css/driver.css"
+          asp-append-version="true" />
+}

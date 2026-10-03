@@ -1,0 +1,43 @@
+﻿@model AMS.Models.AmbulanceRequest
+
+<div class="request-card">
+
+    <div class="request-card-header">
+        <strong>Request #@Model.RequestId</strong>
+    </div>
+
+    <div class="request-card-details">
+
+        <div>
+            <span>Emergency Type</span>
+            <strong>@Model.EmergencyType</strong>
+        </div>
+
+        <div>
+            <span>Patient Condition</span>
+            <strong>@Model.PatientCondition</strong>
+        </div>
+
+        <div>
+            <span>Patients</span>
+            <strong>@Model.NumberOfPatients</strong>
+        </div>
+
+        <div>
+            <span>Status</span>
+            <strong>@Model.Status</strong>
+        </div>
+
+    </div>
+
+    <div class="request-card-action">
+
+        <a asp-controller="Driver"
+           asp-action="RequestDetails"
+           asp-route-id="@Model.RequestId">
+            View Request
+        </a>
+
+    </div>
+
+</div>

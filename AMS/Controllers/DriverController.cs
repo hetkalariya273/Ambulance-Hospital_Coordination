@@ -3,6 +3,7 @@ using AMS.Enums;
 using AMS.Models;
 using AMS.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -12,10 +13,14 @@ namespace AMS.Controllers
     public class DriverController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DriverController(ApplicationDbContext context)
+        public DriverController(
+            ApplicationDbContext context,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // ============================================================
@@ -63,18 +68,82 @@ namespace AMS.Controllers
         // POST: Driver/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Driver driver)
+        public async Task<IActionResult> Create(DriverCreateViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _context.Add(driver);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
+                return View(model);
             }
 
-            return View(driver);
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+
+            if (existingUser != null)
+            {
+                ModelState.AddModelError(
+                    "Email",
+                    "An account with this email already exists.");
+
+                return View(model);
+            }
+
+            var user = new ApplicationUser
+            {
+                FullName = model.FullName,
+                PhoneNumber = model.PhoneNumber,
+                Email = model.Email,
+                UserName = model.Email
+            };
+
+            var userResult = await _userManager.CreateAsync(
+                user,
+                model.Password);
+
+            if (!userResult.Succeeded)
+            {
+                foreach (var error in userResult.Errors)
+                {
+                    ModelState.AddModelError(
+                        string.Empty,
+                        error.Description);
+                }
+
+                return View(model);
+            }
+
+            var roleResult = await _userManager.AddToRoleAsync(
+                user,
+                "Driver");
+
+            if (!roleResult.Succeeded)
+            {
+                await _userManager.DeleteAsync(user);
+
+                foreach (var error in roleResult.Errors)
+                {
+                    ModelState.AddModelError(
+                        string.Empty,
+                        error.Description);
+                }
+
+                return View(model);
+            }
+
+            var driver = new Driver
+            {
+                FullName = model.FullName,
+                PhoneNumber = model.PhoneNumber,
+                LicenseNumber = model.LicenseNumber,
+                IsAvailable = model.IsAvailable,
+                UserId = user.Id
+            };
+
+            _context.Drivers.Add(driver);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Driver/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -176,20 +245,13 @@ namespace AMS.Controllers
         [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
-            // --------------------------------------------------------
-            // 1. Get logged-in Identity user's ID
-            // --------------------------------------------------------
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userId))
             {
                 return Challenge();
             }
-
-            // --------------------------------------------------------
-            // 2. Find Driver profile linked to this Identity account
-            // --------------------------------------------------------
 
             var driver = await _context.Drivers
                 .Include(d => d.User)
@@ -202,54 +264,106 @@ namespace AMS.Controllers
                     "Driver profile is not linked with this account.");
             }
 
-            // --------------------------------------------------------
-            // 3. Find ambulance assigned to this driver
-            // --------------------------------------------------------
+            // Get all ambulances assigned to this driver
+            var ambulances = await _context.Ambulances
+                .Where(a => a.DriverId == driver.DriverId)
+                .OrderBy(a => a.VehicleNumber)
+                .ToListAsync();
 
-            var ambulance = await _context.Ambulances
-                .FirstOrDefaultAsync(a =>
-                    a.DriverId == driver.DriverId);
-
-            // --------------------------------------------------------
-            // 4. Find driver's active request
-            //
-            // A driver is allowed to have ONLY ONE request
-            // in any of these active states.
-            // --------------------------------------------------------
-
-            var activeRequest = await _context.AmbulanceRequests
+            // Get the driver's current active request
+            var currentRequest = await _context.AmbulanceRequests
                 .Include(r => r.User)
                 .Include(r => r.Ambulance)
                 .Include(r => r.Hospital)
                 .FirstOrDefaultAsync(r =>
                     r.DriverId == driver.DriverId &&
-                    IsActiveStatus(r.Status));
+                    (
+                        r.Status == RequestStatus.Accepted ||
+                        r.Status == RequestStatus.OnTheWay ||
+                        r.Status == RequestStatus.ReachedPatient ||
+                        r.Status == RequestStatus.PatientPickedUp ||
+                        r.Status == RequestStatus.GoingToHospital ||
+                        r.Status == RequestStatus.ReachedHospital
+                    ));
 
-            // --------------------------------------------------------
-            // 5. Safety synchronization
-            //
-            // If an active request exists, driver is busy.
-            // Otherwise driver is available.
-            // --------------------------------------------------------
-
-            var shouldBeAvailable = activeRequest == null;
-
-            if (driver.IsAvailable != shouldBeAvailable)
-            {
-                driver.IsAvailable = shouldBeAvailable;
-                await _context.SaveChangesAsync();
-            }
-
-            // --------------------------------------------------------
-            // 6. Create dashboard ViewModel
-            // --------------------------------------------------------
+            // Get new requests available for acceptance
+            var requests = await _context.AmbulanceRequests
+                .Include(r => r.User)
+                .Where(r =>
+                    r.DriverId == null &&
+                    r.Status == RequestStatus.Requested)
+                .OrderByDescending(r => r.RequestTime)
+                .ToListAsync();
 
             var viewModel = new DriverDashboardViewModel
             {
                 Driver = driver,
-                Ambulance = ambulance,
-                ActiveRequest = activeRequest,
-                ActiveRequestCount = activeRequest == null ? 0 : 1
+                Ambulances = ambulances,
+                CurrentRequest = currentRequest,
+                Requests = requests,
+                RequestCount = requests.Count
+            };
+
+            return View(viewModel);
+        }
+
+        // ============================================================
+        // DRIVER - REQUEST DETAILS
+        // ============================================================
+
+        [Authorize(Roles = "Driver")]
+        [HttpGet]
+        public async Task<IActionResult> RequestDetails(int id)
+        {
+            // Get logged-in Identity user's ID
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            // Find logged-in driver
+            var driver = await _context.Drivers
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (driver == null)
+            {
+                return NotFound(
+                    "Driver profile is not linked with this account.");
+            }
+
+            // Find the requested ambulance request
+            var request = await _context.AmbulanceRequests
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r =>
+                    r.RequestId == id &&
+                    r.DriverId == null &&
+                    r.Status == RequestStatus.Requested);
+
+            if (request == null)
+            {
+                TempData["ErrorMessage"] =
+                    "This request is no longer available.";
+
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            // Find ambulances assigned to this driver
+            // that are currently available
+            var availableAmbulances = await _context.Ambulances
+                .Where(a =>
+                    a.DriverId == driver.DriverId &&
+                    a.Status == "Available")
+                .OrderBy(a => a.VehicleNumber)
+                .ToListAsync();
+
+            // Create Request Details ViewModel
+            var viewModel = new RequestDetailsViewModel
+            {
+                Request = request,
+                AvailableAmbulances = availableAmbulances
             };
 
             return View(viewModel);
@@ -263,8 +377,11 @@ namespace AMS.Controllers
         [Authorize(Roles = "Driver")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AcceptRequest(int id)
+        public async Task<IActionResult> AcceptRequest(
+            int id,
+            int ambulanceId)
         {
+            // Get logged-in Identity user's ID
             var userId = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
 
@@ -273,10 +390,7 @@ namespace AMS.Controllers
                 return Challenge();
             }
 
-            // --------------------------------------------------------
             // Find logged-in driver
-            // --------------------------------------------------------
-
             var driver = await _context.Drivers
                 .FirstOrDefaultAsync(d => d.UserId == userId);
 
@@ -286,23 +400,31 @@ namespace AMS.Controllers
                     "Driver profile is not linked with this account.");
             }
 
+
             // --------------------------------------------------------
-            // Check whether driver already has another active request
+            // Check whether driver already has an active request
             // --------------------------------------------------------
 
             var existingActiveRequest =
                 await _context.AmbulanceRequests
                     .FirstOrDefaultAsync(r =>
                         r.DriverId == driver.DriverId &&
-                        IsActiveStatus(r.Status));
+                        (
+                            r.Status == RequestStatus.Accepted ||
+                            r.Status == RequestStatus.OnTheWay ||
+                            r.Status == RequestStatus.ReachedPatient ||
+                            r.Status == RequestStatus.PatientPickedUp ||
+                            r.Status == RequestStatus.GoingToHospital ||
+                            r.Status == RequestStatus.ReachedHospital
+                        ));
 
-            if (existingActiveRequest != null &&
-                existingActiveRequest.RequestId != id)
+            if (existingActiveRequest != null)
             {
                 TempData["ErrorMessage"] =
                     "You already have an active ambulance request.";
 
-                return RedirectToAction(nameof(Dashboard));
+                return RedirectToAction(
+                    nameof(Dashboard));
             }
 
             // --------------------------------------------------------
@@ -310,7 +432,6 @@ namespace AMS.Controllers
             // --------------------------------------------------------
 
             var request = await _context.AmbulanceRequests
-                .Include(r => r.Ambulance)
                 .FirstOrDefaultAsync(r =>
                     r.RequestId == id);
 
@@ -319,41 +440,77 @@ namespace AMS.Controllers
                 return NotFound();
             }
 
-            // --------------------------------------------------------
-            // Request must be assigned to this driver
-            // --------------------------------------------------------
-
-            if (request.DriverId != driver.DriverId)
-            {
-                return Forbid();
-            }
 
             // --------------------------------------------------------
-            // Request must currently be Assigned
+            // Request must still be available
             // --------------------------------------------------------
 
-            if (request.Status != RequestStatus.Assigned)
+            if (request.DriverId != null ||
+                request.Status != RequestStatus.Requested)
             {
                 TempData["ErrorMessage"] =
-                    "This request cannot be accepted in its current state.";
+                    "This request has already been accepted by another driver.";
 
                 return RedirectToAction(nameof(Dashboard));
             }
+
+
+            // --------------------------------------------------------
+            // Find selected ambulance
+            // --------------------------------------------------------
+
+            var ambulance = await _context.Ambulances
+                .FirstOrDefaultAsync(a =>
+                    a.AmbulanceId == ambulanceId &&
+                    a.DriverId == driver.DriverId);
+
+            if (ambulance == null)
+            {
+                TempData["ErrorMessage"] =
+                    "The selected ambulance is not assigned to you.";
+
+                return RedirectToAction(
+                    nameof(RequestDetails),
+                    new { id });
+            }
+
+
+            // --------------------------------------------------------
+            // Ambulance must still be available
+            // --------------------------------------------------------
+
+            if (ambulance.Status != "Available")
+            {
+                TempData["ErrorMessage"] =
+                    "The selected ambulance is no longer available.";
+
+                return RedirectToAction(
+                    nameof(RequestDetails),
+                    new { id });
+            }
+
 
             // --------------------------------------------------------
             // Accept request
             // --------------------------------------------------------
 
+            request.DriverId = driver.DriverId;
+
+            request.AmbulanceId = ambulance.AmbulanceId;
+
             request.Status = RequestStatus.Accepted;
 
+
+            // Driver becomes busy
             driver.IsAvailable = false;
 
-            if (request.Ambulance != null)
-            {
-                request.Ambulance.Status = "Busy";
-            }
+
+            // Selected ambulance becomes busy
+            ambulance.Status = "Busy";
+
 
             await _context.SaveChangesAsync();
+
 
             TempData["SuccessMessage"] =
                 "Ambulance request accepted successfully.";
@@ -363,15 +520,12 @@ namespace AMS.Controllers
 
 
         // ============================================================
-        // DRIVER - UPDATE REQUEST STATUS
+        // DRIVER - CURRENT REQUEST DETAILS
         // ============================================================
 
         [Authorize(Roles = "Driver")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateRequestStatus(
-            int id,
-            RequestStatus status)
+        [HttpGet]
+        public async Task<IActionResult> CurrentRequestDetails(int id)
         {
             var userId = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
@@ -380,10 +534,6 @@ namespace AMS.Controllers
             {
                 return Challenge();
             }
-
-            // --------------------------------------------------------
-            // Find driver
-            // --------------------------------------------------------
 
             var driver = await _context.Drivers
                 .FirstOrDefaultAsync(d => d.UserId == userId);
@@ -394,10 +544,64 @@ namespace AMS.Controllers
                     "Driver profile is not linked with this account.");
             }
 
-            // --------------------------------------------------------
-            // Find request belonging to this driver
-            // --------------------------------------------------------
+            var request = await _context.AmbulanceRequests
+                .Include(r => r.User)
+                .Include(r => r.Ambulance)
+                .Include(r => r.Hospital)
+                .FirstOrDefaultAsync(r =>
+                    r.RequestId == id &&
+                    r.DriverId == driver.DriverId &&
+                    (
+                        r.Status == RequestStatus.Accepted ||
+                        r.Status == RequestStatus.OnTheWay ||
+                        r.Status == RequestStatus.ReachedPatient ||
+                        r.Status == RequestStatus.PatientPickedUp ||
+                        r.Status == RequestStatus.GoingToHospital ||
+                        r.Status == RequestStatus.ReachedHospital
+                    ));
 
+            if (request == null)
+            {
+                TempData["ErrorMessage"] =
+                    "This request is no longer your active request.";
+
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            return View(request);
+        }
+
+     
+        // ============================================================
+        // DRIVER - UPDATE REQUEST STATUS
+        // ============================================================
+
+        [Authorize(Roles = "Driver")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateRequestStatus(
+            int id,
+            RequestStatus newStatus)
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            // Find logged-in driver
+            var driver = await _context.Drivers
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (driver == null)
+            {
+                return NotFound(
+                    "Driver profile is not linked with this account.");
+            }
+
+            // Find request belonging to this driver
             var request = await _context.AmbulanceRequests
                 .Include(r => r.Ambulance)
                 .FirstOrDefaultAsync(r =>
@@ -409,34 +613,34 @@ namespace AMS.Controllers
                 return NotFound();
             }
 
-            // --------------------------------------------------------
-            // Validate status transition
-            // --------------------------------------------------------
-
-            if (!IsValidStatusTransition(
-                    request.Status,
-                    status))
+            // Request must be active
+            if (!IsActiveStatus(request.Status))
             {
                 TempData["ErrorMessage"] =
-                    $"Cannot change request status from " +
-                    $"{request.Status} to {status}.";
+                    "This request is no longer active.";
 
                 return RedirectToAction(nameof(Dashboard));
             }
 
-            // --------------------------------------------------------
-            // Update status
-            // --------------------------------------------------------
+            // Validate status transition
+            if (!IsValidStatusTransition(
+                    request.Status,
+                    newStatus))
+            {
+                TempData["ErrorMessage"] =
+                    $"Cannot change request status from " +
+                    $"{request.Status} to {newStatus}.";
 
-            request.Status = status;
+                return RedirectToAction(
+                    nameof(CurrentRequestDetails),
+                    new { id = request.RequestId });
+            }
 
-            // --------------------------------------------------------
-            // Request completed/cancelled
-            // Driver becomes available again
-            // --------------------------------------------------------
+            // Update request status
+            request.Status = newStatus;
 
-            if (status == RequestStatus.Completed ||
-                status == RequestStatus.Cancelled)
+            // Request completed
+            if (newStatus == RequestStatus.Completed)
             {
                 driver.IsAvailable = true;
 
@@ -447,7 +651,7 @@ namespace AMS.Controllers
             }
             else
             {
-                // Any active request keeps driver busy
+                // Driver remains busy
                 driver.IsAvailable = false;
 
                 if (request.Ambulance != null)
@@ -461,7 +665,16 @@ namespace AMS.Controllers
             TempData["SuccessMessage"] =
                 "Request status updated successfully.";
 
-            return RedirectToAction(nameof(Dashboard));
+            // Completed request returns to dashboard
+            if (newStatus == RequestStatus.Completed)
+            {
+                return RedirectToAction(nameof(Dashboard));
+            }
+
+            // Continue working on current request
+            return RedirectToAction(
+                nameof(CurrentRequestDetails),
+                new { id = request.RequestId });
         }
 
 
@@ -489,49 +702,36 @@ namespace AMS.Controllers
             RequestStatus currentStatus,
             RequestStatus newStatus)
         {
-            // Driver accepts assigned request
-            if (currentStatus == RequestStatus.Assigned &&
-                newStatus == RequestStatus.Accepted)
-            {
-                return true;
-            }
-
-            // Accepted -> OnTheWay
             if (currentStatus == RequestStatus.Accepted &&
                 newStatus == RequestStatus.OnTheWay)
             {
                 return true;
             }
 
-            // OnTheWay -> ReachedPatient
             if (currentStatus == RequestStatus.OnTheWay &&
                 newStatus == RequestStatus.ReachedPatient)
             {
                 return true;
             }
 
-            // ReachedPatient -> PatientPickedUp
             if (currentStatus == RequestStatus.ReachedPatient &&
                 newStatus == RequestStatus.PatientPickedUp)
             {
                 return true;
             }
 
-            // PatientPickedUp -> GoingToHospital
             if (currentStatus == RequestStatus.PatientPickedUp &&
                 newStatus == RequestStatus.GoingToHospital)
             {
                 return true;
             }
 
-            // GoingToHospital -> ReachedHospital
             if (currentStatus == RequestStatus.GoingToHospital &&
                 newStatus == RequestStatus.ReachedHospital)
             {
                 return true;
             }
 
-            // ReachedHospital -> Completed
             if (currentStatus == RequestStatus.ReachedHospital &&
                 newStatus == RequestStatus.Completed)
             {
@@ -540,5 +740,6 @@ namespace AMS.Controllers
 
             return false;
         }
+    
     }
 }

@@ -23,9 +23,15 @@
                 #@Model.RequestId
             </p>
 
+            <input type="hidden"
+                   id="requestId"
+                   value="@Model.RequestId" />
+
             <p>
                 <strong>Status:</strong>
-                @Model.Status
+                <span id="requestStatus">
+                    @Model.Status
+                </span>
             </p>
 
         </div>
@@ -192,8 +198,6 @@
         </a>
 
         @if (Model.Status == AMS.Enums.RequestStatus.Requested ||
-             Model.Status == AMS.Enums.RequestStatus.Searching ||
-             Model.Status == AMS.Enums.RequestStatus.Assigned ||
              Model.Status == AMS.Enums.RequestStatus.Accepted ||
              Model.Status == AMS.Enums.RequestStatus.OnTheWay)
         {
@@ -215,3 +219,7 @@
     </div>
 
 </div>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/patient-request-details.js"
+        asp-append-version="true"></script>

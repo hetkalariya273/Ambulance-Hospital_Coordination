@@ -29,8 +29,6 @@ namespace AMS.Controllers
             var activeStatuses = new[]
             {
                 RequestStatus.Requested,
-                RequestStatus.Searching,
-                RequestStatus.Assigned,
                 RequestStatus.Accepted,
                 RequestStatus.OnTheWay,
                 RequestStatus.ReachedPatient,
@@ -92,8 +90,6 @@ namespace AMS.Controllers
             var activeStatuses = new[]
             {
                 RequestStatus.Requested,
-                RequestStatus.Searching,
-                RequestStatus.Assigned,
                 RequestStatus.Accepted,
                 RequestStatus.OnTheWay,
                 RequestStatus.ReachedPatient,
@@ -131,8 +127,6 @@ namespace AMS.Controllers
             var activeStatuses = new[]
             {
                 RequestStatus.Requested,
-                RequestStatus.Searching,
-                RequestStatus.Assigned,
                 RequestStatus.Accepted,
                 RequestStatus.OnTheWay,
                 RequestStatus.ReachedPatient,

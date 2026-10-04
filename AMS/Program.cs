@@ -2,6 +2,7 @@ using AMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using AMS.Models;
+using AMS.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 //ADDED SERVICES TO THE CONTAINER
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -53,6 +56,8 @@ app.UseAuthentication();//WHO IS USER?
 app.UseAuthorization();//IS THIS USER ALLOWED TO DO THIS?
 
 app.MapStaticAssets();
+
+app.MapHub<AmbulanceHub>("/ambulanceHub");
 
 app.MapControllerRoute(
     name: "default",

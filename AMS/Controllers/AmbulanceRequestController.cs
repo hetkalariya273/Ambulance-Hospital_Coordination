@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using AMS.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AMS.Controllers
 {
@@ -12,17 +14,21 @@ namespace AMS.Controllers
     public class AmbulanceRequestController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<AmbulanceHub> _hubContext;
 
-        public AmbulanceRequestController(ApplicationDbContext context)
+        public AmbulanceRequestController(
+            ApplicationDbContext context,
+            IHubContext<AmbulanceHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // GET: AmbulanceRequest/Create
         [HttpGet]
         public IActionResult Create()
         {
-            return View();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+            return View();
         }
 
         // POST: AmbulanceRequest/Create
@@ -50,6 +56,34 @@ namespace AMS.Controllers
 
             _context.AmbulanceRequests.Add(request);
             await _context.SaveChangesAsync();
+
+            var availableAmbulances = await _context.Ambulances
+                .Where(a =>
+                    a.Status == "Available" &&
+                    a.DriverId != null &&
+                    a.Latitude.HasValue &&
+                    a.Longitude.HasValue)
+                .ToListAsync();
+
+            var nearbyDriverIds = availableAmbulances
+                .Where(ambulance =>
+                    CalculateDistanceInKm(
+                        ambulance.Latitude!.Value,
+                        ambulance.Longitude!.Value,
+                        request.PickupLatitude,
+                        request.PickupLongitude) <= 5.0)
+                .Select(ambulance => ambulance.DriverId!.Value)
+                .Distinct()
+                .ToList();
+
+            foreach (var driverId in nearbyDriverIds)
+            {
+                await _hubContext.Clients
+                    .Group($"driver-{driverId}")
+                    .SendAsync(
+                        "NewAmbulanceRequest",
+                        request.RequestId);
+            }
 
             return RedirectToAction(nameof(MyRequests));
         }
@@ -110,8 +144,6 @@ namespace AMS.Controllers
 
             // Cancellation is allowed only before the driver reaches the patient
             if (request.Status == AMS.Enums.RequestStatus.Requested ||
-                request.Status == AMS.Enums.RequestStatus.Searching ||
-                request.Status == AMS.Enums.RequestStatus.Assigned ||
                 request.Status == AMS.Enums.RequestStatus.Accepted ||
                 request.Status == AMS.Enums.RequestStatus.OnTheWay)
             {
@@ -123,6 +155,39 @@ namespace AMS.Controllers
             }
 
             return RedirectToAction(nameof(MyRequests));
+        }
+
+        private static double CalculateDistanceInKm(
+    double latitude1,
+    double longitude1,
+    double latitude2,
+    double longitude2)
+        {
+            const double earthRadiusKm = 6371.0;
+
+            double lat1Rad = latitude1 * Math.PI / 180.0;
+            double lat2Rad = latitude2 * Math.PI / 180.0;
+
+            double deltaLat =
+                (latitude2 - latitude1) * Math.PI / 180.0;
+
+            double deltaLon =
+                (longitude2 - longitude1) * Math.PI / 180.0;
+
+            double a =
+                Math.Sin(deltaLat / 2) *
+                Math.Sin(deltaLat / 2) +
+                Math.Cos(lat1Rad) *
+                Math.Cos(lat2Rad) *
+                Math.Sin(deltaLon / 2) *
+                Math.Sin(deltaLon / 2);
+
+            double c =
+                2 * Math.Atan2(
+                    Math.Sqrt(a),
+                    Math.Sqrt(1 - a));
+
+            return earthRadiusKm * c;
         }
     }
 }

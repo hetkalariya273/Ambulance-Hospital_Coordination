@@ -7,12 +7,6 @@ namespace AMS.Enums
         [Display(Name = "Request Submitted")]
         Requested,
 
-        [Display(Name = "Finding Ambulance")]
-        Searching,
-
-        [Display(Name = "Ambulance Assigned")]
-        Assigned,
-
         [Display(Name = "Driver Accepted")]
         Accepted,
 

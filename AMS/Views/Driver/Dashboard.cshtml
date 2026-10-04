@@ -213,7 +213,7 @@
                 </p>
             </div>
 
-            <div class="request-count">
+            <div class="request-count" id="requestCount">
                 @Model.RequestCount
             </div>
 
@@ -222,7 +222,8 @@
         @if (Model.Requests != null &&
              Model.Requests.Any())
         {
-            <div class="request-list">
+            <div class="request-list"
+                id="requestList">
 
                 @foreach (var request in Model.Requests)
                 {
@@ -248,3 +249,7 @@
           href="~/css/driver.css"
           asp-append-version="true" />
 }
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+<script src="~/js/driver-dashboard.js"
+        asp-append-version="true"></script>

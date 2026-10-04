@@ -1,0 +1,16 @@
+﻿@model List<AMS.Models.AmbulanceRequest>
+
+@if (Model.Any())
+{
+    @foreach (var request in Model)
+    {
+        <partial name="_RequestCard"
+                 model="request" />
+    }
+}
+else
+{
+    <p class="empty-message">
+        No new requests available.
+    </p>
+}

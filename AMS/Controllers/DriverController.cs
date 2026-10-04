@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using AMS.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace AMS.Controllers
 {
@@ -14,13 +16,16 @@ namespace AMS.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubContext<AmbulanceHub> _hubContext;
 
         public DriverController(
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IHubContext<AmbulanceHub> hubContext)
         {
             _context = context;
             _userManager = userManager;
+            _hubContext = hubContext;
         }
 
         // ============================================================
@@ -225,13 +230,60 @@ namespace AMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var driver = await _context.Drivers.FindAsync(id);
+            var driver = await _context.Drivers
+                .Include(d => d.User)
+                .Include(d => d.Ambulances)
+                .FirstOrDefaultAsync(d => d.DriverId == id);
 
-            if (driver != null)
+            if (driver == null)
             {
-                _context.Drivers.Remove(driver);
-                await _context.SaveChangesAsync();
+                return NotFound();
             }
+
+            // Check whether driver has an active request
+            var hasActiveRequest = await _context.AmbulanceRequests
+                .AnyAsync(r =>
+                    r.DriverId == driver.DriverId &&
+                    (
+                        r.Status == RequestStatus.Accepted ||
+                        r.Status == RequestStatus.OnTheWay ||
+                        r.Status == RequestStatus.ReachedPatient ||
+                        r.Status == RequestStatus.PatientPickedUp ||
+                        r.Status == RequestStatus.GoingToHospital ||
+                        r.Status == RequestStatus.ReachedHospital
+                    ));
+
+            if (hasActiveRequest)
+            {
+                TempData["ErrorMessage"] =
+                    "This driver cannot be deleted because they have an active ambulance request.";
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Unassign all ambulances from this driver
+            foreach (var ambulance in driver.Ambulances)
+            {
+                ambulance.DriverId = null;
+                ambulance.Status = "Available";
+            }
+
+            // Store linked Identity user before deleting Driver
+            var applicationUser = driver.User;
+
+            // Delete Driver profile
+            _context.Drivers.Remove(driver);
+
+            // Delete Identity account
+            if (applicationUser != null)
+            {
+                _context.Users.Remove(applicationUser);
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                "Driver deleted successfully.";
 
             return RedirectToAction(nameof(Index));
         }
@@ -287,13 +339,9 @@ namespace AMS.Controllers
                     ));
 
             // Get new requests available for acceptance
-            var requests = await _context.AmbulanceRequests
-                .Include(r => r.User)
-                .Where(r =>
-                    r.DriverId == null &&
-                    r.Status == RequestStatus.Requested)
-                .OrderByDescending(r => r.RequestTime)
-                .ToListAsync();
+            // Get all requested ambulance requests
+            var requests = await GetNearbyRequests(driver.DriverId);
+
 
             var viewModel = new DriverDashboardViewModel
             {
@@ -370,6 +418,36 @@ namespace AMS.Controllers
         }
 
 
+        [Authorize(Roles = "Driver")]
+        [HttpGet]
+        public async Task<IActionResult> NearbyRequests()
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            var driver = await _context.Drivers
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (driver == null)
+            {
+                return NotFound(
+                    "Driver profile is not linked with this account.");
+            }
+
+            var requests = await GetNearbyRequests(
+                driver.DriverId);
+
+            return PartialView(
+                "_NearbyRequests",
+                requests);
+        }
+
+
         // ============================================================
         // DRIVER - ACCEPT REQUEST
         // ============================================================
@@ -378,8 +456,8 @@ namespace AMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcceptRequest(
-            int id,
-            int ambulanceId)
+    int id,
+    int ambulanceId)
         {
             // Get logged-in Identity user's ID
             var userId = User.FindFirstValue(
@@ -399,7 +477,6 @@ namespace AMS.Controllers
                 return NotFound(
                     "Driver profile is not linked with this account.");
             }
-
 
             // --------------------------------------------------------
             // Check whether driver already has an active request
@@ -428,96 +505,125 @@ namespace AMS.Controllers
             }
 
             // --------------------------------------------------------
-            // Find the request
+            // Start serializable transaction
             // --------------------------------------------------------
 
-            var request = await _context.AmbulanceRequests
-                .FirstOrDefaultAsync(r =>
-                    r.RequestId == id);
+            await using var transaction =
+                await _context.Database.BeginTransactionAsync(
+                    System.Data.IsolationLevel.Serializable);
 
-            if (request == null)
+            try
             {
-                return NotFound();
-            }
+                // ----------------------------------------------------
+                // Find request inside transaction
+                // ----------------------------------------------------
 
+                var request = await _context.AmbulanceRequests
+                    .FirstOrDefaultAsync(r =>
+                        r.RequestId == id);
 
-            // --------------------------------------------------------
-            // Request must still be available
-            // --------------------------------------------------------
+                if (request == null)
+                {
+                    await transaction.RollbackAsync();
 
-            if (request.DriverId != null ||
-                request.Status != RequestStatus.Requested)
-            {
-                TempData["ErrorMessage"] =
-                    "This request has already been accepted by another driver.";
+                    return NotFound();
+                }
+
+                // ----------------------------------------------------
+                // Request must still be available
+                // ----------------------------------------------------
+
+                if (request.DriverId != null ||
+                    request.Status != RequestStatus.Requested)
+                {
+                    await transaction.RollbackAsync();
+
+                    TempData["ErrorMessage"] =
+                        "This request has already been accepted by another driver.";
+
+                    return RedirectToAction(nameof(Dashboard));
+                }
+
+                // ----------------------------------------------------
+                // Find selected ambulance
+                // ----------------------------------------------------
+
+                var ambulance = await _context.Ambulances
+                    .FirstOrDefaultAsync(a =>
+                        a.AmbulanceId == ambulanceId &&
+                        a.DriverId == driver.DriverId);
+
+                if (ambulance == null)
+                {
+                    await transaction.RollbackAsync();
+
+                    TempData["ErrorMessage"] =
+                        "The selected ambulance is not assigned to you.";
+
+                    return RedirectToAction(
+                        nameof(RequestDetails),
+                        new { id });
+                }
+
+                // ----------------------------------------------------
+                // Ambulance must still be available
+                // ----------------------------------------------------
+
+                if (ambulance.Status != "Available")
+                {
+                    await transaction.RollbackAsync();
+
+                    TempData["ErrorMessage"] =
+                        "The selected ambulance is no longer available.";
+
+                    return RedirectToAction(
+                        nameof(RequestDetails),
+                        new { id });
+                }
+
+                // ----------------------------------------------------
+                // Accept request
+                // ----------------------------------------------------
+
+                request.DriverId = driver.DriverId;
+
+                request.AmbulanceId = ambulance.AmbulanceId;
+
+                request.Status = RequestStatus.Accepted;
+
+                // Driver becomes busy
+                driver.IsAvailable = false;
+
+                // Selected ambulance becomes busy
+                ambulance.Status = "Busy";
+
+                // ----------------------------------------------------
+                // Save all changes
+                // ----------------------------------------------------
+
+                await _context.SaveChangesAsync();
+
+                // ----------------------------------------------------
+                // Commit transaction
+                // ----------------------------------------------------
+
+                await transaction.CommitAsync();
+
+                TempData["SuccessMessage"] =
+                    "Ambulance request accepted successfully.";
 
                 return RedirectToAction(nameof(Dashboard));
             }
-
-
-            // --------------------------------------------------------
-            // Find selected ambulance
-            // --------------------------------------------------------
-
-            var ambulance = await _context.Ambulances
-                .FirstOrDefaultAsync(a =>
-                    a.AmbulanceId == ambulanceId &&
-                    a.DriverId == driver.DriverId);
-
-            if (ambulance == null)
+            catch
             {
+                await transaction.RollbackAsync();
+
                 TempData["ErrorMessage"] =
-                    "The selected ambulance is not assigned to you.";
+                    "Unable to accept the ambulance request. Please try again.";
 
-                return RedirectToAction(
-                    nameof(RequestDetails),
-                    new { id });
+                return RedirectToAction(nameof(Dashboard));
             }
-
-
-            // --------------------------------------------------------
-            // Ambulance must still be available
-            // --------------------------------------------------------
-
-            if (ambulance.Status != "Available")
-            {
-                TempData["ErrorMessage"] =
-                    "The selected ambulance is no longer available.";
-
-                return RedirectToAction(
-                    nameof(RequestDetails),
-                    new { id });
-            }
-
-
-            // --------------------------------------------------------
-            // Accept request
-            // --------------------------------------------------------
-
-            request.DriverId = driver.DriverId;
-
-            request.AmbulanceId = ambulance.AmbulanceId;
-
-            request.Status = RequestStatus.Accepted;
-
-
-            // Driver becomes busy
-            driver.IsAvailable = false;
-
-
-            // Selected ambulance becomes busy
-            ambulance.Status = "Busy";
-
-
-            await _context.SaveChangesAsync();
-
-
-            TempData["SuccessMessage"] =
-                "Ambulance request accepted successfully.";
-
-            return RedirectToAction(nameof(Dashboard));
         }
-
 
         // ============================================================
         // DRIVER - CURRENT REQUEST DETAILS
@@ -571,7 +677,7 @@ namespace AMS.Controllers
             return View(request);
         }
 
-     
+
         // ============================================================
         // DRIVER - UPDATE REQUEST STATUS
         // ============================================================
@@ -662,6 +768,11 @@ namespace AMS.Controllers
 
             await _context.SaveChangesAsync();
 
+            await _hubContext.Clients.All.SendAsync(
+                "RequestStatusUpdated",
+                request.RequestId,
+                request.Status.ToString());
+
             TempData["SuccessMessage"] =
                 "Request status updated successfully.";
 
@@ -684,8 +795,7 @@ namespace AMS.Controllers
 
         private static bool IsActiveStatus(RequestStatus status)
         {
-            return status == RequestStatus.Assigned ||
-                   status == RequestStatus.Accepted ||
+            return status == RequestStatus.Accepted ||
                    status == RequestStatus.OnTheWay ||
                    status == RequestStatus.ReachedPatient ||
                    status == RequestStatus.PatientPickedUp ||
@@ -740,6 +850,74 @@ namespace AMS.Controllers
 
             return false;
         }
-    
+
+        //This calculates the straight-line geographical distance between two
+        //latitude/longitude coordinates using the Haversine formula.
+        private static double CalculateDistanceInKm(
+            double latitude1,
+            double longitude1,
+            double latitude2,
+            double longitude2)
+        {
+            const double earthRadiusKm = 6371.0;
+
+            double lat1Rad = latitude1 * Math.PI / 180.0;
+            double lat2Rad = latitude2 * Math.PI / 180.0;
+
+            double deltaLat =
+                (latitude2 - latitude1) * Math.PI / 180.0;
+
+            double deltaLon =
+                (longitude2 - longitude1) * Math.PI / 180.0;
+
+            double a =
+                Math.Sin(deltaLat / 2) *
+                Math.Sin(deltaLat / 2) +
+                Math.Cos(lat1Rad) *
+                Math.Cos(lat2Rad) *
+                Math.Sin(deltaLon / 2) *
+                Math.Sin(deltaLon / 2);
+
+            double c =
+                2 * Math.Atan2(
+                    Math.Sqrt(a),
+                    Math.Sqrt(1 - a));
+
+            return earthRadiusKm * c;
+        }
+
+        private async Task<List<AmbulanceRequest>> GetNearbyRequests(
+            int driverId)
+        {
+            var ambulances = await _context.Ambulances
+                .Where(a => a.DriverId == driverId)
+                .ToListAsync();
+
+            var allRequests = await _context.AmbulanceRequests
+                .Include(r => r.User)
+                .Where(r =>
+                    r.DriverId == null &&
+                    r.Status == RequestStatus.Requested)
+                .OrderByDescending(r => r.RequestTime)
+                .ToListAsync();
+
+            var availableAmbulances = ambulances
+                .Where(a =>
+                    a.Status == "Available" &&
+                    a.Latitude.HasValue &&
+                    a.Longitude.HasValue)
+                .ToList();
+
+            return allRequests
+                .Where(request =>
+                    availableAmbulances.Any(ambulance =>
+                        CalculateDistanceInKm(
+                            ambulance.Latitude!.Value,
+                            ambulance.Longitude!.Value,
+                            request.PickupLatitude,
+                            request.PickupLongitude) <= 5.0))
+                .ToList();
+        }
+
     }
 }

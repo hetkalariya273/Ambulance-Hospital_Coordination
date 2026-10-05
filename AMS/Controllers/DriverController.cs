@@ -456,8 +456,8 @@ namespace AMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcceptRequest(
-    int id,
-    int ambulanceId)
+            int id,
+            int ambulanceId)
         {
             // Get logged-in Identity user's ID
             var userId = User.FindFirstValue(

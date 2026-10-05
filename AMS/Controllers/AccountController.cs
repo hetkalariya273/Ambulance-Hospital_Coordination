@@ -160,8 +160,8 @@ namespace AMS.Controllers
             await _signInManager.SignOutAsync();
 
             return RedirectToAction(
-                "Index",
-                "Home");
+                "Login",
+                "Account");
         }
     }
 }

@@ -1064,3 +1064,167 @@
         width: 100%;
     }
 }
+
+/* Error message */
+.driver-dashboard .alert-error {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 15px 18px;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    border-left: 5px solid #e11d48;
+    border-radius: 10px;
+    color: #be123c;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.08);
+}
+
+/* Success message */
+.driver-dashboard .alert-success {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 15px 18px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-left: 5px solid #10b981;
+    border-radius: 10px;
+    color: #047857;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08);
+}
+
+/* Hospital selection list */
+.driver-dashboard .hospital-selection-list {
+    display: grid;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+/* Hospital selection item */
+.driver-dashboard .hospital-selection-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    /* Hospital selection hover */
+    .driver-dashboard .hospital-selection-item:hover {
+        background: #eff6ff;
+        border-color: #93c5fd;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 14px rgba(37, 99, 235, 0.08);
+    }
+
+    /* Hospital radio button */
+    .driver-dashboard .hospital-selection-item input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        accent-color: #2563eb;
+        cursor: pointer;
+    }
+
+    /* Selected hospital */
+    .driver-dashboard .hospital-selection-item:has(input[type="radio"]:checked) {
+        background: #eff6ff;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    /* Hospital name */
+    .driver-dashboard .hospital-selection-item span {
+        font-size: 15px;
+        font-weight: 600;
+        color: #172033;
+    }
+
+/* Select hospital button */
+.driver-dashboard .status-update-btn {
+    border: none;
+    padding: 11px 20px;
+    border-radius: 9px;
+    background: #2563eb;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+    /* Select hospital button hover */
+    .driver-dashboard .status-update-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 12px rgba(37, 99, 235, 0.2);
+    }
+
+
+/* Selected hospital card */
+.driver-dashboard .selected-hospital-card {
+    padding: 14px 16px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 9px;
+}
+
+/* Hospital header */
+.driver-dashboard .selected-hospital-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+    /* Hospital label */
+    .driver-dashboard .selected-hospital-header span {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    /* Hospital name */
+    .driver-dashboard .selected-hospital-header strong {
+        font-size: 15px;
+        color: #172033;
+    }
+
+/* Hospital information */
+.driver-dashboard .selected-hospital-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 8px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* Hospital selection details */
+.driver-dashboard .hospital-selection-details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+    /* Hospital name */
+    .driver-dashboard .hospital-selection-details strong {
+        font-size: 16px;
+        color: #172033;
+    }
+
+    /* Hospital information */
+    .driver-dashboard .hospital-selection-details span {
+        font-size: 13px;
+        color: #64748b;
+    }

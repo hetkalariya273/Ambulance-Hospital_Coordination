@@ -1,10 +1,23 @@
-﻿@model AMS.Models.AmbulanceRequest
+﻿@model AMS.ViewModels.CurrentRequestDetailsViewModel
 
 @{
     ViewData["Title"] = "Current Request";
 }
 
 <div class="driver-dashboard">
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert-message alert-error">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-message alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
 
     <!-- Current request header -->
     <div class="dashboard-header">
@@ -14,7 +27,7 @@
 
             <p>
                 You are currently working on Request
-                #@Model.RequestId.
+                #@Model.Request.RequestId.
             </p>
         </div>
 
@@ -41,7 +54,7 @@
                 <span>Request ID</span>
 
                 <strong>
-                    #@Model.RequestId
+                    #@Model.Request.RequestId
                 </strong>
             </div>
 
@@ -49,7 +62,7 @@
                 <span>Patient Name</span>
 
                 <strong>
-                    @Model.User.FullName
+                    @Model.Request.User?.FullName
                 </strong>
             </div>
 
@@ -57,7 +70,7 @@
                 <span>Emergency Type</span>
 
                 <strong>
-                    @Model.EmergencyType
+                    @Model.Request.EmergencyType
                 </strong>
             </div>
 
@@ -65,7 +78,7 @@
                 <span>Patient Condition</span>
 
                 <strong>
-                    @Model.PatientCondition
+                    @Model.Request.PatientCondition
                 </strong>
             </div>
 
@@ -73,7 +86,7 @@
                 <span>Number of Patients</span>
 
                 <strong>
-                    @Model.NumberOfPatients
+                    @Model.Request.NumberOfPatients
                 </strong>
             </div>
 
@@ -81,7 +94,7 @@
                 <span>Request Time</span>
 
                 <strong>
-                    @Model.RequestTime
+                    @Model.Request.RequestTime
                 </strong>
             </div>
 
@@ -111,7 +124,7 @@
             </span>
 
             <strong>
-                @Model.Status
+                @Model.Request.Status
             </strong>
 
         </div>
@@ -140,7 +153,7 @@
                 <span>Vehicle Number</span>
 
                 <strong>
-                    @(Model.Ambulance?.VehicleNumber ?? "Not available")
+                    @(Model.Request.Ambulance?.VehicleNumber ?? "Not available")
                 </strong>
 
             </div>
@@ -150,7 +163,7 @@
                 <span>Ambulance Status</span>
 
                 <strong>
-                    @(Model.Ambulance?.Status ?? "Not available")
+                    @(Model.Request.Ambulance?.Status ?? "Not available")
                 </strong>
 
             </div>
@@ -181,7 +194,7 @@
                 <span>Latitude</span>
 
                 <strong>
-                    @Model.PickupLatitude
+                    @Model.Request.PickupLatitude
                 </strong>
 
             </div>
@@ -191,7 +204,7 @@
                 <span>Longitude</span>
 
                 <strong>
-                    @Model.PickupLongitude
+                    @Model.Request.PickupLongitude
                 </strong>
 
             </div>
@@ -199,6 +212,97 @@
         </div>
 
     </div>
+
+    <!-- Suitable hospitals -->
+    @if (Model.Hospitals.Any())
+    {
+        <div class="dashboard-section">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Suitable Hospitals</h2>
+
+                    <p>
+                        Select a hospital for the patient.
+                    </p>
+                </div>
+
+            </div>
+
+            @if (Model.Request.HospitalId == null &&
+                 Model.Request.Status == AMS.Enums.RequestStatus.PatientPickedUp)
+            {
+                <form asp-controller="Driver"
+                      asp-action="SelectHospital"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@Model.Request.RequestId" />
+
+                    <div class="hospital-selection-list">
+
+                        @foreach (var hospital in Model.Hospitals)
+                        {
+                            <partial name="_HospitalSelectionItem"
+                                     model="hospital" />
+                        }
+
+                    </div>
+
+                    <button type="submit"
+                            class="status-update-btn">
+                        Select Hospital
+                    </button>
+
+                </form>
+            }
+            else
+            {
+                <div class="selected-hospital-card">
+
+                    <div class="selected-hospital-header">
+                        <span>Selected Hospital</span>
+
+                        <strong>
+                            @(Model.Request.Hospital?.Name ?? "Not selected")
+                        </strong>
+                    </div>
+
+                    @if (Model.Request.Hospital != null)
+                    {
+                        <div class="selected-hospital-info">
+
+                            <span>
+                                @Model.Request.Hospital.Address
+                            </span>
+
+                            <span>
+                                Beds: @Model.Request.Hospital.AvailableBeds
+                            </span>
+
+                            <span>
+                                ICU Beds: @Model.Request.Hospital.AvailableICUBeds
+                            </span>
+
+                            <span>
+                                Emergency:
+                                @(Model.Request.Hospital.EmergencyAvailable
+                                    ? "Available"
+                                    : "Not Available")
+                            </span>
+
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+    }
 
     <!-- Status update -->
     <div class="dashboard-section">
@@ -215,7 +319,7 @@
 
         </div>
 
-        @if (Model.Status == AMS.Enums.RequestStatus.Accepted)
+        @if (Model.Request.Status == AMS.Enums.RequestStatus.Accepted)
         {
             <form asp-controller="Driver"
                   asp-action="UpdateRequestStatus"
@@ -225,7 +329,7 @@
 
                 <input type="hidden"
                        name="id"
-                       value="@Model.RequestId" />
+                       value="@Model.Request.RequestId" />
 
                 <input type="hidden"
                        name="newStatus"
@@ -238,7 +342,7 @@
 
             </form>
         }
-        else if (Model.Status == AMS.Enums.RequestStatus.OnTheWay)
+        else if (Model.Request.Status == AMS.Enums.RequestStatus.OnTheWay)
         {
             <form asp-controller="Driver"
                   asp-action="UpdateRequestStatus"
@@ -248,7 +352,7 @@
 
                 <input type="hidden"
                        name="id"
-                       value="@Model.RequestId" />
+                       value="@Model.Request.RequestId" />
 
                 <input type="hidden"
                        name="newStatus"
@@ -261,7 +365,7 @@
 
             </form>
         }
-        else if (Model.Status == AMS.Enums.RequestStatus.ReachedPatient)
+        else if (Model.Request.Status == AMS.Enums.RequestStatus.ReachedPatient)
         {
             <form asp-controller="Driver"
                   asp-action="UpdateRequestStatus"
@@ -271,7 +375,7 @@
 
                 <input type="hidden"
                        name="id"
-                       value="@Model.RequestId" />
+                       value="@Model.Request.RequestId" />
 
                 <input type="hidden"
                        name="newStatus"
@@ -284,7 +388,7 @@
 
             </form>
         }
-        else if (Model.Status == AMS.Enums.RequestStatus.PatientPickedUp)
+        else if (Model.Request.Status == AMS.Enums.RequestStatus.PatientPickedUp)
         {
             <form asp-controller="Driver"
                   asp-action="UpdateRequestStatus"
@@ -294,7 +398,7 @@
 
                 <input type="hidden"
                        name="id"
-                       value="@Model.RequestId" />
+                       value="@Model.Request.RequestId" />
 
                 <input type="hidden"
                        name="newStatus"
@@ -307,7 +411,7 @@
 
             </form>
         }
-        else if (Model.Status == AMS.Enums.RequestStatus.GoingToHospital)
+        else if (Model.Request.Status == AMS.Enums.RequestStatus.GoingToHospital)
         {
             <form asp-controller="Driver"
                   asp-action="UpdateRequestStatus"
@@ -317,7 +421,7 @@
 
                 <input type="hidden"
                        name="id"
-                       value="@Model.RequestId" />
+                       value="@Model.Request.RequestId" />
 
                 <input type="hidden"
                        name="newStatus"
@@ -330,7 +434,7 @@
 
             </form>
         }
-        else if (Model.Status == AMS.Enums.RequestStatus.ReachedHospital)
+        else if (Model.Request.Status == AMS.Enums.RequestStatus.ReachedHospital)
         {
             <form asp-controller="Driver"
                   asp-action="UpdateRequestStatus"
@@ -340,7 +444,7 @@
 
                 <input type="hidden"
                        name="id"
-                       value="@Model.RequestId" />
+                       value="@Model.Request.RequestId" />
 
                 <input type="hidden"
                        name="newStatus"

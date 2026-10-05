@@ -1,0 +1,38 @@
+﻿@model AMS.Models.Hospital
+
+<label class="hospital-selection-item">
+
+    <input type="radio"
+           name="hospitalId"
+           value="@Model.HospitalId"
+           required />
+
+    <div class="hospital-selection-details">
+
+        <strong>
+            @Model.Name
+        </strong>
+
+        <span>
+            Address: @Model.Address
+        </span>
+
+        <span>
+            Beds: @Model.AvailableBeds
+        </span>
+
+        <span>
+            ICU Beds: @Model.AvailableICUBeds
+        </span>
+
+        <span>
+            Emergency:
+            @(Model.EmergencyAvailable
+                ? "Available"
+                : "Not Available")
+        </span>
+
+    </div>
+
+</label>
+

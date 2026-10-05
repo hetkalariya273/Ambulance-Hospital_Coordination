@@ -456,8 +456,8 @@ namespace AMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AcceptRequest(
-            int id,
-            int ambulanceId)
+    int id,
+    int ambulanceId)
         {
             // Get logged-in Identity user's ID
             var userId = User.FindFirstValue(
@@ -674,7 +674,50 @@ namespace AMS.Controllers
                 return RedirectToAction(nameof(Dashboard));
             }
 
-            return View(request);
+            var hospitals = await _context.Hospitals
+                .Where(h =>
+                (
+                    request.PatientCondition == PatientCondition.Critical &&
+                    h.EmergencyAvailable &&
+                    h.AvailableICUBeds >= request.NumberOfPatients
+                )
+                ||
+                (
+                    request.PatientCondition == PatientCondition.Unconscious &&
+                    h.EmergencyAvailable &&
+                    h.AvailableICUBeds >= request.NumberOfPatients
+                )
+                ||
+                (
+                    request.PatientCondition == PatientCondition.Serious &&
+                    h.EmergencyAvailable &&
+                    h.AvailableBeds >= request.NumberOfPatients
+                )
+                ||
+                (
+                    request.PatientCondition == PatientCondition.Stable &&
+                    h.AvailableBeds >= request.NumberOfPatients
+                )
+            )
+            .OrderBy(h => h.Name)
+            .ToListAsync();
+
+            hospitals = hospitals
+                .OrderBy(h =>
+                    CalculateDistanceInKm(
+                        request.PickupLatitude,
+                        request.PickupLongitude,
+                        h.Latitude!.Value,
+                        h.Longitude!.Value))
+                .ToList();
+
+            var model = new CurrentRequestDetailsViewModel
+            {
+                Request = request,
+                Hospitals = hospitals
+            };
+
+            return View(model);
         }
 
 
@@ -686,8 +729,8 @@ namespace AMS.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateRequestStatus(
-            int id,
-            RequestStatus newStatus)
+    int id,
+    RequestStatus newStatus)
         {
             var userId = User.FindFirstValue(
                 ClaimTypes.NameIdentifier);
@@ -742,11 +785,119 @@ namespace AMS.Controllers
                     new { id = request.RequestId });
             }
 
+            // ------------------------------------------------------------
+            // Hospital must be selected before going to hospital
+            // ------------------------------------------------------------
+
+            if (request.Status == RequestStatus.PatientPickedUp &&
+                newStatus == RequestStatus.GoingToHospital)
+            {
+                if (request.HospitalId == null)
+                {
+                    TempData["ErrorMessage"] =
+                        "Please select a hospital before going to the hospital.";
+
+                    return RedirectToAction(
+                        nameof(CurrentRequestDetails),
+                        new { id = request.RequestId });
+                }
+
+                // Find selected hospital
+                var hospital = await _context.Hospitals
+                    .FirstOrDefaultAsync(h =>
+                        h.HospitalId == request.HospitalId);
+
+                if (hospital == null)
+                {
+                    TempData["ErrorMessage"] =
+                        "Selected hospital was not found.";
+
+                    return RedirectToAction(
+                        nameof(CurrentRequestDetails),
+                        new { id = request.RequestId });
+                }
+
+                // --------------------------------------------------------
+                // Decrease hospital capacity
+                // --------------------------------------------------------
+
+                // Critical / Unconscious → ICU beds
+                if (request.PatientCondition == PatientCondition.Critical ||
+                    request.PatientCondition == PatientCondition.Unconscious)
+                {
+                    if (hospital.AvailableICUBeds <
+                        request.NumberOfPatients)
+                    {
+                        TempData["ErrorMessage"] =
+                            "The selected hospital does not have enough ICU beds.";
+
+                        return RedirectToAction(
+                            nameof(CurrentRequestDetails),
+                            new { id = request.RequestId });
+                    }
+
+                    hospital.AvailableICUBeds -=
+                        request.NumberOfPatients;
+                }
+                else
+                {
+                    // Stable / Serious → Normal beds
+                    if (hospital.AvailableBeds <
+                        request.NumberOfPatients)
+                    {
+                        TempData["ErrorMessage"] =
+                            "The selected hospital does not have enough available beds.";
+
+                        return RedirectToAction(
+                            nameof(CurrentRequestDetails),
+                            new { id = request.RequestId });
+                    }
+
+                    hospital.AvailableBeds -=
+                        request.NumberOfPatients;
+                }
+            }
+
+            // ------------------------------------------------------------
+            // Restore hospital capacity when cancelling
+            // ------------------------------------------------------------
+
+            if (newStatus == RequestStatus.Cancelled &&
+                request.Status == RequestStatus.GoingToHospital &&
+                request.HospitalId != null)
+            {
+                var hospital = await _context.Hospitals
+                    .FirstOrDefaultAsync(h =>
+                        h.HospitalId == request.HospitalId);
+
+                if (hospital != null)
+                {
+                    // Restore ICU beds
+                    if (request.PatientCondition == PatientCondition.Critical ||
+                        request.PatientCondition == PatientCondition.Unconscious)
+                    {
+                        hospital.AvailableICUBeds +=
+                            request.NumberOfPatients;
+                    }
+                    else
+                    {
+                        // Restore normal beds
+                        hospital.AvailableBeds +=
+                            request.NumberOfPatients;
+                    }
+                }
+            }
+
             // Update request status
             request.Status = newStatus;
 
-            // Request completed
-            if (newStatus == RequestStatus.Completed)
+            // ------------------------------------------------------------
+            // Request completed/cancelled
+            // Driver becomes available again
+            // ------------------------------------------------------------
+
+            if (newStatus == RequestStatus.Completed ||
+                newStatus == RequestStatus.Cancelled)
             {
                 driver.IsAvailable = true;
 
@@ -774,10 +925,13 @@ namespace AMS.Controllers
                 request.Status.ToString());
 
             TempData["SuccessMessage"] =
-                "Request status updated successfully.";
+                newStatus == RequestStatus.Cancelled
+                    ? "Request cancelled successfully."
+                    : "Request status updated successfully.";
 
-            // Completed request returns to dashboard
-            if (newStatus == RequestStatus.Completed)
+            // Completed or cancelled request returns to dashboard
+            if (newStatus == RequestStatus.Completed ||
+                newStatus == RequestStatus.Cancelled)
             {
                 return RedirectToAction(nameof(Dashboard));
             }
@@ -812,6 +966,19 @@ namespace AMS.Controllers
             RequestStatus currentStatus,
             RequestStatus newStatus)
         {
+            if (currentStatus == RequestStatus.Accepted &&
+                newStatus == RequestStatus.Cancelled)
+            {
+                return true;
+            }
+
+            // OnTheWay -> Cancelled
+            if (currentStatus == RequestStatus.OnTheWay &&
+                newStatus == RequestStatus.Cancelled)
+            {
+                return true;
+            }
+
             if (currentStatus == RequestStatus.Accepted &&
                 newStatus == RequestStatus.OnTheWay)
             {
@@ -919,5 +1086,115 @@ namespace AMS.Controllers
                 .ToList();
         }
 
+
+        // ============================================================
+        // DRIVER - SELECT HOSPITAL
+        // ============================================================
+
+        [Authorize(Roles = "Driver")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SelectHospital(
+            int id,
+            int hospitalId)
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
+            var driver = await _context.Drivers
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (driver == null)
+            {
+                return NotFound(
+                    "Driver profile is not linked with this account.");
+            }
+
+            var request = await _context.AmbulanceRequests
+                .FirstOrDefaultAsync(r =>
+                    r.RequestId == id &&
+                    r.DriverId == driver.DriverId);
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            // Hospital can only be selected after patient pickup
+            if (request.Status != RequestStatus.PatientPickedUp)
+            {
+                TempData["ErrorMessage"] =
+                    "Hospital can only be selected after the patient is picked up.";
+
+                return RedirectToAction(
+                    nameof(CurrentRequestDetails),
+                    new { id });
+            }
+
+            // Find selected hospital
+            var hospital = await _context.Hospitals
+    .FirstOrDefaultAsync(h =>
+        h.HospitalId == hospitalId);
+
+            if (hospital == null)
+            {
+                TempData["ErrorMessage"] =
+                    "Selected hospital was not found.";
+
+                return RedirectToAction(
+                    nameof(CurrentRequestDetails),
+                    new { id });
+            }
+
+            // Validate hospital suitability
+            bool isSuitable = false;
+
+            if (request.PatientCondition == PatientCondition.Critical ||
+                request.PatientCondition == PatientCondition.Unconscious)
+            {
+                isSuitable =
+                    hospital.EmergencyAvailable &&
+                    hospital.AvailableICUBeds >= request.NumberOfPatients;
+            }
+            else if (request.PatientCondition == PatientCondition.Serious)
+            {
+                isSuitable =
+                    hospital.EmergencyAvailable &&
+                    hospital.AvailableBeds >= request.NumberOfPatients;
+            }
+            else if (request.PatientCondition == PatientCondition.Stable)
+            {
+                isSuitable =
+                    hospital.AvailableBeds >= request.NumberOfPatients;
+            }
+
+            if (!isSuitable)
+            {
+                TempData["ErrorMessage"] =
+                    "The selected hospital is not suitable for this patient.";
+
+                return RedirectToAction(
+                    nameof(CurrentRequestDetails),
+                    new { id });
+            }
+
+            // Save selected hospital
+            request.HospitalId = hospital.HospitalId;
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] =
+                "Hospital selected successfully.";
+
+            return RedirectToAction(
+                nameof(CurrentRequestDetails),
+                new { id });
+        }
     }
 }
+

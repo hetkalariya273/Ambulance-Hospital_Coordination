@@ -1,4 +1,5 @@
 ﻿@model AMS.ViewModels.RequestDetailsViewModel
+@inject IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Request Details";
@@ -118,8 +119,13 @@
                     @Model.Request.PickupLongitude
                 </strong>
             </div>
-
+            
         </div>
+
+        <div id="patientPickupMap"
+                data-lat="@Model.Request.PickupLatitude"
+                data-lng="@Model.Request.PickupLongitude">
+            </div>
 
     </div>
 
@@ -222,4 +228,13 @@
     <link rel="stylesheet"
           href="~/css/driver.css"
           asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/js/driver-pickup-map.js"
+            asp-append-version="true"></script>
+
+    <script async
+            src="https://maps.googleapis.com/maps/api/js?key=@Configuration["GoogleMaps:ApiKey"]&loading=async&callback=initDriverPickupMap">
+    </script>
 }

@@ -629,6 +629,7 @@ namespace AMS.Controllers
         // DRIVER - CURRENT REQUEST DETAILS
         // ============================================================
 
+
         [Authorize(Roles = "Driver")]
         [HttpGet]
         public async Task<IActionResult> CurrentRequestDetails(int id)
@@ -676,39 +677,36 @@ namespace AMS.Controllers
 
             var hospitals = await _context.Hospitals
                 .Where(h =>
-                (
-                    request.PatientCondition == PatientCondition.Critical &&
-                    h.EmergencyAvailable &&
-                    h.AvailableICUBeds >= request.NumberOfPatients
+                    (
+                        (request.PatientCondition == PatientCondition.Critical ||
+                         request.PatientCondition == PatientCondition.Unconscious) &&
+                        h.EmergencyAvailable &&
+                        h.AvailableICUBeds >= request.NumberOfPatients
+                    )
+                    ||
+                    (
+                        request.PatientCondition == PatientCondition.Serious &&
+                        h.EmergencyAvailable &&
+                        h.AvailableBeds >= request.NumberOfPatients
+                    )
+                    ||
+                    (
+                        request.PatientCondition == PatientCondition.Stable &&
+                        h.AvailableBeds >= request.NumberOfPatients
+                    )
                 )
-                ||
-                (
-                    request.PatientCondition == PatientCondition.Unconscious &&
-                    h.EmergencyAvailable &&
-                    h.AvailableICUBeds >= request.NumberOfPatients
-                )
-                ||
-                (
-                    request.PatientCondition == PatientCondition.Serious &&
-                    h.EmergencyAvailable &&
-                    h.AvailableBeds >= request.NumberOfPatients
-                )
-                ||
-                (
-                    request.PatientCondition == PatientCondition.Stable &&
-                    h.AvailableBeds >= request.NumberOfPatients
-                )
-            )
-            .OrderBy(h => h.Name)
-            .ToListAsync();
+                .OrderBy(h => h.Name)
+                .ToListAsync();
 
             hospitals = hospitals
                 .OrderBy(h =>
-                    CalculateDistanceInKm(
-                        request.PickupLatitude,
-                        request.PickupLongitude,
-                        h.Latitude!.Value,
-                        h.Longitude!.Value))
+                    h.Latitude.HasValue && h.Longitude.HasValue
+                        ? CalculateDistanceInKm(
+                            request.PickupLatitude,
+                            request.PickupLongitude,
+                            h.Latitude.Value,
+                            h.Longitude.Value)
+                        : double.MaxValue)
                 .ToList();
 
             var model = new CurrentRequestDetailsViewModel
@@ -1195,6 +1193,65 @@ namespace AMS.Controllers
                 nameof(CurrentRequestDetails),
                 new { id });
         }
+
+
+
+        [Authorize(Roles = "Driver")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateAmbulanceLocation(
+            int requestId,
+            double latitude,
+            double longitude)
+        {
+            if (latitude < -90 || latitude > 90 ||
+                longitude < -180 || longitude > 180)
+            {
+                return BadRequest("Invalid GPS coordinates.");
+            }
+
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            var driver = await _context.Drivers
+                .FirstOrDefaultAsync(d => d.UserId == userId);
+
+            if (driver == null)
+            {
+                return Forbid();
+            }
+
+            var request = await _context.AmbulanceRequests
+                .Include(r => r.Ambulance)
+                .FirstOrDefaultAsync(r =>
+                    r.RequestId == requestId &&
+                    r.DriverId == driver.DriverId);
+
+            if (request == null ||
+                request.Ambulance == null ||
+                !IsActiveStatus(request.Status))
+            {
+                return NotFound();
+            }
+
+            request.Ambulance.Latitude = latitude;
+            request.Ambulance.Longitude = longitude;
+
+            await _context.SaveChangesAsync();
+
+            await _hubContext.Clients
+                .Group($"request-{request.RequestId}")
+                .SendAsync(
+                    "AmbulanceLocationUpdated",
+                    new
+                    {
+                        latitude,
+                        longitude
+                    });
+
+            return Ok(new { success = true });
+        }
+
     }
 }
 

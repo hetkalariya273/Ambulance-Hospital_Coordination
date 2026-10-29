@@ -1,16 +1,25 @@
-﻿@model List<AMS.Models.AmbulanceRequest>
+﻿
+@model List<AMS.Models.AmbulanceRequest>
 
-@if (Model.Any())
-{
-    @foreach (var request in Model)
+<div id="nearbyRequestsContent"
+     data-request-count="@Model.Count">
+
+    @if (Model.Any())
     {
-        <partial name="_RequestCard"
-                 model="request" />
+        <div class="request-list">
+            @foreach (var request in Model)
+            {
+                <div data-request-card>
+                    <partial name="_RequestCard" model="request" />
+                </div>
+            }
+        </div>
     }
-}
-else
-{
-    <p class="empty-message">
-        No new requests available.
-    </p>
-}
+    else
+    {
+        <p class="empty-message">
+            No new requests available.
+        </p>
+    }
+
+</div>

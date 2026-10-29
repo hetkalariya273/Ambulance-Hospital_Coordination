@@ -1,4 +1,7 @@
-﻿@model AmbulanceRequestViewModel
+﻿```cshtml
+@model AmbulanceRequestViewModel
+@using AMS.Enums
+@inject IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Request Ambulance";
@@ -7,10 +10,9 @@
 <h2>Request Ambulance</h2>
 
 <form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
 
-    @Html.AntiForgeryToken() @* Generates the token which will be checked by the controller's post method *@
-
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div> @* To show Model Level errors *@
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
     <div class="mb-3">
         <label asp-for="EmergencyType" class="form-label"></label>
@@ -42,68 +44,32 @@
         <span asp-validation-for="NumberOfPatients" class="text-danger"></span>
     </div>
 
-    <!-- Location will be filled automatically using browser GPS -->
     <input asp-for="PickupLatitude" type="hidden" id="pickupLatitude" />
     <input asp-for="PickupLongitude" type="hidden" id="pickupLongitude" />
 
     <div class="mb-3">
-        <button type="button"
-                class="btn btn-secondary"
-                id="getLocationBtn">
+        <button type="button" class="btn btn-secondary" id="getLocationBtn">
             Get Current Location
         </button>
-
         <span id="locationStatus" class="ms-2"></span>
     </div>
+
+    <div id="pickupMap"></div>
+
+    <p class="mt-2">Click the map to select your pickup location.</p>
 
     <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
         Request Ambulance
     </button>
-
 </form>
 
-
-
 @section Scripts {
+    <link rel="stylesheet" href="~/css/pickup-map.css" asp-append-version="true" />
     <partial name="_ValidationScriptsPartial" />
 
-    <script>
-        const getLocationBtn = document.getElementById("getLocationBtn");
-        const locationStatus = document.getElementById("locationStatus");
-        const submitBtn = document.getElementById("submitBtn");
+    <script src="~/js/pickup-map.js" asp-append-version="true"></script>
 
-        getLocationBtn.addEventListener("click", function () {
-
-            if (!navigator.geolocation) {
-                locationStatus.textContent =
-                    "Geolocation is not supported by this browser.";
-                return;
-            }
-
-            locationStatus.textContent = "Getting your current location...";
-
-            navigator.geolocation.getCurrentPosition(
-                function (position) {
-
-                    document.getElementById("pickupLatitude").value =
-                        position.coords.latitude;
-
-                    document.getElementById("pickupLongitude").value =
-                        position.coords.longitude;
-
-                    locationStatus.textContent =
-                        "Location captured successfully.";
-
-                    submitBtn.disabled = false;
-                },
-                function (error) {
-
-                    locationStatus.textContent =
-                        "Unable to get your location. Please allow location access.";
-
-                    submitBtn.disabled = true;
-                }
-            );
-        });
+    <script async
+            src="https://maps.googleapis.com/maps/api/js?key=@Configuration["GoogleMaps:ApiKey"]&loading=async&callback=initPickupMap">
     </script>
 }

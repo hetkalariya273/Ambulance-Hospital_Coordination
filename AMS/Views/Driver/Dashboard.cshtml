@@ -1,4 +1,5 @@
-﻿@model AMS.ViewModels.DriverDashboardViewModel
+﻿
+@model AMS.ViewModels.DriverDashboardViewModel
 
 @{
     ViewData["Title"] = "Driver Dashboard";
@@ -8,12 +9,9 @@
 
     <!-- Dashboard header -->
     <div class="dashboard-header">
-
         <div class="dashboard-header-content">
-
             <div>
                 <h1>Driver Dashboard</h1>
-
                 <p>
                     Welcome,
                     <strong>@Model.Driver.FullName</strong>
@@ -21,28 +19,18 @@
             </div>
 
             <div class="driver-status">
-
-                <span class="status-label">
-                    Status:
-                </span>
+                <span class="status-label">Status:</span>
 
                 @if (Model.Driver.IsAvailable)
                 {
-                    <span class="status-available">
-                        Available
-                    </span>
+                    <span class="status-available">Available</span>
                 }
                 else
                 {
-                    <span class="status-busy">
-                        Busy
-                    </span>
+                    <span class="status-busy">Busy</span>
                 }
-
             </div>
-
         </div>
-
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -63,74 +51,48 @@
     @if (Model.CurrentRequest != null)
     {
         <div class="dashboard-section">
-
             <div class="section-header">
-
                 <div>
                     <h2>Current Request</h2>
-
-                    <p>
-                        You are currently working on this ambulance request.
-                    </p>
+                    <p>You are currently working on this ambulance request.</p>
                 </div>
-
             </div>
 
             <div class="current-request-card">
-
                 <div class="current-request-header">
-
                     <div>
                         <span>Request</span>
-
-                        <strong>
-                            #@Model.CurrentRequest.RequestId
-                        </strong>
+                        <strong>#@Model.CurrentRequest.RequestId</strong>
                     </div>
 
                     <div class="current-request-status">
                         @Model.CurrentRequest.Status
                     </div>
-
                 </div>
 
                 <div class="current-request-details">
-
                     <div class="current-request-detail">
                         <span>Patient</span>
-
-                        <strong>
-                            @Model.CurrentRequest.User.FullName
-                        </strong>
+                        <strong>@Model.CurrentRequest.User.FullName</strong>
                     </div>
 
                     <div class="current-request-detail">
                         <span>Emergency Type</span>
-
-                        <strong>
-                            @Model.CurrentRequest.EmergencyType
-                        </strong>
+                        <strong>@Model.CurrentRequest.EmergencyType</strong>
                     </div>
 
                     <div class="current-request-detail">
                         <span>Patient Condition</span>
-
-                        <strong>
-                            @Model.CurrentRequest.PatientCondition
-                        </strong>
+                        <strong>@Model.CurrentRequest.PatientCondition</strong>
                     </div>
 
                     <div class="current-request-detail">
                         <span>Number of Patients</span>
-
-                        <strong>
-                            @Model.CurrentRequest.NumberOfPatients
-                        </strong>
+                        <strong>@Model.CurrentRequest.NumberOfPatients</strong>
                     </div>
 
                     <div class="current-request-detail">
                         <span>Ambulance</span>
-
                         <strong>
                             @(Model.CurrentRequest.Ambulance?.VehicleNumber
                                 ?? "Not assigned")
@@ -139,56 +101,38 @@
 
                     <div class="current-request-detail">
                         <span>Request Time</span>
-
-                        <strong>
-                            @Model.CurrentRequest.RequestTime
-                        </strong>
+                        <strong>@Model.CurrentRequest.RequestTime</strong>
                     </div>
-
                 </div>
 
                 <div class="current-request-actions">
-
                     <a asp-controller="Driver"
                        asp-action="CurrentRequestDetails"
                        asp-route-id="@Model.CurrentRequest.RequestId"
                        class="view-current-request-btn">
                         View Current Request
                     </a>
-
                 </div>
-
             </div>
-
         </div>
     }
 
     <!-- My Ambulances section -->
     <div class="dashboard-section">
-
         <div class="section-header">
-
             <div>
                 <h2>My Ambulances</h2>
-
-                <p>
-                    Ambulances currently assigned to you.
-                </p>
+                <p>Ambulances currently assigned to you.</p>
             </div>
-
         </div>
 
-        @if (Model.Ambulances != null &&
-             Model.Ambulances.Any())
+        @if (Model.Ambulances != null && Model.Ambulances.Any())
         {
             <div class="ambulance-list">
-
                 @foreach (var ambulance in Model.Ambulances)
                 {
-                    <partial name="_AmbulanceCard"
-                             model="ambulance" />
+                    <partial name="_AmbulanceCard" model="ambulance" />
                 }
-
             </div>
         }
         else
@@ -197,49 +141,39 @@
                 No ambulance is assigned to you.
             </p>
         }
-
     </div>
 
     <!-- Requests section -->
     <div class="dashboard-section">
-
         <div class="section-header">
-
             <div>
                 <h2>Requests</h2>
-
-                <p>
-                    New ambulance requests available for acceptance.
-                </p>
+                <p>New ambulance requests available for acceptance.</p>
             </div>
 
             <div class="request-count" id="requestCount">
                 @Model.RequestCount
             </div>
-
         </div>
 
-        @if (Model.Requests != null &&
-             Model.Requests.Any())
-        {
-            <div class="request-list"
-                id="requestList">
-
-                @foreach (var request in Model.Requests)
-                {
-                    <partial name="_RequestCard"
-                             model="request" />
-                }
-
-            </div>
-        }
-        else
-        {
-            <p class="empty-message">
-                No new requests available.
-            </p>
-        }
-
+        <!-- This container always exists, even when there are zero requests -->
+        <div id="nearbyRequestsContainer">
+            @if (Model.Requests != null && Model.Requests.Any())
+            {
+                <div class="request-list">
+                    @foreach (var request in Model.Requests)
+                    {
+                        <partial name="_RequestCard" model="request" />
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="empty-message">
+                    No new requests available.
+                </p>
+            }
+        </div>
     </div>
 
 </div>
@@ -250,6 +184,8 @@
           asp-append-version="true" />
 }
 
-<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
-<script src="~/js/driver-dashboard.js"
-        asp-append-version="true"></script>
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/driver-dashboard.js"
+            asp-append-version="true"></script>
+}

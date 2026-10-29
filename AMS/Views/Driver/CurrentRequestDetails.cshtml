@@ -1,4 +1,5 @@
 ﻿@model AMS.ViewModels.CurrentRequestDetailsViewModel
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
 @{
     ViewData["Title"] = "Current Request";
@@ -460,6 +461,31 @@
 
     </div>
 
+    
+<div id="ambulanceTracking"
+     data-request-id="@Model.Request.RequestId"
+     data-latitude="@Model.Request.Ambulance?.Latitude"
+     data-longitude="@Model.Request.Ambulance?.Longitude"
+     data-pickup-latitude="@Model.Request.PickupLatitude"
+     data-pickup-longitude="@Model.Request.PickupLongitude"
+     data-hospital-latitude="@Model.Request.Hospital?.Latitude"
+     data-hospital-longitude="@Model.Request.Hospital?.Longitude"
+     data-update-url="@Url.Action("UpdateAmbulanceLocation", "Driver")">
+
+
+    <h4>Live Ambulance Tracking</h4>
+
+    <div id="ambulanceLiveMap"></div>
+
+    <p id="trackingStatus">Waiting for GPS...</p>
+
+    <form id="trackingTokenForm">
+        @Html.AntiForgeryToken()
+    </form>
+
+    </div>
+
+
     <!-- Dashboard action -->
     <div class="request-details-actions">
 
@@ -477,4 +503,13 @@
     <link rel="stylesheet"
           href="~/css/driver.css"
           asp-append-version="true" />
+}
+
+@section Scripts {
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=@(Configuration["GoogleMaps:ApiKey"])&callback=initAmbulanceLiveMap" async defer></script>
+
+    <script src="~/js/ambulance-live-tracking.js"
+            asp-append-version="true"></script>
 }

@@ -124,6 +124,42 @@ namespace AMS.Controllers
             return View(request);
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> TrackingData(int id)
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            var request = await _context.AmbulanceRequests
+                .Where(r => r.RequestId == id && r.UserId == userId)
+                .Include(r => r.Ambulance)
+                .Include(r => r.Hospital)
+                .FirstOrDefaultAsync();
+
+            if (request == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new
+            {
+                requestId = request.RequestId,
+                status = request.Status.ToString(),
+                ambulanceLatitude = request.Ambulance?.Latitude,
+                ambulanceLongitude = request.Ambulance?.Longitude,
+                pickupLatitude = request.PickupLatitude,
+                pickupLongitude = request.PickupLongitude,
+                hospitalLatitude = request.Hospital?.Latitude,
+                hospitalLongitude = request.Hospital?.Longitude,
+                hospitalName = request.Hospital?.Name,
+                hasHospital = request.HospitalId.HasValue
+            });
+        }
+
+
+
+
         // POST: AmbulanceRequest/Cancel/5
         [HttpPost]
         [ValidateAntiForgeryToken]

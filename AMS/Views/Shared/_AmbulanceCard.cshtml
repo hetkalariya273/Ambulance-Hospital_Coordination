@@ -1,14 +1,37 @@
-﻿@model AMS.Models.Ambulance
+@model AMS.Models.Ambulance
 
-<div class="ambulance-card">
+<div class="card shadow-sm border ams-card-hover rounded-3 p-3 bg-white">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="d-flex align-items-center gap-2">
+            <div class="ams-stat-icon-wrapper" style="--stat-bg: #e0f2fe; --stat-color: #0284c7; width: 38px; height: 38px; font-size: 1.1rem;">
+                <i class="bi bi-truck-front-fill"></i>
+            </div>
+            <div>
+                <span class="text-muted smaller text-uppercase fw-bold d-block">Vehicle Number</span>
+                <span class="fw-bold text-dark fs-6">@Model.VehicleNumber</span>
+            </div>
+        </div>
 
-    <div class="ambulance-card-header">
-        <strong>Vehicle No:</strong> @Model.VehicleNumber
+        @{
+            var isAvail = Model.Status == "Available";
+        }
+        <span class="badge @(isAvail ? "bg-success-subtle text-success border border-success-subtle" : "bg-warning-subtle text-warning-emphasis border border-warning-subtle") rounded-pill px-3 py-1">
+            <span class="ams-live-dot" style="background-color: @(isAvail ? "#10b981" : "#f59e0b");"></span>
+            @Model.Status
+        </span>
     </div>
 
-    <div class="ambulance-card-status">
-        Status:
-        <strong>@Model.Status</strong>
+    <div class="p-2 rounded bg-light small d-flex justify-content-between text-muted mt-2">
+        <span>GPS Coordinates:</span>
+        <span class="fw-semibold text-dark">
+            @if (Model.Latitude.HasValue && Model.Longitude.HasValue)
+            {
+                @($"{Model.Latitude:F4}, {Model.Longitude:F4}")
+            }
+            else
+            {
+                <span>Awaiting GPS</span>
+            }
+        </span>
     </div>
-
 </div>

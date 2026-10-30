@@ -1,129 +1,133 @@
-﻿@model AMS.ViewModels.DriverCreateViewModel
+@model AMS.ViewModels.DriverCreateViewModel
 
 @{
-    ViewData["Title"] = "Add Driver";
+    ViewData["Title"] = "Enroll Ambulance Driver";
 }
 
-<div class="driver-form-page">
+<div class="driver-form-page container py-3">
 
-    <div class="driver-form-card">
-
-        <h1>Add Driver</h1>
-
-        <p class="form-subtitle">
-            Register a new ambulance driver.
-        </p>
-
-        <form asp-action="Create" method="post">
-
-            <div asp-validation-summary="ModelOnly"></div>
-
-            <div class="driver-form-group">
-                <label asp-for="FullName">
-                    Full Name
-                </label>
-
-                <input asp-for="FullName"
-                       placeholder="Enter driver's full name" />
-
-                <span asp-validation-for="FullName"></span>
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #f59e0b;"></span> Paramedic Enrollment
             </div>
+            <h1 class="ams-page-header-title">
+                Enroll Paramedic Driver
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Register a new ambulance driver with credentials, phone contact, and commercial driver license.
+            </p>
+        </div>
 
-            <div class="driver-form-group">
-                <label asp-for="PhoneNumber">
-                    Phone Number
-                </label>
+        <div>
+            <a asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Drivers
+            </a>
+        </div>
+    </div>
 
-                <input asp-for="PhoneNumber"
-                       placeholder="Enter phone number" />
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus-fill text-warning fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Driver Credentials & Profile</h5>
+                </div>
 
-                <span asp-validation-for="PhoneNumber"></span>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label fw-bold">Driver Full Legal Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-person-fill text-primary"></i></span>
+                                <input asp-for="FullName" class="form-control" placeholder="e.g. John Doe" />
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label asp-for="PhoneNumber" class="form-label fw-bold">Mobile Phone Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-telephone-fill text-success"></i></span>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="e.g. +1 555-0144" />
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label asp-for="LicenseNumber" class="form-label fw-bold">Driving License Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-card-heading text-secondary"></i></span>
+                                    <input asp-for="LicenseNumber" class="form-control" placeholder="e.g. DL-987654321" />
+                                </div>
+                                <span asp-validation-for="LicenseNumber" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold">Login Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope-fill text-primary"></i></span>
+                                <input asp-for="Email" type="email" class="form-control" placeholder="e.g. driver@ams-emergency.org" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <label asp-for="Password" class="form-label fw-bold">Initial Account Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-lock-fill text-muted"></i></span>
+                                    <input asp-for="Password" type="password" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label asp-for="ConfirmPassword" class="form-label fw-bold">Confirm Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-shield-lock-fill text-muted"></i></span>
+                                    <input asp-for="ConfirmPassword" type="password" class="form-control" />
+                                </div>
+                                <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border mb-4">
+                            <div class="form-check form-switch mb-0 d-flex align-items-center gap-3">
+                                <input asp-for="IsAvailable" class="form-check-input fs-4 mt-0" type="checkbox" role="switch" id="driverAvailSwitch" checked />
+                                <label class="form-check-label fw-bold text-dark cursor-pointer" for="driverAvailSwitch">
+                                    Driver is Currently Available on Duty
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-action="Index" class="ams-back-btn">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-ams-primary px-4 py-2 fw-bold">
+                                <i class="bi bi-person-check-fill me-1"></i> Enroll Driver
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="driver-form-group">
-                <label asp-for="LicenseNumber">
-                    License Number
-                </label>
-
-                <input asp-for="LicenseNumber"
-                       placeholder="Enter driving license number" />
-
-                <span asp-validation-for="LicenseNumber"></span>
-            </div>
-
-            <div class="driver-form-group">
-                <label asp-for="Email">
-                    Email
-                </label>
-
-                <input asp-for="Email"
-                       placeholder="Enter driver's email" />
-
-                <span asp-validation-for="Email"></span>
-            </div>
-
-            <div class="driver-form-group">
-                <label asp-for="Password">
-                    Password
-                </label>
-
-                <input asp-for="Password"
-                       placeholder="Enter driver's password" />
-
-                <span asp-validation-for="Password"></span>
-            </div>
-
-            <div class="driver-form-group">
-                <label asp-for="ConfirmPassword">
-                    Confirm Password
-                </label>
-
-                <input asp-for="ConfirmPassword"
-                       placeholder="Confirm driver's password" />
-
-                <span asp-validation-for="ConfirmPassword"></span>
-            </div>
-
-            <div class="driver-form-group">
-
-                <label class="driver-checkbox">
-
-                    <input asp-for="IsAvailable" />
-
-                    Driver is currently available
-
-                </label>
-
-            </div>
-
-            <div class="form-actions">
-
-                <button type="submit"
-                        class="btn-primary-custom">
-                    Save Driver
-                </button>
-
-                <a asp-action="Index"
-                   class="btn-secondary-custom">
-                    Cancel
-                </a>
-
-            </div>
-
-        </form>
-
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/driver.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/driver.css" asp-append-version="true" />
 }
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

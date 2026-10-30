@@ -1,135 +1,209 @@
-﻿@model IEnumerable<AMS.Models.Ambulance>
+@model IEnumerable<AMS.Models.Ambulance>
 
 @{
-    ViewData["Title"] = "Ambulances";
+    ViewData["Title"] = "Ambulance Fleet Management";
+    var totalAmbulances = Model.Count();
+    var availableCount = Model.Count(a => a.Status == "Available");
+    var assignedCount = Model.Count(a => a.DriverId != null);
 }
 
-<div class="ambulance-page">
+<div class="ambulance-page container py-3">
 
-    <div class="ambulance-header">
-
+    <!-- Header Section -->
+    <div class="ams-page-header">
         <div>
-            <h1>Ambulances</h1>
-
-            <p>
-                Manage ambulances in the system.
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #0284c7;"></span> Vehicle Telemetry & Fleet
+            </div>
+            <h1 class="ams-page-header-title">
+                Ambulance Fleet
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Manage registered emergency response vehicles, track live GPS positioning, and assign paramedic drivers.
             </p>
         </div>
 
-        <a asp-action="Create"
-           class="btn-primary-custom">
-            Add Ambulance
-        </a>
-
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Admin" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+            <a asp-action="Create" class="btn btn-ams-primary">
+                <i class="bi bi-plus-circle me-1"></i> Add Ambulance
+            </a>
+        </div>
     </div>
 
-    <div class="ambulance-back">
-        <a asp-controller="Admin"
-           asp-action="Index"
-           class="back-btn">
-            ← To Dashboard
-        </a>
+    <!-- Quick Stats Ribbon -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #0284c7; --stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                <div>
+                    <div class="ams-stat-label">Total Fleet Units</div>
+                    <div class="ams-stat-number text-primary">@totalAmbulances</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-truck-front-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #10b981; --stat-bg: #ecfdf5; --stat-color: #10b981;">
+                <div>
+                    <div class="ams-stat-label">Available on Standby</div>
+                    <div class="ams-stat-number text-success">@availableCount</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #f59e0b; --stat-bg: #fef3c7; --stat-color: #d97706;">
+                <div>
+                    <div class="ams-stat-label">Units with Driver</div>
+                    <div class="ams-stat-number text-warning-emphasis">@assignedCount</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="ambulance-table-container">
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm border p-5 text-center my-4">
+            <div class="mb-3 text-muted">
+                <i class="bi bi-truck-front fs-1"></i>
+            </div>
+            <h5 class="fw-bold text-dark">No Ambulances Registered</h5>
+            <p class="text-muted small col-md-6 mx-auto mb-3">
+                Register your first emergency ambulance vehicle to begin dispatching callers.
+            </p>
+            <div>
+                <a asp-action="Create" class="btn btn-ams-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Register Ambulance
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border overflow-hidden">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">
+                    <i class="bi bi-truck-front-fill text-primary me-2"></i>Ambulance Inventory
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary border">Fleet Telemetry</span>
+            </div>
 
-        <table class="ambulance-table">
+            <div class="table-responsive">
+                <table class="ams-table">
+                    <thead>
+                        <tr>
+                            <th>Vehicle Number</th>
+                            <th>Operational Status</th>
+                            <th>Assigned Driver</th>
+                            <th>Current GPS Telemetry</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ambulance in Model)
+                        {
+                            var isAvail = ambulance.Status == "Available";
 
-            <thead>
-                <tr>
-                    <th>Vehicle Number</th>
-                    <th>Status</th>
-                    <th>Driver</th>
-                    <th>Location</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="ams-stat-icon-wrapper" style="--stat-bg: #e0f2fe; --stat-color: #0284c7; width: 34px; height: 34px; font-size: 1rem;">
+                                            <i class="bi bi-truck-front-fill"></i>
+                                        </div>
+                                        <strong class="text-dark fs-6">@ambulance.VehicleNumber</strong>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge @(isAvail ? "bg-success-subtle text-success border border-success-subtle" : "bg-warning-subtle text-warning-emphasis border border-warning-subtle") rounded-pill px-3 py-1">
+                                        <span class="ams-live-dot" style="background-color: @(isAvail ? "#10b981" : "#f59e0b");"></span>
+                                        @ambulance.Status
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (ambulance.Driver != null)
+                                    {
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-person-check-fill text-success"></i>
+                                            <span class="fw-semibold text-dark">@ambulance.Driver.FullName</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted smaller">
+                                            <i class="bi bi-dash-circle me-1"></i> Not Assigned
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (ambulance.Latitude.HasValue && ambulance.Longitude.HasValue)
+                                    {
+                                        <code>@($"{ambulance.Latitude:F4}, {ambulance.Longitude:F4}")</code>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted smaller">GPS Awaiting Fix</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex align-items-center gap-2">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@ambulance.AmbulanceId"
+                                           class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                           title="Edit Ambulance Details">
+                                            <i class="bi bi-pencil me-1"></i> Edit
+                                        </a>
 
-            <tbody>
+                                        @if (ambulance.DriverId == null)
+                                        {
+                                            <a asp-action="Assign"
+                                               asp-route-id="@ambulance.AmbulanceId"
+                                               class="btn btn-sm btn-outline-primary rounded-pill px-3"
+                                               title="Assign Driver">
+                                                <i class="bi bi-person-plus me-1"></i> Assign
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="Unassign" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@ambulance.AmbulanceId" />
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-warning rounded-pill px-3"
+                                                        onclick="return confirm('Unassign driver from this ambulance?');">
+                                                    <i class="bi bi-person-dash me-1"></i> Unassign
+                                                </button>
+                                            </form>
+                                        }
 
-                @foreach (var ambulance in Model)
-                {
-                    <tr>
-
-                        <td>
-                            @ambulance.VehicleNumber
-                        </td>
-
-                        <td>
-                            @ambulance.Status
-                        </td>
-
-                        <td>
-                            @(ambulance.Driver?.FullName ?? "Not Assigned")
-                        </td>
-
-                        <td>
-                            @if (ambulance.Latitude.HasValue &&
-                                 ambulance.Longitude.HasValue)
-                            {
-                                @($"{ambulance.Latitude:F6}, {ambulance.Longitude:F6}")
-                            }
-                            else
-                            {
-                                <span>Not Available</span>
-                            }
-                        </td>
-
-                        <td class="ambulance-actions">
-
-                            <a asp-action="Edit"
-                               asp-route-id="@ambulance.AmbulanceId"
-                               class="edit-btn">
-                                Edit
-                            </a>
-
-                            @if (ambulance.DriverId == null)
-                            {
-                                <a asp-action="Assign"
-                                   asp-route-id="@ambulance.AmbulanceId"
-                                   class="assign-btn">
-                                    Assign
-                                </a>
-                            }
-                            else
-                            {
-                                <form asp-action="Unassign"
-                                      method="post"
-                                      class="inline-action-form">
-
-                                    <input type="hidden"
-                                           name="id"
-                                           value="@ambulance.AmbulanceId" />
-
-                                    <button type="submit"
-                                            class="unassign-btn">
-                                        Unassign
-                                    </button>
-
-                                </form>
-                            }
-
-                            <a asp-action="Delete"
-                               asp-route-id="@ambulance.AmbulanceId"
-                               class="delete-btn">
-                                Delete
-                            </a>
-
-                        </td>
-
-                    </tr>
-                }
-
-            </tbody>
-
-        </table>
-
-    </div>
+                                        <a asp-action="Delete"
+                                           asp-route-id="@ambulance.AmbulanceId"
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                           title="Delete Vehicle">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/ambulance.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ambulance.css" asp-append-version="true" />
 }

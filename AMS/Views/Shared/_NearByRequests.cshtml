@@ -1,4 +1,3 @@
-﻿
 @model List<AMS.Models.AmbulanceRequest>
 
 <div id="nearbyRequestsContent"
@@ -17,9 +16,11 @@
     }
     else
     {
-        <p class="empty-message">
-            No new requests available.
-        </p>
+        <div class="text-center py-4 bg-light rounded-3 border">
+            <i class="bi bi-radar text-muted fs-2 mb-2 d-block"></i>
+            <span class="fw-bold text-dark d-block">Monitoring Live Requests</span>
+            <span class="text-muted smaller">Standing by. Incoming emergency ambulance requests will appear here automatically via SignalR.</span>
+        </div>
     }
 
 </div>

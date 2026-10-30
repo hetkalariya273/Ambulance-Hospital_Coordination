@@ -1,46 +1,110 @@
-﻿@model AMS.ViewModels.LoginViewModel
+@model AMS.ViewModels.LoginViewModel
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Emergency Coordination - Sign In";
 }
 
-<div class="auth-container">
+<div class="container py-4">
 
-    <h2>Login</h2>
-
-    <form asp-action="Login" method="post">
-
-        @Html.AntiForgeryToken()
-
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-        <div class="form-group">
-            <label asp-for="Email"></label>
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+    <!-- Immediate Emergency Request Banner for Distress Callers -->
+    <div class="alert alert-danger d-flex flex-wrap justify-content-between align-items-center gap-3 shadow-sm border-danger mb-4 rounded-3 p-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="fs-2 text-danger">
+                <i class="bi bi-shield-fill-exclamation"></i>
+            </div>
+            <div>
+                <strong class="fs-6 d-block text-danger">Facing an Immediate Life-Threatening Emergency?</strong>
+                <span class="small text-danger-emphasis">
+                    You can request emergency dispatch immediately or call <strong>108 / 112</strong> without waiting.
+                </span>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label asp-for="Password"></label>
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
+        <a asp-controller="AmbulanceRequest" asp-action="Create" class="btn btn-ams-primary pulse-button px-4 py-2 fw-bold">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Request Ambulance Directly
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                <!-- Card Header -->
+                <div class="card-header bg-dark text-white p-4 text-center border-0" style="background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%);">
+                    <div class="ams-logo-icon mx-auto mb-3" style="width: 52px; height: 52px; font-size: 1.6rem;">
+                        <i class="bi bi-heart-pulse-fill"></i>
+                    </div>
+                    <h3 class="fw-bold mb-1 text-white">Personnel Sign In</h3>
+                    <p class="text-white-50 small mb-0">
+                        Ambulance Management & Emergency Hospital Coordination
+                    </p>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label fw-bold">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope-fill text-primary"></i></span>
+                                <input asp-for="Email" class="form-control" placeholder="name@domain.com" autocomplete="username" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label fw-bold">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-lock-fill text-muted"></i></span>
+                                <input asp-for="Password" class="form-control" placeholder="Enter password" autocomplete="current-password" />
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check">
+                                <input asp-for="RememberMe" class="form-check-input" />
+                                <label asp-for="RememberMe" class="form-check-label text-muted small"></label>
+                            </div>
+
+                            <a asp-action="Register" class="text-decoration-none small text-primary fw-semibold">
+                                New Patient? Register
+                            </a>
+                        </div>
+
+                        <button type="submit" class="btn btn-ams-primary w-100 py-3 fs-6 fw-bold mb-3">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                        </button>
+                    </form>
+
+                    <!-- Role Guidance Notice -->
+                    <div class="p-3 bg-light rounded-3 border small text-muted mt-4">
+                        <div class="fw-bold text-dark mb-1">
+                            <i class="bi bi-info-circle-fill text-primary me-1"></i> Role-Based Access:
+                        </div>
+                        <ul class="mb-0 ps-3 smaller">
+                            <li><strong>Patients:</strong> Login to track dispatches or register below.</li>
+                            <li><strong>Paramedic Drivers:</strong> Use credentials issued by dispatch admin.</li>
+                            <li><strong>Dispatch Administrators:</strong> Use root administrative credentials.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card Footer -->
+                <div class="card-footer bg-light py-3 text-center border-top">
+                    <span class="text-muted small">
+                        Don't have a patient account yet?
+                        <a asp-action="Register" class="text-danger fw-bold text-decoration-none">
+                            Register Here <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </span>
+                </div>
+            </div>
         </div>
-
-        <div class="form-group">
-            <input asp-for="RememberMe" />
-            <label asp-for="RememberMe"></label>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            Login
-        </button>
-
-    </form>
-
-    <p>
-        Don't have an account?
-        <a asp-action="Register">Register</a>
-    </p>
+    </div>
 
 </div>
 
@@ -48,8 +112,6 @@
     <link rel="stylesheet" href="~/css/account.css" asp-append-version="true" />
 }
 
-
-<!-- Styles for client-side validation -->
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

@@ -1,104 +1,225 @@
-﻿@model AMS.ViewModels.AdminDashboardViewModel
+@model AMS.ViewModels.AdminDashboardViewModel
 
 @{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Emergency Coordination - Admin Command Center";
 }
 
-<div class="admin-dashboard">
+<div class="admin-dashboard container py-3">
 
-    <div class="admin-dashboard-header">
+    <!-- Header Section -->
+    <div class="ams-page-header">
         <div>
-            <h2>Admin Dashboard</h2>
-            <p>Monitor and manage the ambulance coordination system.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-purple-subtle text-purple border border-purple-subtle mb-2 small fw-bold" style="background-color: #f3e8ff; color: #7e22ce; border-color: #e9d5ff;">
+                <span class="ams-live-dot" style="background-color: #a855f7;"></span> System Administrator Console
+            </div>
+            <h1 class="ams-page-header-title">
+                Command Center Dashboard
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Monitor system-wide emergency dispatches, fleet capacity, and healthcare hospital telemetry.
+            </p>
         </div>
 
-        <form asp-controller="Account"
-              asp-action="Logout"
-              method="post">
-
-            @Html.AntiForgeryToken()
-
-            <button type="submit"
-                    class="btn btn-outline-danger">
-                Logout
-            </button>
-
-        </form>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Home" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-house-door"></i> Home
+            </a>
+            <a asp-controller="Admin" asp-action="Requests" class="btn btn-ams-primary pulse-button">
+                <i class="bi bi-broadcast me-1"></i> Live Requests (@Model.ActiveRequests)
+            </a>
+        </div>
     </div>
 
-    <div class="admin-statistics">
-
-        <div class="admin-stat-card">
-            <span class="stat-label">Total Users</span>
-            <span class="stat-value">@Model.TotalUsers</span>
+    <!-- 5 Live Telemetry Statistic Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Active Requests -->
+        <div class="col-sm-6 col-lg">
+            <div class="ams-stat-card" style="--stat-accent: #e11d48; --stat-bg: #fee2e2; --stat-color: #e11d48;">
+                <div>
+                    <div class="ams-stat-label">Active Requests</div>
+                    <div class="ams-stat-number text-danger">@Model.ActiveRequests</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-broadcast"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-stat-card">
-            <span class="stat-label">Total Drivers</span>
-            <span class="stat-value">@Model.TotalDrivers</span>
+        <!-- Total Ambulances -->
+        <div class="col-sm-6 col-lg">
+            <div class="ams-stat-card" style="--stat-accent: #0284c7; --stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                <div>
+                    <div class="ams-stat-label">Ambulances</div>
+                    <div class="ams-stat-number text-primary">@Model.TotalAmbulances</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-truck-front-fill"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-stat-card">
-            <span class="stat-label">Total Ambulances</span>
-            <span class="stat-value">@Model.TotalAmbulances</span>
+        <!-- Total Hospitals -->
+        <div class="col-sm-6 col-lg">
+            <div class="ams-stat-card" style="--stat-accent: #10b981; --stat-bg: #ecfdf5; --stat-color: #10b981;">
+                <div>
+                    <div class="ams-stat-label">Hospitals</div>
+                    <div class="ams-stat-number text-success">@Model.TotalHospitals</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-hospital"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-stat-card">
-            <span class="stat-label">Total Hospitals</span>
-            <span class="stat-value">@Model.TotalHospitals</span>
+        <!-- Total Drivers -->
+        <div class="col-sm-6 col-lg">
+            <div class="ams-stat-card" style="--stat-accent: #f59e0b; --stat-bg: #fef3c7; --stat-color: #d97706;">
+                <div>
+                    <div class="ams-stat-label">Drivers</div>
+                    <div class="ams-stat-number text-warning-emphasis">@Model.TotalDrivers</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-stat-card">
-            <span class="stat-label">Active Requests</span>
-            <span class="stat-value">@Model.ActiveRequests</span>
+        <!-- Total Users -->
+        <div class="col-sm-6 col-lg">
+            <div class="ams-stat-card" style="--stat-accent: #8b5cf6; --stat-bg: #f3e8ff; --stat-color: #7c3aed;">
+                <div>
+                    <div class="ams-stat-label">Total Users</div>
+                    <div class="ams-stat-number" style="color: #6d28d9;">@Model.TotalUsers</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
         </div>
-
     </div>
 
-    <div class="admin-management">
-
-        <h3>Management</h3>
-
-        <div class="admin-management-grid">
-
-            <a asp-controller="Admin"
-               asp-action="Users"
-               class="admin-management-card">
-                Manage Users
-            </a>
-
-            <a asp-controller="Driver"
-               asp-action="Index"
-               class="admin-management-card">
-                Manage Drivers
-            </a>
-
-            <a asp-controller="Ambulance"
-               asp-action="Index"
-               class="admin-management-card">
-                Manage Ambulances
-            </a>
-
-            <a asp-controller="Hospital"
-               asp-action="Index"
-               class="admin-management-card">
-                Manage Hospitals
-            </a>
-
-            <a asp-controller="Admin"
-               asp-action="Requests"
-               class="admin-management-card">
-                View All Requests
-            </a>
-
+    <!-- Interactive Management Console Grid -->
+    <div class="card shadow-sm border mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+            <i class="bi bi-grid-fill text-dark fs-5"></i>
+            <h5 class="mb-0 fw-bold">Emergency Operations & Fleet Management</h5>
         </div>
 
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Manage Requests -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Admin" asp-action="Requests" class="card h-100 p-4 border ams-card-hover text-decoration-none bg-white">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="ams-stat-icon-wrapper" style="--stat-bg: #fee2e2; --stat-color: #e11d48;">
+                                <i class="bi bi-card-checklist"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Emergency Requests</h5>
+                                <span class="badge bg-danger rounded-pill">@Model.ActiveRequests Active</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Monitor and inspect patient emergency requests across the network, with real-time status filtering.
+                        </p>
+                    </a>
+                </div>
+
+                <!-- Manage Ambulances -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Ambulance" asp-action="Index" class="card h-100 p-4 border ams-card-hover text-decoration-none bg-white">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="ams-stat-icon-wrapper" style="--stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                                <i class="bi bi-truck-front-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Ambulance Fleet</h5>
+                                <span class="badge bg-primary rounded-pill">@Model.TotalAmbulances Units</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Add new ambulance vehicles, inspect GPS telemetry status, and assign or unassign drivers.
+                        </p>
+                    </a>
+                </div>
+
+                <!-- Manage Hospitals -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Hospital" asp-action="Index" class="card h-100 p-4 border ams-card-hover text-decoration-none bg-white">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="ams-stat-icon-wrapper" style="--stat-bg: #ecfdf5; --stat-color: #059669;">
+                                <i class="bi bi-hospital"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Hospitals Directory</h5>
+                                <span class="badge bg-success rounded-pill">@Model.TotalHospitals Centers</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Coordinate partner hospitals, update available emergency beds, and manage ICU capacity telemetry.
+                        </p>
+                    </a>
+                </div>
+
+                <!-- Manage Drivers -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Driver" asp-action="Index" class="card h-100 p-4 border ams-card-hover text-decoration-none bg-white">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="ams-stat-icon-wrapper" style="--stat-bg: #fef3c7; --stat-color: #d97706;">
+                                <i class="bi bi-person-badge-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Paramedic Drivers</h5>
+                                <span class="badge bg-warning text-dark rounded-pill">@Model.TotalDrivers Enrolled</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Register paramedic drivers, check availability statuses, update license details, and review assignments.
+                        </p>
+                    </a>
+                </div>
+
+                <!-- Manage Users -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="Admin" asp-action="Users" class="card h-100 p-4 border ams-card-hover text-decoration-none bg-white">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="ams-stat-icon-wrapper" style="--stat-bg: #f3e8ff; --stat-color: #7c3aed;">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">Registered Users</h5>
+                                <span class="badge rounded-pill" style="background-color: #7c3aed; color: white;">@Model.TotalUsers Profiles</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Browse registered caller accounts, phone records, and emergency request summaries.
+                        </p>
+                    </a>
+                </div>
+
+                <!-- Quick Emergency Request Link -->
+                <div class="col-md-6 col-lg-4">
+                    <a asp-controller="AmbulanceRequest" asp-action="Create" class="card h-100 p-4 border ams-card-hover text-decoration-none bg-light border-danger border-opacity-50">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="ams-stat-icon-wrapper" style="--stat-bg: #fee2e2; --stat-color: #e11d48;">
+                                <i class="bi bi-plus-circle-fill"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-danger mb-0">New Dispatch</h5>
+                                <span class="badge bg-danger rounded-pill">Priority Direct</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            Manually originate an emergency ambulance request on behalf of a citizen or trauma intake.
+                        </p>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/admin.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 }

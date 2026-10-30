@@ -1,239 +1,186 @@
-﻿@model AMS.ViewModels.RequestDetailsViewModel
+@model AMS.ViewModels.RequestDetailsViewModel
 @inject IConfiguration Configuration
 
 @{
-    ViewData["Title"] = "Request Details";
+    ViewData["Title"] = $"Inspect Request #{Model.Request.RequestId}";
 }
 
-<div class="driver-dashboard">
+<div class="driver-dashboard container py-3">
 
-    <!-- Request details header -->
-    <div class="dashboard-header">
+    <!-- Header Section -->
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-danger-subtle text-danger border border-danger-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot"></span> Emergency Dispatch Call
+            </div>
+            <h1 class="ams-page-header-title">
+                Review Request #@Model.Request.RequestId
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Review patient emergency status and pickup coordinates before accepting dispatch.
+            </p>
+        </div>
 
         <div>
-            <h1>Request Details</h1>
-
-            <p>
-                Review the patient request before accepting it.
-            </p>
+            <a asp-controller="Driver" asp-action="Dashboard" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
         </div>
-
     </div>
 
-
-    <!-- Request information -->
-    <div class="dashboard-section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>
-                    Request #@Model.Request.RequestId
-                </h2>
-
-                <p>
-                    Request information provided by the patient.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="request-details-grid">
-
-            <div class="request-detail-item">
-                <span>Emergency Type</span>
-                <strong>
-                    @Model.Request.EmergencyType
-                </strong>
-            </div>
-
-            <div class="request-detail-item">
-                <span>Patient Condition</span>
-                <strong>
-                    @Model.Request.PatientCondition
-                </strong>
-            </div>
-
-            <div class="request-detail-item">
-                <span>Number of Patients</span>
-                <strong>
-                    @Model.Request.NumberOfPatients
-                </strong>
-            </div>
-
-            <div class="request-detail-item">
-                <span>Status</span>
-                <strong>
-                    @Model.Request.Status
-                </strong>
-            </div>
-
-            <div class="request-detail-item">
-                <span>Request Time</span>
-                <strong>
-                    @Model.Request.RequestTime
-                </strong>
-            </div>
-
-            <div class="request-detail-item">
-                <span>Patient Name</span>
-                <strong>
-                    @Model.Request.User.FullName
-                </strong>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- Pickup location -->
-    <div class="dashboard-section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>Pickup Location</h2>
-
-                <p>
-                    Current location provided by the patient.
-                </p>
-            </div>
-
-        </div>
-
-
-        <div class="request-details-grid">
-
-            <div class="request-detail-item">
-                <span>Latitude</span>
-                <strong>
-                    @Model.Request.PickupLatitude
-                </strong>
-            </div>
-
-            <div class="request-detail-item">
-                <span>Longitude</span>
-                <strong>
-                    @Model.Request.PickupLongitude
-                </strong>
-            </div>
-            
-        </div>
-
-        <div id="patientPickupMap"
-                data-lat="@Model.Request.PickupLatitude"
-                data-lng="@Model.Request.PickupLongitude">
-            </div>
-
-    </div>
-
-
-    <!-- Ambulance selection -->
-    <div class="dashboard-section">
-
-        <div class="section-header">
-
-            <div>
-                <h2>Select Ambulance</h2>
-
-                <p>
-                    Select one of your available ambulances
-                    for this request.
-                </p>
-            </div>
-
-        </div>
-
-
-        @if (Model.AvailableAmbulances != null &&
-             Model.AvailableAmbulances.Any())
-        {
-            <form asp-controller="Driver"
-                  asp-action="AcceptRequest"
-                  method="post">
-
-                @Html.AntiForgeryToken()
-
-                <input type="hidden"
-                       name="id"
-                       value="@Model.Request.RequestId" />
-
-                <div class="request-form-group">
-
-                    <label for="ambulanceId">
-                        Available Ambulance
-                    </label>
-
-                    <select id="ambulanceId"
-                            name="ambulanceId"
-                            required>
-
-                        <option value="">
-                            -- Select Ambulance --
-                        </option>
-
-                        @foreach (var ambulance in Model.AvailableAmbulances)
-                        {
-                            <option value="@ambulance.AmbulanceId">
-                                @ambulance.VehicleNumber
-                            </option>
-                        }
-
-                    </select>
-
+    <div class="row g-4 mb-4">
+        <!-- Left: Patient & Emergency Details -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-heart-pulse-fill text-danger fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Emergency & Caller Overview</h5>
                 </div>
 
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted smaller text-uppercase fw-bold d-block">Caller / Patient Name</span>
+                                <strong class="fs-5 text-dark">@Model.Request.User?.FullName</strong>
+                            </div>
+                            <span class="badge bg-primary rounded-pill px-3 py-1">@Model.Request.Status</span>
+                        </div>
 
-                <div class="request-details-actions">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-danger-subtle text-danger border border-danger-subtle rounded-3">
+                                    <span class="smaller text-uppercase fw-bold d-block text-danger-emphasis">Emergency Type</span>
+                                    <strong class="fs-6">@Model.Request.EmergencyType</strong>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Patient Condition</span>
+                                    <strong class="fs-6 text-dark">@Model.Request.PatientCondition</strong>
+                                </div>
+                            </div>
+                        </div>
 
-                    <button type="submit"
-                            class="accept-request-btn">
-                        Accept Request
-                    </button>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Number of Patients</span>
+                                    <strong class="fs-6 text-dark">@Model.Request.NumberOfPatients</strong>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Request Timestamp</span>
+                                    <span class="text-dark fw-semibold">@Model.Request.RequestTime.ToString("dd-MM-yyyy HH:mm")</span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <a asp-controller="Driver"
-                       asp-action="Dashboard"
-                       class="back-dashboard-btn">
-                        Back to Dashboard
-                    </a>
+                        <!-- Ambulance Selection & Acceptance -->
+                        <div class="mt-3 pt-3 border-top">
+                            <h5 class="fw-bold text-dark mb-3">Assign Ambulance & Accept Call</h5>
 
+                            @if (Model.AvailableAmbulances != null && Model.AvailableAmbulances.Any())
+                            {
+                                <form asp-controller="Driver" asp-action="AcceptRequest" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@Model.Request.RequestId" />
+
+                                    <div class="mb-3">
+                                        <label for="ambulanceId" class="form-label fw-bold">
+                                            Select One of Your Available Ambulances: <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="bi bi-truck-front-fill text-danger"></i></span>
+                                            <select id="ambulanceId" name="ambulanceId" class="form-select" required>
+                                                <option value="">-- Choose Ambulance Vehicle --</option>
+                                                @foreach (var ambulance in Model.AvailableAmbulances)
+                                                {
+                                                    <option value="@ambulance.AmbulanceId">
+                                                        Vehicle: @ambulance.VehicleNumber (@ambulance.Status)
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-wrap gap-2 pt-2">
+                                        <button type="submit" class="btn btn-ams-primary pulse-button flex-grow-1 py-3 fw-bold">
+                                            <i class="bi bi-check2-circle me-1"></i> Accept Emergency Request
+                                        </button>
+                                        <a asp-controller="Driver" asp-action="Dashboard" class="ams-back-btn">
+                                            Cancel
+                                        </a>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning border-warning shadow-sm">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    <strong>No Available Ambulances:</strong> All your assigned ambulances are currently occupied or none have been assigned to you.
+                                </div>
+                                <a asp-controller="Driver" asp-action="Dashboard" class="ams-back-btn">
+                                    <i class="bi bi-arrow-left"></i> Return to Dashboard
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Pickup Location Map Preview -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                        <h5 class="mb-0 fw-bold">Caller Pickup Geolocation</h5>
+                    </div>
+                    <span class="badge bg-secondary-subtle text-secondary border">GPS Coordinates</span>
                 </div>
 
-            </form>
-        }
-        else
-        {
-            <p class="empty-message">
-                You currently have no available ambulances.
-            </p>
+                <div class="card-body p-4">
+                    <div class="row g-2 mb-3 small">
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-light">
+                                <span class="text-muted d-block smaller">Latitude</span>
+                                <code>@Model.Request.PickupLatitude</code>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 rounded bg-light">
+                                <span class="text-muted d-block smaller">Longitude</span>
+                                <code>@Model.Request.PickupLongitude</code>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="request-details-actions">
-
-                <a asp-controller="Driver"
-                   asp-action="Dashboard"
-                   class="back-dashboard-btn">
-                    Back to Dashboard
-                </a>
-
+                    <div class="position-relative">
+                        <div id="patientPickupMap"
+                             data-lat="@Model.Request.PickupLatitude"
+                             data-lng="@Model.Request.PickupLongitude"
+                             style="width: 100%; height: 380px; border-radius: 14px; border: 1px solid #cbd5e1; box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);">
+                        </div>
+                        <div class="position-absolute bottom-0 start-0 m-3 bg-white p-2 px-3 rounded-pill shadow-sm border small fw-semibold text-danger d-flex align-items-center gap-2">
+                            <i class="bi bi-geo-alt-fill"></i> Patient's exact GPS location
+                        </div>
+                    </div>
+                </div>
             </div>
-        }
-
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/driver.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/driver.css" asp-append-version="true" />
 }
 
 @section Scripts {
-    <script src="~/js/driver-pickup-map.js"
-            asp-append-version="true"></script>
-
+    <script src="~/js/driver-pickup-map.js" asp-append-version="true"></script>
     <script async
             src="https://maps.googleapis.com/maps/api/js?key=@Configuration["GoogleMaps:ApiKey"]&loading=async&callback=initDriverPickupMap">
     </script>

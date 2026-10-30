@@ -1,98 +1,119 @@
-﻿@model IEnumerable<AMS.Models.AmbulanceRequest>
+@model IEnumerable<AMS.Models.AmbulanceRequest>
 
 @{
     ViewData["Title"] = "My Ambulance Requests";
 }
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
+<div class="container py-3">
 
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Close">
-        </button>
-    </div>
-}
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-<div class="container mt-4">
+    <!-- Header & Navigation -->
+    <div class="ams-page-header">
+        <div>
+            <h1 class="ams-page-header-title">
+                <i class="bi bi-clock-history text-primary me-2"></i>My Ambulance Requests
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Complete history and live status of your emergency ambulance service requests.
+            </p>
+        </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>My Ambulance Requests</h2>
-
-        <a asp-controller="AmbulanceRequest"
-           asp-action="Create"
-           class="btn btn-primary">
-            Request Ambulance
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Patient" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+            <a asp-controller="AmbulanceRequest" asp-action="Create" class="btn btn-ams-primary pulse-button">
+                <i class="bi bi-plus-circle-fill me-1"></i> Request Ambulance
+            </a>
+        </div>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">
-            You have not created any ambulance requests yet.
+        <div class="card shadow-sm border p-5 text-center my-4">
+            <div class="mb-3 text-muted">
+                <i class="bi bi-inbox fs-1"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">No Requests Found</h4>
+            <p class="text-muted col-md-6 mx-auto mb-4">
+                You have not submitted any ambulance requests yet. If you need urgent medical assistance, tap below to request an ambulance.
+            </p>
+            <div>
+                <a asp-controller="AmbulanceRequest" asp-action="Create" class="btn btn-ams-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Request Emergency Ambulance
+                </a>
+            </div>
         </div>
     }
     else
     {
-        <div class="row">
-
+        <div class="row g-4">
             @foreach (var request in Model)
             {
-                <div class="col-md-6 col-lg-4 mb-4">
+                var statusBadge = request.Status switch
+                {
+                    AMS.Enums.RequestStatus.Requested => "bg-primary text-white",
+                    AMS.Enums.RequestStatus.Accepted => "bg-info text-dark",
+                    AMS.Enums.RequestStatus.OnTheWay => "bg-warning text-dark",
+                    AMS.Enums.RequestStatus.ReachedPatient => "bg-warning text-dark",
+                    AMS.Enums.RequestStatus.PatientPickedUp => "bg-primary text-white",
+                    AMS.Enums.RequestStatus.GoingToHospital => "bg-primary text-white",
+                    AMS.Enums.RequestStatus.ReachedHospital => "bg-info text-dark",
+                    AMS.Enums.RequestStatus.Completed => "bg-success text-white",
+                    AMS.Enums.RequestStatus.Cancelled => "bg-danger text-white",
+                    _ => "bg-secondary text-white"
+                };
 
-                    <div class="card h-100 shadow-sm">
-
-                        <div class="card-body">
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-
-                                <h5 class="card-title mb-0">
-                                    Request #@request.RequestId
-                                </h5>
-
-                                <span class="badge bg-primary">
-                                    @request.Status
-                                </span>
-
-                            </div>
-
-                            <p class="mb-2">
-                                <strong>Emergency:</strong>
-                                @request.EmergencyType
-                            </p>
-
-                            <p class="mb-2">
-                                <strong>Condition:</strong>
-                                @request.PatientCondition
-                            </p>
-
-                            <p class="mb-2">
-                                <strong>Patients:</strong>
-                                @request.NumberOfPatients
-                            </p>
-
-                            <p class="mb-3">
-                                <strong>Requested:</strong>
-                                @request.RequestTime.ToString("dd-MM-yyyy HH:mm")
-                            </p>
-
-                            <a asp-controller="AmbulanceRequest"
-                               asp-action="Details"
-                               asp-route-id="@request.RequestId"
-                               class="btn btn-outline-primary w-100">
-                                View Details
-                            </a>
-
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm border ams-card-hover">
+                        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-dark fs-5">
+                                Request #@request.RequestId
+                            </span>
+                            <span class="badge @statusBadge rounded-pill px-3 py-1">
+                                @request.Status
+                            </span>
                         </div>
 
-                    </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex flex-column gap-2 mb-4">
+                                <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light">
+                                    <span class="text-muted small fw-semibold">Emergency:</span>
+                                    <span class="fw-bold text-danger">@request.EmergencyType</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light">
+                                    <span class="text-muted small fw-semibold">Condition:</span>
+                                    <span class="fw-bold text-dark">@request.PatientCondition</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light">
+                                    <span class="text-muted small fw-semibold">Patients:</span>
+                                    <span class="fw-bold text-dark">@request.NumberOfPatients</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center p-2 rounded bg-light">
+                                    <span class="text-muted small fw-semibold">Requested:</span>
+                                    <span class="small fw-semibold text-dark">@request.RequestTime.ToString("dd-MM-yyyy HH:mm")</span>
+                                </div>
+                            </div>
 
+                            <div class="mt-auto">
+                                <a asp-controller="AmbulanceRequest"
+                                   asp-action="Details"
+                                   asp-route-id="@request.RequestId"
+                                   class="btn btn-outline-primary w-100 rounded-pill fw-bold py-2 d-inline-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-geo-alt-fill text-danger"></i> View Details & Live Map
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
-
         </div>
     }
 

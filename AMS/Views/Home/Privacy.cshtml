@@ -1,6 +1,41 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Emergency Medical Privacy & Telemetry Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container py-4">
+
+    <div class="ams-page-header">
+        <div>
+            <h1 class="ams-page-header-title">
+                <i class="bi bi-shield-check text-success me-2"></i>Privacy & Telemetry Protocol
+            </h1>
+            <p class="ams-page-header-subtitle">
+                How we protect patient medical coordinates, emergency records, and paramedic telemetry.
+            </p>
+        </div>
+
+        <div>
+            <a asp-controller="Home" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Home
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border p-4 bg-white mb-4">
+        <h5 class="fw-bold text-dark mb-3">1. Real-Time Geolocation Usage</h5>
+        <p class="text-muted">
+            The Ambulance Management System (AMS) accesses caller and driver GPS coordinates strictly for dispatch triangulation, estimated arrival time (ETA) calculation, and direct routing to emergency medical facilities. GPS feeds terminate automatically upon completion of the dispatch mission.
+        </p>
+
+        <h5 class="fw-bold text-dark mb-3 mt-4">2. Medical Condition Confidentiality</h5>
+        <p class="text-muted">
+            Patient condition and triage classifications (e.g., Trauma, Cardiac, Respiratory) are shared exclusively with the responding paramedic crew and receiving hospital emergency department to ensure appropriate trauma equipment and ICU beds are prepared prior to arrival.
+        </p>
+
+        <h5 class="fw-bold text-dark mb-3 mt-4">3. Coordination Network Security</h5>
+        <p class="text-muted mb-0">
+            All SignalR telemetry packets and identity tokens are transmitted over TLS encrypted communication channels, safeguarding all parties in adherence to emergency medical coordination regulations.
+        </p>
+    </div>
+
+</div>

@@ -1,91 +1,97 @@
-﻿@model AMS.Models.Ambulance
+@model AMS.Models.Ambulance
 
 @{
-    ViewData["Title"] = "Edit Ambulance";
+    ViewData["Title"] = $"Edit Ambulance - {Model.VehicleNumber}";
 }
 
-<div class="ambulance-form-page">
+<div class="ambulance-form-page container py-3">
 
-    <div class="ambulance-form-card">
-
-        <h1>Edit Ambulance</h1>
-
-        <p class="form-subtitle">
-            Update ambulance information.
-        </p>
-
-        <form asp-action="Edit" method="post">
-
-            <input type="hidden"
-                   asp-for="AmbulanceId" />
-
-            <div asp-validation-summary="ModelOnly"></div>
-
-            <div class="ambulance-form-group">
-                <label asp-for="VehicleNumber">
-                    Vehicle Number
-                </label>
-
-                <input asp-for="VehicleNumber"
-                       placeholder="Enter vehicle number" />
-
-                <span asp-validation-for="VehicleNumber"></span>
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #0284c7;"></span> Fleet Configuration
             </div>
+            <h1 class="ams-page-header-title">
+                Edit Ambulance: @Model.VehicleNumber
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Update vehicle identifiers and default telemetry base coordinates.
+            </p>
+        </div>
 
-            <div class="ambulance-form-group">
-                <label asp-for="Latitude">
-                    Latitude
-                </label>
+        <div>
+            <a asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Ambulances
+            </a>
+        </div>
+    </div>
 
-                <input asp-for="Latitude"
-                       type="number"
-                       step="any"
-                       placeholder="Enter latitude" />
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Update Vehicle Information</h5>
+                </div>
 
-                <span asp-validation-for="Latitude"></span>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" asp-for="AmbulanceId" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="VehicleNumber" class="form-label fw-bold">Vehicle Registration Number <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-truck-front text-primary"></i></span>
+                                <input asp-for="VehicleNumber" class="form-control" />
+                            </div>
+                            <span asp-validation-for="VehicleNumber" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <label asp-for="Latitude" class="form-label fw-bold">Base Latitude</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><code>Lat</code></span>
+                                    <input asp-for="Latitude" type="number" step="any" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Latitude" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label asp-for="Longitude" class="form-label fw-bold">Base Longitude</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><code>Lng</code></span>
+                                    <input asp-for="Longitude" type="number" step="any" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Longitude" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-action="Index" class="ams-back-btn">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-ams-primary px-4 py-2 fw-bold">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="ambulance-form-group">
-                <label asp-for="Longitude">
-                    Longitude
-                </label>
-
-                <input asp-for="Longitude"
-                       type="number"
-                       step="any"
-                       placeholder="Enter longitude" />
-
-                <span asp-validation-for="Longitude"></span>
-            </div>
-
-            <div class="form-actions">
-
-                <button type="submit"
-                        class="btn-primary-custom">
-                    Update Ambulance
-                </button>
-
-                <a asp-action="Index"
-                   class="btn-secondary-custom">
-                    Cancel
-                </a>
-
-            </div>
-
-        </form>
-
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/ambulance.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ambulance.css" asp-append-version="true" />
 }
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

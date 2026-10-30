@@ -1,122 +1,129 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-a@model AMS.ViewModels.AdminUserDetailsViewModel
+@model AMS.ViewModels.AdminUserDetailsViewModel
 
 @{
     ViewData["Title"] = "User Details";
 }
 
-<div class="admin-page">
+<div class="admin-page container py-3">
 
-    <div class="admin-page-header">
-
+    <div class="ams-page-header">
         <div>
-            <h2>User Details</h2>
-            <p>View registered user information and request summary.</p>
+            <h1 class="ams-page-header-title">
+                <i class="bi bi-person-circle text-primary me-2"></i>User Profile & Details
+            </h1>
+            <p class="ams-page-header-subtitle">
+                View registered user details and emergency ambulance request telemetry history.
+            </p>
         </div>
 
-        <a asp-controller="Admin"
-           asp-action="Users"
-           class="btn btn-secondary">
-            ← Back to Users
-        </a>
-
+        <div class="d-flex gap-2">
+            <a asp-controller="Admin" asp-action="Users" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Users
+            </a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3 d-inline-flex align-items-center">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
     </div>
 
-    <div class="admin-details-card">
+    <div class="row g-4 mb-4">
+        <!-- Account Info Card -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-person-lines-fill text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Personal & Account Information</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-semibold d-block">User ID</span>
+                                <code class="text-dark fw-bold">@Model.UserId</code>
+                            </div>
+                            <span class="badge bg-secondary-subtle text-secondary border">UUID</span>
+                        </div>
 
-        <div class="admin-details-header">
-            <h3>Account Information</h3>
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="text-muted small text-uppercase fw-semibold d-block">Full Legal Name</span>
+                            <span class="fs-5 fw-bold text-dark">@Model.FullName</span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted small text-uppercase fw-semibold d-block">Email Address</span>
+                                    <span class="fw-semibold text-dark text-break">@Model.Email</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted small text-uppercase fw-semibold d-block">Phone Number</span>
+                                    <span class="fw-semibold text-dark">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-semibold d-block">Primary Role</span>
+                                <span class="fw-bold text-dark">Registered Patient</span>
+                            </div>
+                            <span class="ams-role-pill role-patient fs-6 px-3 py-1">Patient</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-details-grid">
+        <!-- Request Summary Card -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-bar-chart-line-fill text-danger fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Ambulance Request Telemetry</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="p-4 bg-primary-subtle text-primary border border-primary-subtle rounded-3 text-center">
+                                <div class="fs-1 fw-bold">@Model.TotalRequests</div>
+                                <div class="small fw-bold text-uppercase">Total Requests</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-4 bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-3 text-center">
+                                <div class="fs-1 fw-bold">@Model.ActiveRequests</div>
+                                <div class="small fw-bold text-uppercase">Active En Route</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-4 bg-success-subtle text-success border border-success-subtle rounded-3 text-center">
+                                <div class="fs-1 fw-bold">@Model.CompletedRequests</div>
+                                <div class="small fw-bold text-uppercase">Completed</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-4 bg-danger-subtle text-danger border border-danger-subtle rounded-3 text-center">
+                                <div class="fs-1 fw-bold">@Model.CancelledRequests</div>
+                                <div class="small fw-bold text-uppercase">Cancelled</div>
+                            </div>
+                        </div>
+                    </div>
 
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">User ID</span>
-                <span class="admin-detail-value admin-user-id">
-                    @Model.UserId
-                </span>
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">Need to inspect user's emergency records?</span>
+                        <a asp-controller="Admin" asp-action="Requests" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            <i class="bi bi-search me-1"></i> View All Requests
+                        </a>
+                    </div>
+                </div>
             </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Full Name</span>
-                <span class="admin-detail-value">
-                    @Model.FullName
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Email</span>
-                <span class="admin-detail-value">
-                    @Model.Email
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Phone Number</span>
-                <span class="admin-detail-value">
-                    @Model.PhoneNumber
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Role</span>
-                <span class="admin-status role">
-                    Patient
-                </span>
-            </div>
-
         </div>
-
-    </div>
-
-    <div class="admin-details-card">
-
-        <div class="admin-details-header">
-            <h3>Ambulance Request Summary</h3>
-        </div>
-
-        <div class="admin-request-statistics">
-
-            <div class="admin-request-stat">
-                <span class="admin-detail-label">Total Requests</span>
-                <span class="admin-request-value">
-                    @Model.TotalRequests
-                </span>
-            </div>
-
-            <div class="admin-request-stat">
-                <span class="admin-detail-label">Active Requests</span>
-                <span class="admin-request-value">
-                    @Model.ActiveRequests
-                </span>
-            </div>
-
-            <div class="admin-request-stat">
-                <span class="admin-detail-label">Completed</span>
-                <span class="admin-request-value">
-                    @Model.CompletedRequests
-                </span>
-            </div>
-
-            <div class="admin-request-stat">
-                <span class="admin-detail-label">Cancelled</span>
-                <span class="admin-request-value">
-                    @Model.CancelledRequests
-                </span>
-            </div>
-
-        </div>
-
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/admin.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 }

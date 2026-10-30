@@ -1,71 +1,85 @@
-﻿@model AMS.Models.Hospital
+@model AMS.Models.Hospital
 
-<div class="hospital-card">
-
-    <div class="hospital-card-header">
-
+<div class="card shadow-sm border ams-card-hover rounded-3 overflow-hidden bg-white h-100 d-flex flex-column">
+    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-start gap-2">
         <div>
-            <h4>@Model.Name</h4>
-            <p>@Model.Address</p>
+            <h5 class="fw-bold text-dark mb-1">@Model.Name</h5>
+            <p class="text-muted smaller mb-0">
+                <i class="bi bi-geo-alt-fill text-danger me-1"></i> @Model.Address
+            </p>
         </div>
 
         @if (Model.EmergencyAvailable)
         {
-            <span class="availability available">
-                Emergency Available
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 text-nowrap">
+                <i class="bi bi-check-circle-fill me-1"></i> Emergency Ready
             </span>
         }
         else
         {
-            <span class="availability unavailable">
-                Emergency Unavailable
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 text-nowrap">
+                <i class="bi bi-x-circle-fill me-1"></i> Emergency Full
             </span>
         }
-
     </div>
 
-    <div class="hospital-information">
-
-        <div class="hospital-info-item">
-            <span class="info-label">Phone</span>
-            <span>@Model.PhoneNumber</span>
+    <div class="card-body p-3 d-flex flex-column flex-grow-1">
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="p-2 rounded bg-light border text-center">
+                    <span class="text-muted smaller text-uppercase fw-bold d-block">Available Beds</span>
+                    <strong class="fs-5 text-primary">@Model.AvailableBeds</strong>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="p-2 rounded bg-light border text-center">
+                    <span class="text-muted smaller text-uppercase fw-bold d-block">ICU Capacity</span>
+                    <strong class="fs-5 text-danger">@Model.AvailableICUBeds</strong>
+                </div>
+            </div>
         </div>
 
-        <div class="hospital-info-item">
-            <span class="info-label">Available Beds</span>
-            <span>@Model.AvailableBeds</span>
+        <div class="mb-3 small text-muted">
+            <div class="d-flex justify-content-between py-1 border-bottom">
+                <span>Emergency Contact:</span>
+                @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                {
+                    <a href="tel:@Model.PhoneNumber" class="text-primary fw-semibold text-decoration-none">
+                        <i class="bi bi-telephone-fill me-1"></i> @Model.PhoneNumber
+                    </a>
+                }
+                else
+                {
+                    <span class="text-muted">None</span>
+                }
+            </div>
+            <div class="d-flex justify-content-between py-1">
+                <span>Coordinates:</span>
+                <code>@($"{Model.Latitude:F3}, {Model.Longitude:F3}")</code>
+            </div>
         </div>
 
-        <div class="hospital-info-item">
-            <span class="info-label">ICU Beds</span>
-            <span>@Model.AvailableICUBeds</span>
+        <div class="d-flex gap-2 mt-auto pt-2 border-top">
+            <a asp-controller="Hospital"
+               asp-action="Details"
+               asp-route-id="@Model.HospitalId"
+               class="btn btn-sm btn-outline-primary flex-grow-1 rounded-pill">
+                <i class="bi bi-info-circle me-1"></i> Details
+            </a>
+            <a asp-controller="Hospital"
+               asp-action="Edit"
+               asp-route-id="@Model.HospitalId"
+               class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+               title="Edit Hospital">
+                <i class="bi bi-pencil"></i>
+            </a>
+            <a asp-controller="Hospital"
+               asp-action="Delete"
+               asp-route-id="@Model.HospitalId"
+               class="btn btn-sm btn-outline-danger rounded-pill px-3"
+               title="Delete Hospital">
+                <i class="bi bi-trash"></i>
+            </a>
         </div>
-
     </div>
-
-    <div class="hospital-actions">
-
-        <a asp-controller="Hospital"
-           asp-action="Details"
-           asp-route-id="@Model.HospitalId"
-           class="btn btn-outline-primary">
-            Details
-        </a>
-
-        <a asp-controller="Hospital"
-           asp-action="Edit"
-           asp-route-id="@Model.HospitalId"
-           class="btn btn-outline-secondary">
-            Edit
-        </a>
-
-        <a asp-controller="Hospital"
-           asp-action="Delete"
-           asp-route-id="@Model.HospitalId"
-           class="btn btn-outline-danger">
-            Delete
-        </a>
-
-    </div>
-
 </div>

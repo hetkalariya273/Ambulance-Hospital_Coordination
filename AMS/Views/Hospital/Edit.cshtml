@@ -1,139 +1,142 @@
-﻿@model AMS.Models.Hospital
+@model AMS.Models.Hospital
 
 @{
-    ViewData["Title"] = "Edit Hospital";
+    ViewData["Title"] = $"Edit Hospital - {Model.Name}";
 }
 
-<div class="hospital-form-page">
+<div class="hospital-form-page container py-3">
 
-    <div class="hospital-form-header">
-        <h2>Edit Hospital</h2>
-        <p>Update hospital information and current availability.</p>
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #0284c7;"></span> Facility Configuration
+            </div>
+            <h1 class="ams-page-header-title">
+                Edit Hospital: @Model.Name
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Update bed telemetry, ICU capacity, location, and intake phone contacts.
+            </p>
+        </div>
+
+        <div>
+            <a asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Hospitals
+            </a>
+        </div>
     </div>
 
-    <form asp-action="Edit" method="post">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-pencil-square text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Update Facility Telemetry</h5>
+                </div>
 
-        @Html.AntiForgeryToken()
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
 
-        <input asp-for="HospitalId" type="hidden" />
+                        <input asp-for="HospitalId" type="hidden" />
 
-        <div asp-validation-summary="ModelOnly"
-             class="validation-summary">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Hospital Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-building text-primary"></i></span>
+                                <input asp-for="Name" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label fw-bold">Physical Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+                                <input asp-for="Address" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Address" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label fw-bold">Intake Phone Number <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-telephone-fill text-success"></i></span>
+                                <input asp-for="PhoneNumber" class="form-control" />
+                            </div>
+                            <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label asp-for="Latitude" class="form-label fw-bold">GPS Latitude <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><code>Lat</code></span>
+                                    <input asp-for="Latitude" type="number" step="any" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Latitude" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label asp-for="Longitude" class="form-label fw-bold">GPS Longitude <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><code>Lng</code></span>
+                                    <input asp-for="Longitude" type="number" step="any" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Longitude" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-sm-6">
+                                <label asp-for="AvailableBeds" class="form-label fw-bold">General Beds Available</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-hospital text-muted"></i></span>
+                                    <input asp-for="AvailableBeds" type="number" min="0" class="form-control" />
+                                </div>
+                                <span asp-validation-for="AvailableBeds" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <label asp-for="AvailableICUBeds" class="form-label fw-bold">ICU Beds Available</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-heart-pulse text-danger"></i></span>
+                                    <input asp-for="AvailableICUBeds" type="number" min="0" class="form-control" />
+                                </div>
+                                <span asp-validation-for="AvailableICUBeds" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border mb-4">
+                            <div class="form-check form-switch mb-0 d-flex align-items-center gap-3">
+                                <input asp-for="EmergencyAvailable" class="form-check-input fs-4 mt-0" type="checkbox" role="switch" id="emergencyEditSwitch" />
+                                <label class="form-check-label fw-bold text-dark cursor-pointer" for="emergencyEditSwitch">
+                                    Emergency Ward is Open & Accepting Ambulances
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-action="Index" class="ams-back-btn">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-ams-primary px-4 py-2 fw-bold">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="Name"></label>
-
-            <input asp-for="Name"
-                   class="hospital-input" />
-
-            <span asp-validation-for="Name"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="Address"></label>
-
-            <input asp-for="Address"
-                   class="hospital-input" />
-
-            <span asp-validation-for="Address"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="PhoneNumber"></label>
-
-            <input asp-for="PhoneNumber"
-                   class="hospital-input" />
-
-            <span asp-validation-for="PhoneNumber"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="Latitude"></label>
-
-            <input asp-for="Latitude"
-                   class="hospital-input" />
-
-            <span asp-validation-for="Latitude"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="Longitude"></label>
-
-            <input asp-for="Longitude"
-                   class="hospital-input" />
-
-            <span asp-validation-for="Longitude"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-checkbox-group">
-
-            <input asp-for="EmergencyAvailable"
-                   class="hospital-checkbox" />
-
-            <label asp-for="EmergencyAvailable"></label>
-
-        </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="AvailableBeds"></label>
-
-            <input asp-for="AvailableBeds"
-                   type="number"
-                   min="0"
-                   class="hospital-input" />
-
-            <span asp-validation-for="AvailableBeds"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-form-group">
-            <label asp-for="AvailableICUBeds"></label>
-
-            <input asp-for="AvailableICUBeds"
-                   type="number"
-                   min="0"
-                   class="hospital-input" />
-
-            <span asp-validation-for="AvailableICUBeds"
-                  class="validation-message">
-            </span>
-        </div>
-
-        <div class="hospital-form-actions">
-
-            <a asp-action="Details"
-               asp-route-id="@Model.HospitalId"
-               class="hospital-back-button">
-                ← Back to Details
-            </a>
-
-            <button type="submit"
-                    class="hospital-submit-button">
-                Save Changes
-            </button>
-
-        </div>
-
-    </form>
+    </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/hospital.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/hospital.css" asp-append-version="true" />
 }
 
 @section Scripts {

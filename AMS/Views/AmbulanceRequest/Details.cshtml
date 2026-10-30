@@ -1,248 +1,399 @@
-﻿
 @model AMS.Models.AmbulanceRequest
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 
 @{
-    ViewData["Title"] = "Ambulance Request Details";
+    ViewData["Title"] = $"Request #{Model.RequestId} - Live Tracking";
 }
 
-<div class="container mt-4">
+<div class="container py-3">
 
-    <div class="mb-4">
-        <h2>Ambulance Request Details</h2>
-    </div>
-
-    <!-- Request Information -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Request Information</h5>
+    <!-- Header & Navigation -->
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-danger-subtle text-danger border border-danger-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot"></span> Live Telemetry Session
+            </div>
+            <h1 class="ams-page-header-title">
+                Ambulance Request #@Model.RequestId
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Real-time dispatch tracking, paramedic telemetry, and hospital coordination.
+            </p>
         </div>
 
-        <div class="card-body">
-            <p>
-                <strong>Request ID:</strong>
-                #@Model.RequestId
-            </p>
-
-            <input type="hidden"
-                   id="requestId"
-                   value="@Model.RequestId" />
-
-            <p class="mb-0">
-                <strong>Status:</strong>
-                <span id="requestStatus">@Model.Status</span>
-            </p>
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Patient" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+            <a asp-controller="AmbulanceRequest" asp-action="MyRequests" class="ams-back-btn">
+                <i class="bi bi-clock-history"></i> My Requests
+            </a>
         </div>
     </div>
 
-    <!-- Emergency Information -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Emergency Information</h5>
-        </div>
+    <input type="hidden" id="requestId" value="@Model.RequestId" />
 
-        <div class="card-body">
-            <p>
-                <strong>Emergency Type:</strong>
-                @Model.EmergencyType
-            </p>
+    <!-- Live Status Banner & Tracker -->
+    <div class="card shadow-sm border mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold d-block">Current Telemetry Status</span>
+                    <h3 class="fw-extrabold mb-0 text-dark d-flex align-items-center gap-2">
+                        <span class="ams-live-dot"></span>
+                        <span id="requestStatus">@Model.Status</span>
+                    </h3>
+                </div>
 
-            <p>
-                <strong>Patient Condition:</strong>
-                @Model.PatientCondition
-            </p>
+                <div class="text-end">
+                    <span class="text-muted small text-uppercase fw-bold d-block">Request Initiated</span>
+                    <span class="fw-semibold text-dark">
+                        <i class="bi bi-calendar-event me-1"></i> @Model.RequestTime.ToString("dd-MM-yyyy HH:mm")
+                    </span>
+                </div>
+            </div>
 
-            <p>
-                <strong>Number of Patients:</strong>
-                @Model.NumberOfPatients
-            </p>
-
-            <p class="mb-0">
-                <strong>Request Time:</strong>
-                @Model.RequestTime.ToString("dd-MM-yyyy HH:mm")
-            </p>
+            <!-- Visual Progress Stepper -->
+            @{
+                var statusInt = (int)Model.Status;
+            }
+            <div class="ams-stepper d-flex justify-content-between position-relative py-3">
+                <div class="ams-step @(statusInt >= 0 ? "active" : "")">
+                    <div class="ams-step-dot"><i class="bi bi-send-fill"></i></div>
+                    <span class="ams-step-label">Requested</span>
+                </div>
+                <div class="ams-step @(statusInt >= 1 ? "active" : "")">
+                    <div class="ams-step-dot"><i class="bi bi-check2-circle"></i></div>
+                    <span class="ams-step-label">Accepted</span>
+                </div>
+                <div class="ams-step @(statusInt >= 2 ? "active" : "")">
+                    <div class="ams-step-dot"><i class="bi bi-truck-front-fill"></i></div>
+                    <span class="ams-step-label">On The Way</span>
+                </div>
+                <div class="ams-step @(statusInt >= 3 ? "active" : "")">
+                    <div class="ams-step-dot"><i class="bi bi-geo-alt-fill"></i></div>
+                    <span class="ams-step-label">Arrived</span>
+                </div>
+                <div class="ams-step @(statusInt >= 4 ? "active" : "")">
+                    <div class="ams-step-dot"><i class="bi bi-activity"></i></div>
+                    <span class="ams-step-label">Transporting</span>
+                </div>
+                <div class="ams-step @(statusInt >= 6 ? "active" : "")">
+                    <div class="ams-step-dot"><i class="bi bi-flag-fill"></i></div>
+                    <span class="ams-step-label">Completed</span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Driver Information -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Driver Information</h5>
-        </div>
-
-        <div class="card-body">
-            @if (Model.Driver != null)
-            {
-                <p>
-                    <strong>Driver Name:</strong>
-                    @Model.Driver.FullName
-                </p>
-
-                <p class="mb-0">
-                    <strong>Phone Number:</strong>
-                    @Model.Driver.PhoneNumber
-                </p>
-            }
-            else
-            {
-                <p>
-                    <strong>Driver Name:</strong> Not Assigned
-                </p>
-
-                <p class="mb-0">
-                    <strong>Phone Number:</strong> Not Available
-                </p>
-            }
-        </div>
-    </div>
-
-    <!-- Ambulance Information -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Ambulance Information</h5>
-        </div>
-
-        <div class="card-body">
-            @if (Model.Ambulance != null)
-            {
-                <p>
-                    <strong>Vehicle Number:</strong>
-                    @Model.Ambulance.VehicleNumber
-                </p>
-
-                <p class="mb-0">
-                    <strong>Ambulance Status:</strong>
-                    @Model.Ambulance.Status
-                </p>
-            }
-            else
-            {
-                <p>
-                    <strong>Vehicle Number:</strong> Not Assigned
-                </p>
-
-                <p class="mb-0">
-                    <strong>Ambulance Status:</strong> Not Assigned
-                </p>
-            }
-        </div>
-    </div>
-
-    <!-- Hospital Information -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">
-            <h5 class="mb-0">Hospital Information</h5>
-        </div>
-
-        <div class="card-body">
-            @if (Model.Hospital != null)
-            {
-                <p>
-                    <strong>Hospital:</strong>
-                    @Model.Hospital.Name
-                </p>
-
-                <p>
-                    <strong>Address:</strong>
-                    @Model.Hospital.Address
-                </p>
-
-                <p class="mb-0">
-                    <strong>Phone Number:</strong>
-                    @Model.Hospital.PhoneNumber
-                </p>
-            }
-            else
-            {
-                <p class="mb-0">
-                    <strong>Hospital:</strong> Not Selected
-                </p>
-            }
-        </div>
-    </div>
-
-    <!-- Live Ambulance Tracking -->
-    <div class="card shadow-sm mb-4"
+    <!-- Live Ambulance Tracking Card -->
+    <div class="card shadow-sm border mb-4"
          id="patientTrackingData"
          data-tracking-url="@Url.Action("TrackingData", "AmbulanceRequest", new { id = Model.RequestId })">
 
-        <div class="card-header">
-            <h5 class="mb-0">Live Ambulance Tracking</h5>
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-broadcast text-danger fs-5"></i>
+                <h5 class="mb-0 fw-bold">Live GPS Telemetry & Arrival Estimation</h5>
+            </div>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle d-inline-flex align-items-center gap-1">
+                <span class="ams-live-dot"></span> Live GPS Feed
+            </span>
         </div>
 
-        <div class="card-body">
-
-            <p id="patientTrackingStatus" role="status">
-                Waiting for ambulance location...
-            </p>
-
-            <div class="row mb-3">
-                <div class="col-sm-6 mb-2">
-                    <div class="border rounded p-3 h-100">
-                        <strong>Distance</strong>
-                        <div id="patientRouteDistance"
-                             class="fs-5 mt-1">--</div>
+        <div class="card-body p-4">
+            <!-- Distance & ETA Counters -->
+            <div class="row g-3 mb-4">
+                <div class="col-sm-6">
+                    <div class="p-4 rounded-3 border bg-light d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold d-block">Estimated Distance</span>
+                            <div id="patientRouteDistance" class="display-6 fw-bold text-dark mt-1">--</div>
+                        </div>
+                        <div class="ams-stat-icon-wrapper" style="--stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                            <i class="bi bi-signpost-split-fill"></i>
+                        </div>
                     </div>
                 </div>
 
-                <div class="col-sm-6 mb-2">
-                    <div class="border rounded p-3 h-100">
-                        <strong>Estimated Arrival</strong>
-                        <div id="patientRouteEta"
-                             class="fs-5 mt-1">--</div>
+                <div class="col-sm-6">
+                    <div class="p-4 rounded-3 border bg-light d-flex align-items-center justify-content-between">
+                        <div>
+                            <span class="text-muted small text-uppercase fw-bold d-block">Estimated Time of Arrival</span>
+                            <div id="patientRouteEta" class="display-6 fw-bold text-danger mt-1">--</div>
+                        </div>
+                        <div class="ams-stat-icon-wrapper" style="--stat-bg: #fee2e2; --stat-color: #e11d48;">
+                            <i class="bi bi-stopwatch-fill"></i>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div id="patientLiveMap"
-                 role="region"
-                 aria-label="Live ambulance map"
-                 style="width:100%; height:400px; border-radius:10px;">
+            <!-- GPS Live Map Container -->
+            <div class="position-relative">
+                <div id="patientLiveMap"
+                     role="region"
+                     aria-label="Live ambulance map"
+                     style="width:100%; height:450px; border-radius:14px; border: 1px solid #cbd5e1; box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);">
+                </div>
+
+                <div class="position-absolute top-0 start-0 m-3 bg-white p-2 px-3 rounded-pill shadow-sm border small fw-semibold text-secondary d-flex align-items-center gap-2">
+                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                    <span id="patientTrackingStatus">Waiting for ambulance GPS signal...</span>
+                </div>
             </div>
 
-            <small class="text-muted d-block mt-2">
-                Ambulance location refreshes automatically when new GPS
-                coordinates are available. ETA and distance are estimates.
-            </small>
+            <div class="d-flex justify-content-between align-items-center mt-3 text-muted small">
+                <span><i class="bi bi-shield-check text-success me-1"></i> Continuous SignalR Telemetry Active</span>
+                <span>Coordinates update automatically en route</span>
+            </div>
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- 4 Information Cards Grid -->
+    <div class="row g-4 mb-4">
+        <!-- Emergency Info -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-heart-pulse-fill text-danger"></i>
+                    <h6 class="mb-0 fw-bold">Emergency Details</h6>
+                </div>
+                <div class="card-body p-3 d-flex flex-column gap-2 small">
+                    <div class="p-2 rounded bg-light">
+                        <span class="text-muted d-block">Classification</span>
+                        <strong class="text-danger">@Model.EmergencyType</strong>
+                    </div>
+                    <div class="p-2 rounded bg-light">
+                        <span class="text-muted d-block">Condition</span>
+                        <strong class="text-dark">@Model.PatientCondition</strong>
+                    </div>
+                    <div class="p-2 rounded bg-light">
+                        <span class="text-muted d-block">Patients</span>
+                        <strong class="text-dark">@Model.NumberOfPatients Person(s)</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <a asp-controller="Patient"
-           asp-action="Index"
-           class="btn btn-secondary">
-            ← Back
-        </a>
+        <!-- Driver Info -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-person-badge-fill text-primary"></i>
+                    <h6 class="mb-0 fw-bold">Paramedic Driver</h6>
+                </div>
+                <div class="card-body p-3 d-flex flex-column gap-2 small">
+                    @if (Model.Driver != null)
+                    {
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Driver Name</span>
+                            <strong class="text-dark">@Model.Driver.FullName</strong>
+                        </div>
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Contact Number</span>
+                            @if (!string.IsNullOrEmpty(Model.Driver.PhoneNumber))
+                            {
+                                <a href="tel:@Model.Driver.PhoneNumber" class="fw-bold text-primary text-decoration-none d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-telephone-fill"></i> @Model.Driver.PhoneNumber
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not Available</span>
+                            }
+                        </div>
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Driver Status</span>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">Assigned & Active</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 text-center text-muted my-auto">
+                            <i class="bi bi-hourglass-split fs-2 mb-2 d-block text-warning"></i>
+                            <strong>Awaiting Driver Acceptance</strong>
+                            <p class="smaller mb-0 mt-1">Nearest drivers are being signaled right now.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
 
-        @if (Model.Status == AMS.Enums.RequestStatus.Requested ||
-             Model.Status == AMS.Enums.RequestStatus.Accepted ||
-             Model.Status == AMS.Enums.RequestStatus.OnTheWay)
-        {
-            <form asp-action="Cancel"
-                  asp-route-id="@Model.RequestId"
-                  method="post"
-                  onsubmit="return confirm('Are you sure you want to cancel this request?');">
+        <!-- Ambulance Info -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-truck-front-fill text-success"></i>
+                    <h6 class="mb-0 fw-bold">Vehicle Details</h6>
+                </div>
+                <div class="card-body p-3 d-flex flex-column gap-2 small">
+                    @if (Model.Ambulance != null)
+                    {
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Vehicle Number</span>
+                            <strong class="text-dark fs-6">@Model.Ambulance.VehicleNumber</strong>
+                        </div>
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Unit Status</span>
+                            <strong class="text-success">@Model.Ambulance.Status</strong>
+                        </div>
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Equipment</span>
+                            <span class="text-dark">Life Support & Emergency Kit</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="p-4 text-center text-muted my-auto">
+                            <i class="bi bi-truck fs-2 mb-2 d-block text-secondary"></i>
+                            <strong>Vehicle Unassigned</strong>
+                            <p class="smaller mb-0 mt-1">Vehicle will appear once driver accepts.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
 
-                @Html.AntiForgeryToken()
+        <!-- Hospital Info -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-hospital-fill text-info"></i>
+                    <h6 class="mb-0 fw-bold">Destination Hospital</h6>
+                </div>
+                <div class="card-body p-3 d-flex flex-column gap-2 small">
+                    @if (Model.Hospital != null)
+                    {
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Hospital Name</span>
+                            <strong class="text-dark">@Model.Hospital.Name</strong>
+                        </div>
+                        <div class="p-2 rounded bg-light">
+                            <span class="text-muted d-block">Address</span>
+                            <span class="text-dark">@Model.Hospital.Address</span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Hospital.PhoneNumber))
+                        {
+                            <div class="p-2 rounded bg-light">
+                                <span class="text-muted d-block">Emergency Hotline</span>
+                                <a href="tel:@Model.Hospital.PhoneNumber" class="text-primary text-decoration-none fw-bold">
+                                    <i class="bi bi-telephone-fill me-1"></i> @Model.Hospital.PhoneNumber
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="p-4 text-center text-muted my-auto">
+                            <i class="bi bi-hospital fs-2 mb-2 d-block text-secondary"></i>
+                            <strong>Destination Pending</strong>
+                            <p class="smaller mb-0 mt-1">Driver will coordinate hospital destination upon arrival.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <button type="submit" class="btn btn-danger">
-                    Cancel Request
-                </button>
-            </form>
-        }
+    <!-- Actions Bar -->
+    <div class="card shadow-sm p-4 bg-white border">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <a asp-controller="Patient" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+
+            @if (Model.Status == AMS.Enums.RequestStatus.Requested ||
+                 Model.Status == AMS.Enums.RequestStatus.Accepted ||
+                 Model.Status == AMS.Enums.RequestStatus.OnTheWay)
+            {
+                <form asp-action="Cancel"
+                      asp-route-id="@Model.RequestId"
+                      method="post"
+                      onsubmit="return confirm('Are you sure you want to cancel this emergency ambulance request?');">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="btn btn-outline-danger fw-bold rounded-pill px-4 py-2">
+                        <i class="bi bi-x-circle me-1"></i> Cancel Emergency Request
+                    </button>
+                </form>
+            }
+        </div>
     </div>
 
 </div>
 
+@section Styles {
+    <style>
+        .ams-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .ams-stepper::before {
+            content: '';
+            position: absolute;
+            top: 25px;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .ams-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            width: 14%;
+            text-align: center;
+        }
+
+        .ams-step-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 3px solid #cbd5e1;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .ams-step-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .ams-step.active .ams-step-dot {
+            background: #e11d48;
+            border-color: #be123c;
+            color: #ffffff;
+            box-shadow: 0 0 14px rgba(225, 29, 72, 0.4);
+            transform: scale(1.1);
+        }
+
+        .ams-step.active .ams-step-label {
+            color: #e11d48;
+            font-weight: 800;
+        }
+    </style>
+}
+
 @section Scripts {
     <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
-
-    <script src="~/js/patient-request-details.js"
-            asp-append-version="true"></script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=@(Configuration["GoogleMaps:ApiKey"])&callback=initPatientTrackingMap"
-            async
-            defer></script>
+    <script src="~/js/patient-request-details.js" asp-append-version="true"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@(Configuration["GoogleMaps:ApiKey"])&callback=initPatientTrackingMap" async defer></script>
 }

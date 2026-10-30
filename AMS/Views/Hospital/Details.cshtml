@@ -1,101 +1,147 @@
-﻿@model AMS.Models.Hospital
+@model AMS.Models.Hospital
 
 @{
-    ViewData["Title"] = "Hospital Details";
+    ViewData["Title"] = $"Hospital Details - {Model.Name}";
 }
 
-<div class="hospital-form-page">
+<div class="hospital-form-page container py-3">
 
-    <div class="hospital-form-header">
-        <h2>Hospital Details</h2>
-        <p>View hospital information and current availability.</p>
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success-subtle text-success border border-success-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #10b981;"></span> Healthcare Center Profile
+            </div>
+            <h1 class="ams-page-header-title">
+                @Model.Name
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Hospital location coordinates, emergency availability, and real-time bed telemetry.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Hospitals
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.HospitalId" class="btn btn-primary rounded-pill px-3 btn-sm">
+                <i class="bi bi-pencil me-1"></i> Edit Facility
+            </a>
+        </div>
     </div>
 
-    <div class="hospital-form-group">
-        <label asp-for="Name"></label>
+    <div class="row g-4 mb-4">
+        <!-- Bed Capacity Overview -->
+        <div class="col-md-4">
+            <div class="ams-stat-card mb-3" style="--stat-accent: #0284c7; --stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                <div>
+                    <div class="ams-stat-label">Available General Beds</div>
+                    <div class="ams-stat-number text-primary">@Model.AvailableBeds</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-hospital"></i>
+                </div>
+            </div>
 
-        <input asp-for="Name"
-               class="hospital-input"
-               readonly />
+            <div class="ams-stat-card mb-3" style="--stat-accent: #e11d48; --stat-bg: #fee2e2; --stat-color: #e11d48;">
+                <div>
+                    <div class="ams-stat-label">Available ICU Beds</div>
+                    <div class="ams-stat-number text-danger">@Model.AvailableICUBeds</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border p-3">
+                <span class="text-muted smaller text-uppercase fw-bold d-block mb-1">Emergency Intake Status</span>
+                @if (Model.EmergencyAvailable)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle p-2 fs-6 rounded-3 text-start d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill fs-5"></i> Emergency Ready & Open
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle p-2 fs-6 rounded-3 text-start d-flex align-items-center gap-2">
+                        <i class="bi bi-x-circle-fill fs-5"></i> Emergency Department Full
+                    </span>
+                }
+            </div>
+        </div>
+
+        <!-- Details Card -->
+        <div class="col-md-8">
+            <div class="card shadow-sm border h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-building text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Facility Telemetry & Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="text-muted smaller text-uppercase fw-bold d-block">Facility Name</span>
+                            <strong class="fs-5 text-dark">@Model.Name</strong>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="text-muted smaller text-uppercase fw-bold d-block">Physical Address</span>
+                            <span class="text-dark"><i class="bi bi-geo-alt-fill text-danger me-1"></i> @Model.Address</span>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="text-muted smaller text-uppercase fw-bold d-block">Emergency Contact Hotline</span>
+                            @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                            {
+                                <a href="tel:@Model.PhoneNumber" class="text-primary fs-6 fw-bold text-decoration-none">
+                                    <i class="bi bi-telephone-fill me-1"></i> @Model.PhoneNumber
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not Available</span>
+                            }
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">GPS Latitude</span>
+                                    <code>@Model.Latitude</code>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">GPS Longitude</span>
+                                    <code>@Model.Longitude</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="hospital-form-group">
-        <label asp-for="Address"></label>
+    <div class="card shadow-sm p-4 bg-white border">
+        <div class="d-flex justify-content-between align-items-center">
+            <a asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Hospitals
+            </a>
 
-        <input asp-for="Address"
-               class="hospital-input"
-               readonly />
-    </div>
-
-    <div class="hospital-form-group">
-        <label asp-for="PhoneNumber"></label>
-
-        <input asp-for="PhoneNumber"
-               class="hospital-input"
-               readonly />
-    </div>
-
-    <div class="hospital-form-group">
-        <label asp-for="Latitude"></label>
-
-        <input asp-for="Latitude"
-               class="hospital-input"
-               readonly />
-    </div>
-
-    <div class="hospital-form-group">
-        <label asp-for="Longitude"></label>
-
-        <input asp-for="Longitude"
-               class="hospital-input"
-               readonly />
-    </div>
-
-    <div class="hospital-checkbox-group">
-
-        <input asp-for="EmergencyAvailable"
-               class="hospital-checkbox"
-               disabled />
-
-        <label asp-for="EmergencyAvailable"></label>
-
-    </div>
-
-    <div class="hospital-form-group">
-        <label asp-for="AvailableBeds"></label>
-
-        <input asp-for="AvailableBeds"
-               class="hospital-input"
-               readonly />
-    </div>
-
-    <div class="hospital-form-group">
-        <label asp-for="AvailableICUBeds"></label>
-
-        <input asp-for="AvailableICUBeds"
-               class="hospital-input"
-               readonly />
-    </div>
-
-    <div class="hospital-form-actions">
-
-        <a asp-action="Index"
-           class="hospital-back-button">
-            ← Back to Hospitals
-        </a>
-
-        <a asp-action="Edit"
-           asp-route-id="@Model.HospitalId"
-           class="hospital-submit-button">
-            Edit Hospital
-        </a>
-
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.HospitalId" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-pencil me-1"></i> Edit Facility
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.HospitalId" class="btn btn-outline-danger rounded-pill px-3">
+                    <i class="bi bi-trash me-1"></i> Delete
+                </a>
+            </div>
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/hospital.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/hospital.css" asp-append-version="true" />
 }

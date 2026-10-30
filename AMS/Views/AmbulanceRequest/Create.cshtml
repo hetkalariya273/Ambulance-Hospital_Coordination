@@ -1,67 +1,176 @@
-﻿```cshtml
 @model AmbulanceRequestViewModel
 @using AMS.Enums
 @inject IConfiguration Configuration
 
 @{
-    ViewData["Title"] = "Request Ambulance";
+    ViewData["Title"] = "Request Emergency Ambulance";
 }
 
-<h2>Request Ambulance</h2>
+<div class="container py-3">
 
-<form asp-action="Create" method="post">
-    @Html.AntiForgeryToken()
+    <!-- Header & Back Navigation -->
+    <div class="ams-page-header">
+        <div>
+            <h1 class="ams-page-header-title text-danger">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>Request Emergency Ambulance
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Provide emergency information and pinpoint your pickup location for immediate dispatch.
+            </p>
+        </div>
 
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="mb-3">
-        <label asp-for="EmergencyType" class="form-label"></label>
-        <select asp-for="EmergencyType"
-                asp-items="Html.GetEnumSelectList<EmergencyType>()"
-                class="form-select">
-            <option value="">-- Select Emergency Type --</option>
-        </select>
-        <span asp-validation-for="EmergencyType" class="text-danger"></span>
+        <div>
+            <a asp-controller="Patient" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="PatientCondition" class="form-label"></label>
-        <select asp-for="PatientCondition"
-                asp-items="Html.GetEnumSelectList<PatientCondition>()"
-                class="form-select">
-            <option value="">-- Select Patient Condition --</option>
-        </select>
-        <span asp-validation-for="PatientCondition" class="text-danger"></span>
+    <!-- Emergency Priority Alert -->
+    <div class="alert alert-danger d-flex align-items-center gap-3 border-danger shadow-sm mb-4" role="alert">
+        <div class="fs-2 text-danger">
+            <i class="bi bi-shield-fill-exclamation"></i>
+        </div>
+        <div class="flex-grow-1">
+            <strong>Critical Emergency Dispatch Notice:</strong>
+            <p class="mb-0 small text-danger-emphasis">
+                If the patient is unconscious, experiencing severe chest pain, or having severe trauma, call <strong>108 / 112</strong> immediately while submitting this request. Our dispatchers broadcast requests to nearby drivers in real time.
+            </p>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="NumberOfPatients" class="form-label"></label>
-        <input asp-for="NumberOfPatients"
-               type="number"
-               min="1"
-               max="20"
-               class="form-control" />
-        <span asp-validation-for="NumberOfPatients" class="text-danger"></span>
-    </div>
+    <!-- Booking Form -->
+    <form asp-action="Create" method="post" id="ambulanceRequestForm">
+        @Html.AntiForgeryToken()
 
-    <input asp-for="PickupLatitude" type="hidden" id="pickupLatitude" />
-    <input asp-for="PickupLongitude" type="hidden" id="pickupLongitude" />
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
 
-    <div class="mb-3">
-        <button type="button" class="btn btn-secondary" id="getLocationBtn">
-            Get Current Location
-        </button>
-        <span id="locationStatus" class="ms-2"></span>
-    </div>
+        <div class="row g-4 mb-4">
+            <!-- Left Column: Patient & Emergency Details -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white border-bottom py-3 d-flex align-items-center gap-2">
+                        <i class="bi bi-person-heart text-danger fs-5"></i>
+                        <h5 class="mb-0 fw-bold">Emergency & Patient Details</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label asp-for="EmergencyType" class="form-label fw-bold">
+                                Emergency Classification <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-heart-pulse text-danger"></i></span>
+                                <select asp-for="EmergencyType"
+                                        asp-items="Html.GetEnumSelectList<EmergencyType>()"
+                                        class="form-select">
+                                    <option value="">-- Select Emergency Type --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="EmergencyType" class="text-danger small mt-1 d-block"></span>
+                        </div>
 
-    <div id="pickupMap"></div>
+                        <div class="mb-3">
+                            <label asp-for="PatientCondition" class="form-label fw-bold">
+                                Current Patient Condition <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-activity text-primary"></i></span>
+                                <select asp-for="PatientCondition"
+                                        asp-items="Html.GetEnumSelectList<PatientCondition>()"
+                                        class="form-select">
+                                    <option value="">-- Select Patient Condition --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="PatientCondition" class="text-danger small mt-1 d-block"></span>
+                        </div>
 
-    <p class="mt-2">Click the map to select your pickup location.</p>
+                        <div class="mb-3">
+                            <label asp-for="NumberOfPatients" class="form-label fw-bold">
+                                Number of Patients Requiring Transport <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-people-fill text-muted"></i></span>
+                                <input asp-for="NumberOfPatients"
+                                       type="number"
+                                       min="1"
+                                       max="20"
+                                       value="1"
+                                       class="form-control" />
+                            </div>
+                            <span asp-validation-for="NumberOfPatients" class="text-danger small mt-1 d-block"></span>
+                        </div>
 
-    <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
-        Request Ambulance
-    </button>
-</form>
+                        <div class="p-3 bg-light rounded-3 border mt-4">
+                            <h6 class="fw-bold mb-2 small text-uppercase text-muted">
+                                <i class="bi bi-info-circle-fill text-primary me-1"></i> What happens next?
+                            </h6>
+                            <ul class="small text-muted mb-0 ps-3">
+                                <li>The nearest available driver is notified via SignalR telemetry.</li>
+                                <li>You will receive live GPS tracking of the ambulance en route.</li>
+                                <li>Destination hospital availability is coordinated automatically.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Pickup Location Map -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                            <h5 class="mb-0 fw-bold">Pinpoint Pickup Location</h5>
+                        </div>
+                        <span class="badge bg-secondary-subtle text-secondary border">GPS Telemetry</span>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <input asp-for="PickupLatitude" type="hidden" id="pickupLatitude" />
+                        <input asp-for="PickupLongitude" type="hidden" id="pickupLongitude" />
+
+                        <!-- GPS Button & Status -->
+                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3 p-3 bg-light rounded-3 border">
+                            <button type="button" class="btn btn-outline-danger fw-bold d-inline-flex align-items-center gap-2" id="getLocationBtn">
+                                <i class="bi bi-crosshair"></i> Use My Current GPS Location
+                            </button>
+                            <div id="locationStatus" class="small fw-semibold text-muted d-flex align-items-center gap-2">
+                                <i class="bi bi-info-circle"></i> Click the map or use the GPS button to set pickup point.
+                            </div>
+                        </div>
+
+                        <!-- Map Frame -->
+                        <div class="position-relative">
+                            <div id="pickupMap" class="ams-pickup-map shadow-inner"></div>
+                            <div class="position-absolute bottom-0 start-0 m-3 bg-white p-2 px-3 rounded-pill shadow-sm border small fw-semibold text-secondary d-flex align-items-center gap-2">
+                                <i class="bi bi-hand-index-thumb-fill text-danger"></i> Drag marker or tap map to adjust
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Actions Bar -->
+        <div class="card shadow-sm p-4 bg-white border">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <a asp-controller="Patient" asp-action="Index" class="ams-back-btn">
+                    <i class="bi bi-arrow-left"></i> Cancel & Return
+                </a>
+
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-muted small d-none d-sm-inline">
+                        <i class="bi bi-check-circle text-success me-1"></i> Instant dispatch upon submission
+                    </span>
+                    <button type="submit" class="btn-ams-primary pulse-button px-4 py-3 fs-6" id="submitBtn" disabled>
+                        <i class="bi bi-send-fill me-1"></i> Dispatch Emergency Ambulance
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
 
 @section Scripts {
     <link rel="stylesheet" href="~/css/pickup-map.css" asp-append-version="true" />

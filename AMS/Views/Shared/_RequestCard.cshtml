@@ -1,43 +1,52 @@
-﻿@model AMS.Models.AmbulanceRequest
+@model AMS.Models.AmbulanceRequest
 
-<div class="request-card">
+<div class="card shadow-sm border ams-card-hover rounded-3 p-3 bg-white mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                <i class="bi bi-broadcast me-1"></i> Active Signal
+            </span>
+            <span class="fw-bold fs-6 text-dark">Request #@Model.RequestId</span>
+        </div>
 
-    <div class="request-card-header">
-        <strong>Request #@Model.RequestId</strong>
+        <span class="badge bg-primary text-white rounded-pill px-3 py-1">
+            @Model.Status
+        </span>
     </div>
 
-    <div class="request-card-details">
-
-        <div>
-            <span>Emergency Type</span>
-            <strong>@Model.EmergencyType</strong>
+    <div class="row g-2 mb-3 small">
+        <div class="col-6">
+            <div class="p-2 rounded bg-light">
+                <span class="text-muted d-block smaller">Emergency Type</span>
+                <strong class="text-danger">@Model.EmergencyType</strong>
+            </div>
         </div>
-
-        <div>
-            <span>Patient Condition</span>
-            <strong>@Model.PatientCondition</strong>
+        <div class="col-6">
+            <div class="p-2 rounded bg-light">
+                <span class="text-muted d-block smaller">Patient Condition</span>
+                <strong class="text-dark">@Model.PatientCondition</strong>
+            </div>
         </div>
-
-        <div>
-            <span>Patients</span>
-            <strong>@Model.NumberOfPatients</strong>
+        <div class="col-6">
+            <div class="p-2 rounded bg-light">
+                <span class="text-muted d-block smaller">Patients</span>
+                <strong class="text-dark">@Model.NumberOfPatients</strong>
+            </div>
         </div>
-
-        <div>
-            <span>Status</span>
-            <strong>@Model.Status</strong>
+        <div class="col-6">
+            <div class="p-2 rounded bg-light">
+                <span class="text-muted d-block smaller">Request Time</span>
+                <strong class="text-dark">@Model.RequestTime.ToString("HH:mm")</strong>
+            </div>
         </div>
-
     </div>
 
-    <div class="request-card-action">
-
+    <div>
         <a asp-controller="Driver"
            asp-action="RequestDetails"
-           asp-route-id="@Model.RequestId">
-            View Request
+           asp-route-id="@Model.RequestId"
+           class="btn btn-ams-primary w-100 rounded-pill py-2 fw-bold">
+            <i class="bi bi-eye-fill me-1"></i> Inspect & Accept Request
         </a>
-
     </div>
-
 </div>

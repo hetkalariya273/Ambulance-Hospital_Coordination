@@ -1,172 +1,192 @@
-﻿@model IEnumerable<AMS.Models.Driver>
+@model IEnumerable<AMS.Models.Driver>
 
 @{
-    ViewData["Title"] = "Driver Management";
-
+    ViewData["Title"] = "Paramedic Driver Management";
     var totalDrivers = Model.Count();
     var availableDrivers = Model.Count(d => d.IsAvailable);
     var unavailableDrivers = totalDrivers - availableDrivers;
 }
 
-<div class="driver-page">
+<div class="driver-page container py-3">
 
-    <div class="driver-header">
-
+    <!-- Header Section -->
+    <div class="ams-page-header">
         <div>
-            <h1>Driver Management</h1>
-            <p>Manage ambulance drivers and their availability.</p>
-        </div>
-
-        <a asp-controller="Admin"
-           asp-action="Index"
-           class="btn btn-secondary">
-            ← Dashboard
-        </a>
-        <a asp-action="Create" class="btn-add-driver">
-            + Add Driver
-        </a>
-
-    </div>
-
-
-    <!-- Statistics -->
-
-    <div class="driver-stats">
-
-        <div class="stat-card">
-            <div class="stat-title">Total Drivers</div>
-            <div class="stat-number">@totalDrivers</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-title">Available Drivers</div>
-            <div class="stat-number">@availableDrivers</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-title">Unavailable Drivers</div>
-            <div class="stat-number">@unavailableDrivers</div>
-        </div>
-
-    </div>
-
-
-    <!-- Driver Table -->
-
-    <div class="driver-table-card">
-
-        <div class="driver-table-header">
-            <h2>All Drivers</h2>
-        </div>
-
-        @if (!Model.Any())
-        {
-            <div class="empty-drivers">
-
-                <h3>No Drivers Found</h3>
-
-                <p>
-                    Add your first ambulance driver to the system.
-                </p>
-
-                <a asp-action="Create" class="btn-add-driver">
-                    + Add First Driver
-                </a>
-
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #f59e0b;"></span> Paramedic Personnel Roster
             </div>
-        }
-        else
-        {
-            <table class="driver-table">
+            <h1 class="ams-page-header-title">
+                Paramedic Driver Management
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Manage registered ambulance drivers, license validations, and real-time on-duty availability.
+            </p>
+        </div>
 
-                <thead>
-                    <tr>
-                        <th>Driver</th>
-                        <th>Phone</th>
-                        <th>License</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    @foreach (var driver in Model)
-                    {
-                        <tr>
-
-                            <td>
-                                <span class="driver-name">
-                                    @driver.FullName
-                                </span>
-                            </td>
-
-                            <td>
-                                @driver.PhoneNumber
-                            </td>
-
-                            <td>
-                                @driver.LicenseNumber
-                            </td>
-
-                            <td>
-
-                                @if (driver.IsAvailable)
-                                {
-                                    <span class="status status-available">
-                                        <span class="status-dot"></span>
-                                        Available
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="status status-unavailable">
-                                        <span class="status-dot"></span>
-                                        Unavailable
-                                    </span>
-                                }
-
-                            </td>
-
-                            <td>
-
-                                <div class="action-buttons">
-
-                                    <a asp-action="Details"
-                                       asp-route-id="@driver.DriverId"
-                                       class="action-btn action-view">
-                                        View
-                                    </a>
-
-                                    <a asp-action="Edit"
-                                       asp-route-id="@driver.DriverId"
-                                       class="action-btn action-edit">
-                                        Edit
-                                    </a>
-
-                                    <a asp-action="Delete"
-                                       asp-route-id="@driver.DriverId"
-                                       class="action-btn action-delete">
-                                        Delete
-                                    </a>
-
-                                </div>
-
-                            </td>
-
-                        </tr>
-                    }
-
-                </tbody>
-
-            </table>
-        }
-
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Admin" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Dashboard
+            </a>
+            <a asp-action="Create" class="btn btn-ams-primary">
+                <i class="bi bi-person-plus-fill me-1"></i> Add Driver
+            </a>
+        </div>
     </div>
+
+    <!-- Driver Statistics Ribbon -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #0284c7; --stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                <div>
+                    <div class="ams-stat-label">Total Enrolled Drivers</div>
+                    <div class="ams-stat-number text-primary">@totalDrivers</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #10b981; --stat-bg: #ecfdf5; --stat-color: #10b981;">
+                <div>
+                    <div class="ams-stat-label">Available on Duty</div>
+                    <div class="ams-stat-number text-success">@availableDrivers</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #f59e0b; --stat-bg: #fef3c7; --stat-color: #d97706;">
+                <div>
+                    <div class="ams-stat-label">Busy / Off Duty</div>
+                    <div class="ams-stat-number text-warning-emphasis">@unavailableDrivers</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-clock-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm border p-5 text-center my-4">
+            <div class="mb-3 text-muted">
+                <i class="bi bi-person-badge fs-1"></i>
+            </div>
+            <h5 class="fw-bold text-dark">No Drivers Enrolled</h5>
+            <p class="text-muted small col-md-6 mx-auto mb-3">
+                Register your first ambulance driver to begin assigning response vehicles.
+            </p>
+            <div>
+                <a asp-action="Create" class="btn btn-ams-primary">
+                    <i class="bi bi-person-plus-fill me-1"></i> Add First Driver
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border overflow-hidden">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">
+                    <i class="bi bi-person-badge-fill text-primary me-2"></i>Driver Personnel Roster
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary border">Identity Database</span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="ams-table">
+                    <thead>
+                        <tr>
+                            <th>Paramedic Driver</th>
+                            <th>Contact Phone</th>
+                            <th>Driver License</th>
+                            <th>Duty Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var driver in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="ams-avatar" style="width: 34px; height: 34px; font-size: 0.9rem; background-color: #0284c7;">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@driver.FullName</div>
+                                            <span class="smaller text-muted">Driver ID #@driver.DriverId</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(driver.PhoneNumber))
+                                    {
+                                        <a href="tel:@driver.PhoneNumber" class="text-primary text-decoration-none fw-semibold">
+                                            <i class="bi bi-telephone-fill me-1 small"></i> @driver.PhoneNumber
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted smaller">Not provided</span>
+                                    }
+                                </td>
+                                <td>
+                                    <code class="text-dark fw-bold">@driver.LicenseNumber</code>
+                                </td>
+                                <td>
+                                    @if (driver.IsAvailable)
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                            <span class="ams-live-dot"></span> Available
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1">
+                                            <span class="ams-live-dot" style="background-color: #f59e0b;"></span> Unavailable / Busy
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex align-items-center gap-2">
+                                        <a asp-action="Details"
+                                           asp-route-id="@driver.DriverId"
+                                           class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            <i class="bi bi-info-circle me-1"></i> Details
+                                        </a>
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@driver.DriverId"
+                                           class="btn btn-sm btn-outline-secondary rounded-pill px-3"
+                                           title="Edit Driver Information">
+                                            <i class="bi bi-pencil me-1"></i> Edit
+                                        </a>
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@driver.DriverId"
+                                           class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                           title="Delete Driver">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
 
 </div>
+
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/driver.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/driver.css" asp-append-version="true" />
 }

@@ -1,93 +1,116 @@
-﻿@model IEnumerable<AMS.Models.ApplicationUser>
+@model IEnumerable<AMS.Models.ApplicationUser>
 
 @{
-    ViewData["Title"] = "Manage Users";
+    ViewData["Title"] = "Manage Registered Users";
 }
 
-<div class="admin-page">
+<div class="admin-page container py-3">
 
-    <div class="admin-page-header">
-
+    <!-- Header & Navigation -->
+    <div class="ams-page-header">
         <div>
-            <h2>Manage Users</h2>
-            <p>View and manage registered users.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-purple-subtle text-purple border border-purple-subtle mb-2 small fw-bold" style="background-color: #f3e8ff; color: #7e22ce; border-color: #e9d5ff;">
+                <span class="ams-live-dot" style="background-color: #a855f7;"></span> User Directory & Registry
+            </div>
+            <h1 class="ams-page-header-title">
+                Manage Registered Users
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Directory of registered caller profiles, patient contacts, and emergency access credentials.
+            </p>
         </div>
 
-        <a asp-controller="Admin"
-           asp-action="Index"
-           class="btn btn-secondary">
-            ← Dashboard
-        </a>
-
+        <div>
+            <a asp-controller="Admin" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="admin-empty-message">
-            No users have been registered yet.
+        <div class="card shadow-sm border p-5 text-center my-4">
+            <div class="mb-3 text-muted">
+                <i class="bi bi-people fs-1"></i>
+            </div>
+            <h5 class="fw-bold text-dark">No Users Registered</h5>
+            <p class="text-muted small col-md-6 mx-auto mb-0">
+                No users have signed up in the coordination database yet.
+            </p>
         </div>
     }
     else
     {
-        <div class="admin-table-container">
+        <div class="card shadow-sm border overflow-hidden">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">
+                    <i class="bi bi-people-fill text-primary me-2"></i>Total Enrolled Accounts: @Model.Count()
+                </span>
+                <span class="badge bg-secondary-subtle text-secondary border">Identity Database</span>
+            </div>
 
-            <table class="admin-table">
-
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    @foreach (var user in Model)
-                    {
+            <div class="table-responsive">
+                <table class="ams-table">
+                    <thead>
                         <tr>
-
-                            <td class="user-id">
-                                @user.Id
-                            </td>
-
-                            <td>
-                                @user.FullName
-                            </td>
-
-                            <td>
-                                @user.Email
-                            </td>
-
-                            <td>
-                                @user.PhoneNumber
-                            </td>
-
-                            <td>
-                                <a asp-controller="Admin"
-                                   asp-action="UserDetails"
-                                   asp-route-id="@user.Id"
-                                   class="admin-view-button">
-                                    View
-                                </a>
-                            </td>
-
+                            <th>User Profile</th>
+                            <th>Contact Email</th>
+                            <th>Phone Number</th>
+                            <th>Role</th>
+                            <th class="text-end">Action</th>
                         </tr>
-                    }
-
-                </tbody>
-
-            </table>
-
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="ams-avatar" style="width: 34px; height: 34px; font-size: 0.9rem; background-color: #6366f1;">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@user.FullName</div>
+                                            <code class="smaller text-muted">@user.Id.Substring(0, Math.Min(12, user.Id.Length))...</code>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="text-dark">@user.Email</span>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(user.PhoneNumber))
+                                    {
+                                        <a href="tel:@user.PhoneNumber" class="text-primary text-decoration-none fw-semibold">
+                                            <i class="bi bi-telephone-fill me-1 small"></i> @user.PhoneNumber
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted smaller">Not provided</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="ams-role-pill role-patient">Patient</span>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-controller="Admin"
+                                       asp-action="UserDetails"
+                                       asp-route-id="@user.Id"
+                                       class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                        <i class="bi bi-person-lines-fill me-1"></i> View Profile
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     }
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/admin.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 }

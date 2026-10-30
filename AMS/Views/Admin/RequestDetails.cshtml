@@ -1,195 +1,243 @@
-﻿@model AMS.Models.AmbulanceRequest
+@model AMS.Models.AmbulanceRequest
 
 @{
-    ViewData["Title"] = "Request Details";
+    ViewData["Title"] = $"Request Details #{Model.RequestId}";
 }
 
-<div class="admin-page">
+<div class="admin-page container py-3">
 
-    <div class="admin-page-header">
-
+    <!-- Header & Navigation -->
+    <div class="ams-page-header">
         <div>
-            <h2>Request Details</h2>
-            <p>View complete information about the ambulance request.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-danger-subtle text-danger border border-danger-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot"></span> Emergency Telemetry Record
+            </div>
+            <h1 class="ams-page-header-title">
+                Ambulance Request Details #@Model.RequestId
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Complete audit trace of the emergency request, assigned ambulance, driver, and destination hospital.
+            </p>
         </div>
 
-        <a asp-controller="Admin"
-           asp-action="Requests"
-           class="btn btn-secondary">
-            ← Back to Requests
-        </a>
-
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Admin" asp-action="Requests" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Requests
+            </a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            </a>
+        </div>
     </div>
 
-    <div class="admin-details-card">
+    <!-- Telemetry Status Ribbon -->
+    <div class="card shadow-sm border mb-4">
+        <div class="card-body p-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <span class="text-muted smaller text-uppercase fw-bold d-block">Current Telemetry Status</span>
+                <div class="d-flex align-items-center gap-2 mt-1">
+                    <span class="ams-live-dot"></span>
+                    <h4 class="fw-bold text-dark mb-0">@Model.Status</h4>
+                </div>
+            </div>
 
-        <div class="admin-details-header">
-            <h3>Request Information</h3>
-        </div>
-
-        <div class="admin-details-grid">
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Request ID</span>
-                <span class="admin-detail-value">
-                    #@Model.RequestId
+            <div>
+                <span class="text-muted smaller text-uppercase fw-bold d-block">Request Logged At</span>
+                <span class="fw-semibold text-dark fs-6">
+                    <i class="bi bi-calendar-event me-1"></i> @Model.RequestTime.ToString("dd-MM-yyyy HH:mm:ss")
                 </span>
             </div>
 
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Request Time</span>
-                <span class="admin-detail-value">
-                    @Model.RequestTime.ToString("dd-MM-yyyy HH:mm")
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Current Status</span>
-                <span class="admin-status">
-                    @Model.Status
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="admin-details-card">
-
-        <div class="admin-details-header">
-            <h3>Patient Information</h3>
-        </div>
-
-        <div class="admin-details-grid">
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">User ID</span>
-                <span class="admin-detail-value admin-user-id">
-                    @Model.UserId
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Full Name</span>
-                <span class="admin-detail-value">
-                    @(Model.User?.FullName ?? "Not available")
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Email</span>
-                <span class="admin-detail-value">
-                    @(Model.User?.Email ?? "Not available")
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Phone Number</span>
-                <span class="admin-detail-value">
-                    @(Model.User?.PhoneNumber ?? "Not available")
-                </span>
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="admin-details-card">
-
-        <div class="admin-details-header">
-            <h3>Emergency Information</h3>
-        </div>
-
-        <div class="admin-details-grid">
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Emergency Type</span>
-                <span class="admin-detail-value">
+            <div>
+                <span class="text-muted smaller text-uppercase fw-bold d-block">Emergency Severity</span>
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-6 px-3 py-1">
                     @Model.EmergencyType
                 </span>
             </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Patient Condition</span>
-                <span class="admin-detail-value">
-                    @Model.PatientCondition
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Number of Patients</span>
-                <span class="admin-detail-value">
-                    @Model.NumberOfPatients
-                </span>
-            </div>
-
         </div>
-
     </div>
 
-    <div class="admin-details-card">
+    <div class="row g-4 mb-4">
+        <!-- Patient Information Card -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-person-circle text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Caller & Patient Profile</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 bg-light rounded-3 border d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted smaller text-uppercase fw-bold d-block">Caller Full Name</span>
+                                <strong class="fs-5 text-dark">@(Model.User?.FullName ?? "Unknown Caller")</strong>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.UserId))
+                            {
+                                <a asp-controller="Admin" asp-action="UserDetails" asp-route-id="@Model.UserId" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    <i class="bi bi-person me-1"></i> View Profile
+                                </a>
+                            }
+                        </div>
 
-        <div class="admin-details-header">
-            <h3>Pickup Location</h3>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Phone Number</span>
+                                    @if (!string.IsNullOrEmpty(Model.User?.PhoneNumber))
+                                    {
+                                        <a href="tel:@Model.User.PhoneNumber" class="text-primary fw-bold text-decoration-none">
+                                            <i class="bi bi-telephone-fill me-1"></i> @Model.User.PhoneNumber
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not Available</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Email Address</span>
+                                    <span class="text-dark small fw-semibold text-break">@(Model.User?.Email ?? "Not available")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="text-muted smaller text-uppercase fw-bold d-block">Internal User ID</span>
+                            <code class="text-secondary small">@Model.UserId</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="admin-details-grid">
+        <!-- Emergency & Pickup Location -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-geo-alt-fill text-danger fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Emergency & Location Data</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex flex-column gap-3">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-danger-subtle text-danger border border-danger-subtle rounded-3">
+                                    <span class="smaller text-uppercase fw-bold d-block text-danger-emphasis">Emergency Type</span>
+                                    <strong class="fs-6">@Model.EmergencyType</strong>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Patient Condition</span>
+                                    <strong class="fs-6 text-dark">@Model.PatientCondition</strong>
+                                </div>
+                            </div>
+                        </div>
 
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Latitude</span>
-                <span class="admin-detail-value">
-                    @Model.PickupLatitude
-                </span>
+                        <div class="p-3 bg-light rounded-3 border">
+                            <span class="text-muted smaller text-uppercase fw-bold d-block">Number of Patients Requiring Transport</span>
+                            <strong class="fs-6 text-dark">@Model.NumberOfPatients Person(s)</strong>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Pickup Latitude</span>
+                                    <code>@Model.PickupLatitude</code>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <span class="text-muted smaller text-uppercase fw-bold d-block">Pickup Longitude</span>
+                                    <code>@Model.PickupLongitude</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Longitude</span>
-                <span class="admin-detail-value">
-                    @Model.PickupLongitude
-                </span>
-            </div>
-
         </div>
-
     </div>
 
-    <div class="admin-details-card">
-
-        <div class="admin-details-header">
-            <h3>Assignment Information</h3>
+    <!-- Assignment Telemetry Card -->
+    <div class="card shadow-sm border mb-4">
+        <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+            <i class="bi bi-diagram-3-fill text-success fs-5"></i>
+            <h5 class="mb-0 fw-bold">Resource Assignment & Hospital Telemetry</h5>
         </div>
 
-        <div class="admin-details-grid">
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Driver -->
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-person-badge-fill text-primary fs-5"></i>
+                            <span class="text-muted smaller text-uppercase fw-bold">Assigned Driver</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">@(Model.Driver?.FullName ?? "Not Assigned")</h6>
+                        @if (!string.IsNullOrEmpty(Model.Driver?.PhoneNumber))
+                        {
+                            <span class="small text-muted d-block">Phone: @Model.Driver.PhoneNumber</span>
+                        }
+                    </div>
+                </div>
 
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Driver</span>
-                <span class="admin-detail-value">
-                    @(Model.Driver?.FullName ?? "Not assigned")
-                </span>
+                <!-- Ambulance -->
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-truck-front-fill text-success fs-5"></i>
+                            <span class="text-muted smaller text-uppercase fw-bold">Ambulance Vehicle</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">@(Model.Ambulance?.VehicleNumber ?? "Not Assigned")</h6>
+                        @if (Model.Ambulance != null)
+                        {
+                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">
+                                @Model.Ambulance.Status
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <!-- Hospital -->
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded-3 border h-100">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-hospital-fill text-danger fs-5"></i>
+                            <span class="text-muted smaller text-uppercase fw-bold">Destination Hospital</span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1">@(Model.Hospital?.Name ?? "Pending Selection")</h6>
+                        @if (Model.Hospital != null)
+                        {
+                            <span class="small text-muted d-block mb-1">@Model.Hospital.Address</span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill">
+                                Beds: @Model.Hospital.AvailableBeds | ICU: @Model.Hospital.AvailableICUBeds
+                            </span>
+                        }
+                    </div>
+                </div>
             </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Ambulance</span>
-                <span class="admin-detail-value">
-                    @(Model.Ambulance?.VehicleNumber ?? "Not assigned")
-                </span>
-            </div>
-
-            <div class="admin-detail-item">
-                <span class="admin-detail-label">Hospital</span>
-                <span class="admin-detail-value">
-                    @(Model.Hospital?.Name ?? "Not assigned")
-                </span>
-            </div>
-
         </div>
+    </div>
 
+    <!-- Bottom Actions -->
+    <div class="card shadow-sm p-4 bg-white border">
+        <div class="d-flex justify-content-between align-items-center">
+            <a asp-controller="Admin" asp-action="Requests" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Requests
+            </a>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                <i class="bi bi-speedometer2 me-1"></i> Admin Dashboard
+            </a>
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/admin.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 }

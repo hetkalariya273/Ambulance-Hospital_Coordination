@@ -1,56 +1,108 @@
-﻿@model IEnumerable<AMS.Models.Hospital>
+@model IEnumerable<AMS.Models.Hospital>
 
 @{
-    ViewData["Title"] = "Hospitals";
+    ViewData["Title"] = "Emergency Hospitals Directory";
+    var totalBeds = Model.Sum(h => h.AvailableBeds);
+    var totalIcu = Model.Sum(h => h.AvailableICUBeds);
+    var readyCount = Model.Count(h => h.EmergencyAvailable);
 }
 
-<div class="hospital-page">
+<div class="hospital-page container py-3">
 
-    <div class="hospital-header">
-
+    <!-- Header Section -->
+    <div class="ams-page-header">
         <div>
-            <h2>Hospitals</h2>
-            <p>Manage registered hospitals and their current availability.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-success-subtle text-success border border-success-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #10b981;"></span> Hospital Bed Telemetry Network
+            </div>
+            <h1 class="ams-page-header-title">
+                Coordinated Emergency Hospitals
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Manage registered hospital facilities, track emergency bed availability, and monitor ICU capacity.
+            </p>
         </div>
 
-        <div>
-            <a asp-controller="Admin"
-               asp-action="Index"
-               class="btn btn-secondary">
-                ← Dashboard
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Admin" asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Dashboard
             </a>
-
-            <a asp-action="Create"
-               class="btn btn-primary">
-                Add Hospital
+            <a asp-action="Create" class="btn btn-ams-primary">
+                <i class="bi bi-plus-circle me-1"></i> Add Hospital
             </a>
         </div>
+    </div>
 
+    <!-- Live Bed Capacity Ribbon -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #10b981; --stat-bg: #ecfdf5; --stat-color: #10b981;">
+                <div>
+                    <div class="ams-stat-label">Emergency Ready Hospitals</div>
+                    <div class="ams-stat-number text-success">@readyCount / @Model.Count()</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-hospital"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #0284c7; --stat-bg: #e0f2fe; --stat-color: #0284c7;">
+                <div>
+                    <div class="ams-stat-label">Total General Beds Open</div>
+                    <div class="ams-stat-number text-primary">@totalBeds</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-heart-pulse"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="ams-stat-card" style="--stat-accent: #e11d48; --stat-bg: #fee2e2; --stat-color: #e11d48;">
+                <div>
+                    <div class="ams-stat-label">Total ICU Beds Open</div>
+                    <div class="ams-stat-number text-danger">@totalIcu</div>
+                </div>
+                <div class="ams-stat-icon-wrapper">
+                    <i class="bi bi-activity"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info">
-            No hospitals have been added yet.
+        <div class="card shadow-sm border p-5 text-center my-4">
+            <div class="mb-3 text-muted">
+                <i class="bi bi-hospital fs-1"></i>
+            </div>
+            <h5 class="fw-bold text-dark">No Hospitals Registered</h5>
+            <p class="text-muted small col-md-6 mx-auto mb-3">
+                No healthcare centers have been added to the system yet. Add the first hospital to enable ambulance routing.
+            </p>
+            <div>
+                <a asp-action="Create" class="btn btn-ams-primary">
+                    <i class="bi bi-plus-circle me-1"></i> Register Hospital
+                </a>
+            </div>
         </div>
     }
     else
     {
-        <div class="hospital-list">
-
+        <div class="row g-4">
             @foreach (var hospital in Model)
             {
-                <partial name="_HospitalCard"
-                         model="hospital" />
+                <div class="col-md-6 col-lg-4">
+                    <partial name="_HospitalCard" model="hospital" />
+                </div>
             }
-
         </div>
     }
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/hospital.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/hospital.css" asp-append-version="true" />
 }

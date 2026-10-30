@@ -9,7 +9,8 @@ namespace AMS.ViewModels
         public string FullName { get; set; } = string.Empty;
 
         [Required]
-        [Phone]
+        //[Phone]
+        [Range(1000000000, 9999999999, ErrorMessage = "Phone number must be a 10-digit number.")]
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; } = string.Empty;
 

@@ -1,91 +1,93 @@
-﻿@model AMS.ViewModels.AmbulanceAssignmentViewModel
+@model AMS.ViewModels.AmbulanceAssignmentViewModel
 
 @{
-    ViewData["Title"] = "Assign Ambulance";
+    ViewData["Title"] = $"Assign Ambulance - {Model.VehicleNumber}";
 }
 
-<div class="ambulance-form-page">
+<div class="ambulance-form-page container py-3">
 
-    <div class="ambulance-form-card">
-
-        <h1>Assign Ambulance</h1>
-
-        <p class="form-subtitle">
-            Assign this ambulance to a driver.
-        </p>
-
-        <form asp-action="Assign" method="post">
-
-            <input type="hidden"
-                   asp-for="AmbulanceId" />
-
-            <div asp-validation-summary="ModelOnly"></div>
-
-            <div class="ambulance-form-group">
-
-                <label>
-                    Vehicle Number
-                </label>
-
-                <input type="text"
-                       value="@Model.VehicleNumber"
-                       readonly />
-
+    <div class="ams-page-header">
+        <div>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-2 small fw-bold">
+                <span class="ams-live-dot" style="background-color: #0284c7;"></span> Driver Roster Assignment
             </div>
+            <h1 class="ams-page-header-title">
+                Assign Driver to Ambulance
+            </h1>
+            <p class="ams-page-header-subtitle">
+                Link vehicle <strong>@Model.VehicleNumber</strong> to an enrolled paramedic driver.
+            </p>
+        </div>
 
-            <div class="ambulance-form-group">
+        <div>
+            <a asp-action="Index" class="ams-back-btn">
+                <i class="bi bi-arrow-left"></i> Back to Ambulances
+            </a>
+        </div>
+    </div>
 
-                <label asp-for="DriverId">
-                    Driver
-                </label>
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-sm border">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                    <i class="bi bi-person-plus-fill text-primary fs-5"></i>
+                    <h5 class="mb-0 fw-bold">Driver Assignment</h5>
+                </div>
 
-                <select asp-for="DriverId">
+                <div class="card-body p-4">
+                    <form asp-action="Assign" method="post">
+                        @Html.AntiForgeryToken()
 
-                    <option value="">
-                        -- Select Driver --
-                    </option>
+                        <input type="hidden" asp-for="AmbulanceId" />
 
-                    @foreach (var driver in ViewBag.Drivers)
-                    {
-                        <option value="@driver.DriverId">
-                            @driver.FullName
-                        </option>
-                    }
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4"></div>
 
-                </select>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Ambulance Vehicle</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-truck-front text-muted"></i></span>
+                                <input type="text" value="@Model.VehicleNumber" class="form-control bg-light" readonly />
+                            </div>
+                        </div>
 
-                <span asp-validation-for="DriverId"></span>
+                        <div class="mb-4">
+                            <label asp-for="DriverId" class="form-label fw-bold">Select Paramedic Driver <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-person-badge text-primary"></i></span>
+                                <select asp-for="DriverId" class="form-select" required>
+                                    <option value="">-- Choose Paramedic Driver --</option>
+                                    @foreach (var driver in ViewBag.Drivers)
+                                    {
+                                        <option value="@driver.DriverId">
+                                            @driver.FullName (Phone: @driver.PhoneNumber)
+                                        </option>
+                                    }
+                                </select>
+                            </div>
+                            <span asp-validation-for="DriverId" class="text-danger small mt-1 d-block"></span>
+                        </div>
 
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a asp-action="Index" class="ams-back-btn">
+                                <i class="bi bi-arrow-left"></i> Cancel
+                            </a>
+
+                            <button type="submit" class="btn btn-ams-primary px-4 py-2 fw-bold">
+                                <i class="bi bi-check2-circle me-1"></i> Confirm Assignment
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="form-actions">
-
-                <button type="submit"
-                        class="btn-primary-custom">
-                    Assign Ambulance
-                </button>
-
-                <a asp-action="Index"
-                   class="btn-secondary-custom">
-                    Cancel
-                </a>
-
-            </div>
-
-        </form>
-
+        </div>
     </div>
 
 </div>
 
 @section Styles {
-    <link rel="stylesheet"
-          href="~/css/ambulance.css"
-          asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/ambulance.css" asp-append-version="true" />
 }
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }
